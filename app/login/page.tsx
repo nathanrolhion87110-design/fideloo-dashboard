@@ -55,6 +55,7 @@ export default function LoginPage() {
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } };
+      console.error("[Google] Erreur auth:", e.response?.data?.error || err);
       setError(e.response?.data?.error || "Erreur Google OAuth");
     } finally {
       setLoading(false);
@@ -62,52 +63,89 @@ export default function LoginPage() {
   }, [login, router]);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) return;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.warn("[Google] NEXT_PUBLIC_GOOGLE_CLIENT_ID non défini — bouton Google désactivé");
+      return;
+    }
+    console.log("[Google] Chargement SDK GSI...");
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
     script.onload = () => {
-      window.google?.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        callback: (response: { credential: string }) => handleGoogleCredential(response.credential)
-      });
-      window.google?.accounts.id.renderButton(
-        document.getElementById("google-signin-btn-login"),
-        { theme: "outline", size: "large", width: "100%", text: "signin_with", locale: "fr" }
-      );
+      console.log("[Google] SDK chargé");
+      if (!window.google) {
+        console.error("[Google] window.google introuvable après chargement du SDK");
+        return;
+      }
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response: { credential: string }) => handleGoogleCredential(response.credential),
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn-login"),
+          { theme: "outline", size: "large", width: "100%", text: "signin_with", locale: "fr" }
+        );
+        console.log("[Google] Bouton rendu avec succès");
+      } catch (e) {
+        console.error("[Google] Erreur initialize/renderButton:", e);
+      }
     };
+    script.onerror = (e) => console.error("[Google] Erreur chargement SDK:", e);
     return () => { if (document.head.contains(script)) document.head.removeChild(script); };
   }, [handleGoogleCredential]);
 
   // ─── Apple Sign In ───────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_APPLE_SERVICE_ID) return;
+    const serviceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
+    if (!serviceId) {
+      console.warn("[Apple] NEXT_PUBLIC_APPLE_SERVICE_ID non défini — bouton Apple désactivé");
+      return;
+    }
+    console.log("[Apple] Chargement SDK Apple Sign In...");
     const script = document.createElement("script");
     script.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
     script.onload = () => {
-      window.AppleID?.auth.init({
-        clientId: process.env.NEXT_PUBLIC_APPLE_SERVICE_ID!,
-        scope: "name email",
-        redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
-        usePopup: true,
-      });
-      setAppleReady(true);
+      console.log("[Apple] SDK chargé");
+      if (!window.AppleID) {
+        console.error("[Apple] window.AppleID introuvable après chargement du SDK");
+        return;
+      }
+      try {
+        window.AppleID.auth.init({
+          clientId: serviceId,
+          scope: "name email",
+          redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+          usePopup: true,
+        });
+        setAppleReady(true);
+        console.log("[Apple] init() appelé avec succès, serviceId:", serviceId);
+      } catch (e) {
+        console.error("[Apple] Erreur init():", e);
+      }
     };
+    script.onerror = (e) => console.error("[Apple] Erreur chargement SDK:", e);
     return () => { if (document.head.contains(script)) document.head.removeChild(script); };
   }, []);
 
   const handleAppleSignIn = async () => {
-    if (!window.AppleID) return;
+    if (!window.AppleID) {
+      console.error("[Apple] window.AppleID non disponible au moment du clic");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
+      console.log("[Apple] Déclenchement signIn()...");
       const data = await window.AppleID.auth.signIn();
+      console.log("[Apple] signIn() réussi, envoi au backend...");
       const res = await api.post("/merchants/auth/apple", {
         identityToken: data.authorization.id_token,
         user: data.user,
@@ -118,9 +156,11 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const appleErr = err as { error?: string };
       if (appleErr.error === "popup_closed_by_user" || appleErr.error === "user_trigger_new_signin_flow") {
+        console.log("[Apple] Popup fermée par l'utilisateur");
         setLoading(false);
         return;
       }
+      console.error("[Apple] Erreur signIn:", err);
       const axiosErr = err as { response?: { data?: { error?: string } } };
       setError(axiosErr.response?.data?.error || "Erreur Apple Sign In");
     } finally {
@@ -146,6 +186,9 @@ export default function LoginPage() {
     }
   };
 
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const appleServiceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-main py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -162,10 +205,9 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 space-y-3">
-          {/* Google Sign-In */}
-          {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ? (
-            <div id="google-signin-btn-login" className="w-full flex justify-center min-h-[44px]" />
-          ) : (
+          {/* Google Sign-In — toujours rendu, le SDK gère la visibilité */}
+          <div id="google-signin-btn-login" className="w-full flex justify-center min-h-[44px]" />
+          {!googleClientId && (
             <button disabled className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-text-muted font-medium cursor-not-allowed opacity-60">
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
               Continuer avec Google (non configuré)
@@ -173,7 +215,7 @@ export default function LoginPage() {
           )}
 
           {/* Apple Sign-In */}
-          {process.env.NEXT_PUBLIC_APPLE_SERVICE_ID ? (
+          {appleServiceId ? (
             <button
               onClick={handleAppleSignIn}
               disabled={loading || !appleReady}
