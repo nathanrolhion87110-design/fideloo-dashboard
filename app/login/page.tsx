@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
@@ -13,9 +13,23 @@ declare global {
     google?: {
       accounts: {
         id: {
-          initialize: (opts: any) => void;
-          renderButton: (el: HTMLElement | null, opts: any) => void;
+          initialize: (opts: Record<string, unknown>) => void;
+          renderButton: (el: HTMLElement | null, opts: Record<string, unknown>) => void;
         };
+      };
+    };
+    AppleID?: {
+      auth: {
+        init: (config: {
+          clientId: string;
+          scope: string;
+          redirectURI: string;
+          usePopup: boolean;
+        }) => void;
+        signIn: () => Promise<{
+          authorization: { id_token: string; code: string };
+          user?: { name?: { firstName?: string; lastName?: string }; email?: string };
+        }>;
       };
     };
   }
@@ -26,18 +40,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [appleReady, setAppleReady] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+
+  // ─── Google OAuth ────────────────────────────────────────────────────────────
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
     setError("");
     setLoading(true);
     try {
-      const res = await api.post("/merchants/auth/google", { credential });
+      const res = await api.post("/merchants/auth/google", { credential, mode: "login" });
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Erreur Google OAuth");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || "Erreur Google OAuth");
     } finally {
       setLoading(false);
     }
@@ -45,28 +63,72 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) return;
-
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-
     script.onload = () => {
       window.google?.accounts.id.initialize({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        callback: (response: any) => handleGoogleCredential(response.credential)
+        callback: (response: { credential: string }) => handleGoogleCredential(response.credential)
       });
       window.google?.accounts.id.renderButton(
-        document.getElementById("google-signin-btn"),
-        { theme: "outline", size: "large", width: "100%", text: "continue_with", locale: "fr" }
+        document.getElementById("google-signin-btn-login"),
+        { theme: "outline", size: "large", width: "100%", text: "signin_with", locale: "fr" }
       );
     };
-
-    return () => {
-      if (document.head.contains(script)) document.head.removeChild(script);
-    };
+    return () => { if (document.head.contains(script)) document.head.removeChild(script); };
   }, [handleGoogleCredential]);
+
+  // ─── Apple Sign In ───────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_APPLE_SERVICE_ID) return;
+    const script = document.createElement("script");
+    script.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    script.onload = () => {
+      window.AppleID?.auth.init({
+        clientId: process.env.NEXT_PUBLIC_APPLE_SERVICE_ID!,
+        scope: "name email",
+        redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+        usePopup: true,
+      });
+      setAppleReady(true);
+    };
+    return () => { if (document.head.contains(script)) document.head.removeChild(script); };
+  }, []);
+
+  const handleAppleSignIn = async () => {
+    if (!window.AppleID) return;
+    setError("");
+    setLoading(true);
+    try {
+      const data = await window.AppleID.auth.signIn();
+      const res = await api.post("/merchants/auth/apple", {
+        identityToken: data.authorization.id_token,
+        user: data.user,
+        mode: "login",
+      });
+      login(res.data.token, res.data.merchant);
+      router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
+    } catch (err: unknown) {
+      const appleErr = err as { error?: string };
+      if (appleErr.error === "popup_closed_by_user" || appleErr.error === "user_trigger_new_signin_flow") {
+        setLoading(false);
+        return;
+      }
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || "Erreur Apple Sign In");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ─── Email/Password ──────────────────────────────────────────────────────────
 
   const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -76,8 +138,9 @@ export default function LoginPage() {
       const res = await api.post("/merchants/login", { email, password });
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Identifiants incorrects");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || "Identifiants incorrects");
     } finally {
       setLoading(false);
     }
@@ -98,26 +161,41 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-text-muted">La carte de fidélité digitale pour votre commerce</p>
         </div>
 
-        <div className="mt-8 space-y-4">
-          {/* Google Sign-In rendered by Google SDK si GOOGLE_CLIENT_ID configuré */}
+        <div className="mt-8 space-y-3">
+          {/* Google Sign-In */}
           {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ? (
-            <div id="google-signin-btn" className="w-full flex justify-center" />
+            <div id="google-signin-btn-login" className="w-full flex justify-center min-h-[44px]" />
           ) : (
-            <button
-              disabled
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-text-muted font-medium cursor-not-allowed opacity-60"
-            >
+            <button disabled className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-text-muted font-medium cursor-not-allowed opacity-60">
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
               Continuer avec Google (non configuré)
             </button>
           )}
-          <button
-            disabled
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black/60 text-white rounded-xl font-medium cursor-not-allowed opacity-60"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" /></svg>
-            Continuer avec Apple (bientôt)
-          </button>
+
+          {/* Apple Sign-In */}
+          {process.env.NEXT_PUBLIC_APPLE_SERVICE_ID ? (
+            <button
+              onClick={handleAppleSignIn}
+              disabled={loading || !appleReady}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black text-white rounded-xl hover:bg-black/90 transition-colors font-medium disabled:opacity-60"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                  <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" />
+                </svg>
+              )}
+              Continuer avec Apple
+            </button>
+          ) : (
+            <button disabled className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black/40 text-white rounded-xl font-medium cursor-not-allowed opacity-60">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" />
+              </svg>
+              Continuer avec Apple (non configuré)
+            </button>
+          )}
         </div>
 
         <div className="relative my-6">
@@ -178,8 +256,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50"
           >
-            {loading ? "Connexion..." : "Se connecter"}
-            {!loading && <ArrowRight className="w-4 h-4" />}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Se connecter <ArrowRight className="w-4 h-4" /></>}
           </button>
         </form>
 
