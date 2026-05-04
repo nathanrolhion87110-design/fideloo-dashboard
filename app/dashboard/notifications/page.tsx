@@ -2,9 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { Send, Bell, Plus, Clock, CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  created_at: string;
+}
 
 export default function NotificationsPage() {
   const { merchant } = useAuth();
@@ -12,7 +19,7 @@ export default function NotificationsPage() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<Notification[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
@@ -23,7 +30,7 @@ export default function NotificationsPage() {
       .finally(() => setLoadingHistory(false));
   }, [merchant]);
 
-  const handleSend = async (e: React.FormEvent) => {
+  const handleSend = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!merchant || !title.trim() || !message.trim()) return;
     setSending(true);

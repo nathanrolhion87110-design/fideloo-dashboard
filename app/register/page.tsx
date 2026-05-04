@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -34,8 +34,9 @@ export default function RegisterPage() {
       
       login(response.data.token, response.data.merchant);
       router.push("/onboarding");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Une erreur est survenue");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || "Une erreur est survenue");
     } finally {
       setLoading(false);
     }

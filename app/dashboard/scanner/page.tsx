@@ -19,7 +19,7 @@ export default function ScannerPage() {
   const [recentScans, setRecentScans] = useState<ScanEntry[]>([]);
   const [error, setError] = useState("");
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setLoading(true);

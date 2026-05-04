@@ -68,7 +68,7 @@ export default function LoginPage() {
     };
   }, [handleGoogleCredential]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
