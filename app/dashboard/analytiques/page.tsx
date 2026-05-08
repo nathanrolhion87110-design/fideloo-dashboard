@@ -116,7 +116,7 @@ export default function AnalyticsPage() {
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
                   <Tooltip
                     contentStyle={{ borderRadius: "12px", border: "1px solid rgba(124,58,237,0.4)", background: "rgba(22,22,31,0.95)", color: "#F1F5F9", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
-                    formatter={(v: number) => [`${v} client${v !== 1 ? "s" : ""}`, "Nouveaux"]}
+                    formatter={(value) => [`${Number(value)} client${Number(value) === 1 ? 's' : ''}`, 'Nouveaux clients']}
                   />
                   <Line type="monotone" dataKey="clients" stroke="url(#lineGradient)" strokeWidth={3} dot={false} activeDot={{ r: 5, fill: "#A78BFA" }} />
                 </LineChart>
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
                   <Tooltip
                     contentStyle={{ borderRadius: "12px", border: "1px solid rgba(124,58,237,0.4)", background: "rgba(22,22,31,0.95)", color: "#F1F5F9", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
-                    formatter={(v: number) => [`${v} point${v !== 1 ? "s" : ""}`, "Distribués"]}
+                    formatter={(value) => [`${Number(value)} point${Number(value) !== 1 ? "s" : ""}`, "Distribués"]}
                   />
                   <Bar dataKey="points" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
                 </BarChart>
