@@ -1,32 +1,243 @@
 @import "tailwindcss";
 
+/* ─── Thème Fideloo Premium (sombre) ─────────────────────────────────────── */
 @theme inline {
-  --color-primary: #6366F1;
-  --color-secondary: #8B5CF6;
+  /* Palette */
+  --color-primary: #7C3AED;
+  --color-primary-dark: #6D28D9;
+  --color-primary-soft: rgba(124, 58, 237, 0.15);
+
+  --color-secondary: #2563EB;
   --color-accent: #F59E0B;
-  --color-background-main: #F8FAFC;
-  --color-sidebar: #0F172A;
-  --color-text-main: #1E293B;
-  --color-text-muted: #64748B;
+
+  --color-background: #0A0A0F;
+  --color-background-soft: #111118;
+  --color-surface: #16161F;
+  --color-surface-hover: #1B1B27;
+  --color-border: #1E1E2E;
+  --color-border-strong: #2A2A3D;
+
+  --color-text-main: #F1F5F9;
+  --color-text-muted: #94A3B8;
+  --color-text-subtle: #64748B;
+
   --color-success: #10B981;
   --color-error: #EF4444;
+  --color-warning: #F59E0B;
+
+  /* Aliases pour compat avec l'ancien thème */
+  --color-text-main-color: var(--color-text-main);
+  --color-background-main: var(--color-background);
+  --color-sidebar: var(--color-background-soft);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Radius design system */
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
 }
 
 :root {
-  --background: var(--color-background-main);
+  --background: var(--color-background);
   --foreground: var(--color-text-main);
+
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--color-sidebar);
-    --foreground: #F8FAFC;
-  }
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+html, body {
+  background: var(--color-background);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  /* Grille subtile en filigrane sur tout le site */
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(124, 58, 237, 0.10) 1px, transparent 0),
+    radial-gradient(ellipse at top, rgba(124, 58, 237, 0.10), transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(37, 99, 235, 0.08), transparent 60%);
+  background-size: 40px 40px, auto, auto;
+  background-attachment: fixed;
 }
+
+::selection {
+  background: rgba(124, 58, 237, 0.4);
+  color: #fff;
+}
+
+/* ─── Scrollbar premium ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.25);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.5); background-clip: padding-box; }
+
+/* ─── Typo ───────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  letter-spacing: -0.025em;
+}
+.heading-display {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+/* ─── Glassmorphism cards ────────────────────────────────────────────────── */
+.glass {
+  background: rgba(22, 22, 31, 0.65);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+.glass-strong {
+  background: rgba(22, 22, 31, 0.82);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 30px 60px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* ─── Texte gradient animé ──────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 35%, #2563EB 70%, #A78BFA 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ─── Boutons glow ───────────────────────────────────────────────────────── */
+.btn-glow {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  color: white;
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.45), 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.btn-glow:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 48px rgba(124, 58, 237, 0.7), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  filter: brightness(1.05);
+}
+.btn-glow:active { transform: translateY(0); }
+.btn-glow:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all .25s ease;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+/* ─── Card hover lift ────────────────────────────────────────────────────── */
+.card-lift {
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+/* ─── Sidebar item actif ─────────────────────────────────────────────────── */
+.nav-active {
+  position: relative;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.18), transparent 80%);
+  color: #F1F5F9;
+}
+.nav-active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, #A78BFA, #7C3AED);
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.7);
+  border-radius: 2px;
+}
+
+/* ─── Stat card gradient ─────────────────────────────────────────────────── */
+.stat-card {
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.10), rgba(37, 99, 235, 0.06) 60%, rgba(22, 22, 31, 0.6));
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────── */
+.input-dark {
+  background: rgba(15, 15, 22, 0.6);
+  color: var(--color-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.input-dark::placeholder { color: rgba(148, 163, 184, 0.6); }
+.input-dark:focus {
+  outline: none;
+  border-color: rgba(124, 58, 237, 0.6);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+  background: rgba(15, 15, 22, 0.85);
+}
+
+/* ─── Animations d'entrée ────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp .6s ease both; }
+.fade-in-up.delay-1 { animation-delay: .08s; }
+.fade-in-up.delay-2 { animation-delay: .16s; }
+.fade-in-up.delay-3 { animation-delay: .24s; }
+.fade-in-up.delay-4 { animation-delay: .32s; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0) translateX(0); }
+  50%     { transform: translateY(-20px) translateX(10px); }
+}
+.float-orb { animation: float 14s ease-in-out infinite; }
+
+@keyframes pulse-glow {
+  0%,100% { box-shadow: 0 0 24px rgba(124, 58, 237, 0.4); }
+  50%     { box-shadow: 0 0 48px rgba(124, 58, 237, 0.8); }
+}
+.pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+/* ─── Apple Wallet button (réutilisé sur /join) ─────────────────────────── */
+.btn-apple-wallet {
+  background: #000;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all .25s ease;
+}
+.btn-apple-wallet:hover { background: #1a1a1a; border-color: rgba(255, 255, 255, 0.18); }
+
+/* ─── Backwards compat (anciens noms tailwind) ──────────────────────────── */
+.bg-background-main { background-color: var(--color-background); }
+.text-text-main { color: var(--color-text-main); }
+.text-text-muted { color: var(--color-text-muted); }
+.bg-primary { background-color: var(--color-primary); }
+.text-primary { color: var(--color-primary); }
+.text-success { color: var(--color-success); }
+.text-error { color: var(--color-error); }
+.text-accent { color: var(--color-accent); }
+.bg-success { background-color: var(--color-success); }
+.bg-accent { background-color: var(--color-accent); }

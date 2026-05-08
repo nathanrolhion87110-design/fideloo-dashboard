@@ -4,10 +4,15 @@ import { useState, useEffect } from "react";
 import { Search, MoreVertical, Download } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
+import GlassCard from "../../../components/GlassCard";
+import GlowButton from "../../../components/GlowButton";
+import GradientText from "../../../components/GradientText";
+
+interface Client { id: string; name: string; email?: string | null; phone?: string | null; points: number; last_visit?: string | null; }
 
 export default function ClientsPage() {
   const { merchant } = useAuth();
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -15,22 +20,22 @@ export default function ClientsPage() {
 
   useEffect(() => {
     if (!merchant) return;
-    api.get(`/customers/${merchant.id}`)
-      .then(res => setClients(res.data))
+    api.get<Client[]>(`/customers/${merchant.id}`)
+      .then((res) => setClients(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [merchant]);
 
-  const filtered = clients.filter(c =>
+  const filtered = clients.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     (c.email || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filtered.length / perPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
   const threshold = merchant?.reward_threshold || 10;
 
-  const formatDate = (dateStr: string | null) => {
+  const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return "Jamais";
     const d = new Date(dateStr);
     const diff = (Date.now() - d.getTime()) / 1000;
@@ -41,110 +46,93 @@ export default function ClientsPage() {
   };
 
   const exportCSV = () => {
-    const rows = [["Nom", "Email", "Points", "Téléphone", "Dernière visite"]];
-    clients.forEach(c =>
-      rows.push([c.name, c.email || "", c.points, c.phone || "", formatDate(c.last_visit)])
-    );
-    const csv = rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const rows: (string | number)[][] = [["Nom", "Email", "Points", "Téléphone", "Dernière visite"]];
+    clients.forEach((c) => rows.push([c.name, c.email || "", c.points, c.phone || "", formatDate(c.last_visit)]));
+    const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
     const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "clients-fideloo.csv";
-    a.click();
+    a.href = url; a.download = "clients-fideloo.csv"; a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in-up">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-main">Mes Clients</h1>
+          <h1 className="heading-display text-3xl"><GradientText>Mes Clients</GradientText></h1>
           <p className="text-text-muted mt-1" id="nav-clients">
-            Gérez votre base de clientèle ({loading ? "..." : clients.length} au total)
+            Gérez votre base de clientèle ({loading ? "…" : clients.length} au total)
           </p>
         </div>
-        <button
-          onClick={exportCSV}
-          className="flex items-center gap-2 border border-slate-200 bg-white text-text-main px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          Export CSV
-        </button>
+        <GlowButton variant="ghost" onClick={exportCSV}>
+          <Download className="w-4 h-4" /> Export CSV
+        </GlowButton>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between">
-          <div className="relative flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-slate-400" />
-            </div>
+      <GlassCard className="overflow-hidden">
+        <div className="p-4 border-b border-white/5">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none" />
             <input
-              type="text"
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 block w-full rounded-xl border-slate-200 bg-slate-50 py-2 text-sm text-text-main focus:border-primary focus:ring-primary focus:bg-white"
-              placeholder="Rechercher par nom ou email..."
+              type="text" value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="input-dark pl-10 w-full rounded-xl py-2.5 text-sm"
+              placeholder="Rechercher par nom ou email…"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-100">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Client</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Progression</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Dernière visite</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+          <table className="min-w-full">
+            <thead>
+              <tr className="text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
+                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Client</th>
+                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Progression</th>
+                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Dernière visite</th>
+                <th className="px-6 py-3 text-right" style={{ background: "rgba(255,255,255,0.02)" }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-text-muted text-sm">Chargement...</td>
-                </tr>
+                <tr><td colSpan={4} className="px-6 py-10 text-center text-text-muted text-sm">Chargement…</td></tr>
               ) : paginated.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-text-muted text-sm">
-                    {search ? "Aucun client trouvé pour cette recherche." : "Aucun client pour l'instant."}
-                  </td>
-                </tr>
+                <tr><td colSpan={4} className="px-6 py-10 text-center text-text-muted text-sm">
+                  {search ? "Aucun client trouvé pour cette recherche." : "Aucun client pour l'instant."}
+                </td></tr>
               ) : (
-                paginated.map(client => (
-                  <tr key={client.id} className="hover:bg-slate-50 transition-colors">
+                paginated.map((c) => (
+                  <tr key={c.id} className="hover:bg-white/[0.03] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center font-bold text-primary text-sm flex-shrink-0">
-                          {client.name.split(" ").map((n: string) => n[0]).join("")}
+                        <div className="h-10 w-10 rounded-full flex items-center justify-center font-bold text-white text-sm shrink-0"
+                             style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.7), rgba(37,99,235,0.7))" }}>
+                          {c.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-text-main">{client.name}</div>
-                          <div className="text-sm text-text-muted">{client.email || "—"}</div>
+                          <div className="text-sm font-medium text-text-main">{c.name}</div>
+                          <div className="text-sm text-text-muted">{c.email || "—"}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="text-sm font-bold text-text-main w-16">
-                          {client.points}/{threshold}
+                        <div className="text-sm font-bold text-text-main w-16">{c.points}/{threshold}</div>
+                        <div className="w-28 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                          <div className="h-full rounded-full"
+                               style={{
+                                 width: `${Math.min((c.points / threshold) * 100, 100)}%`,
+                                 background: c.points >= threshold
+                                   ? "linear-gradient(90deg, #10B981, #34D399)"
+                                   : "linear-gradient(90deg, #7C3AED, #2563EB)",
+                               }} />
                         </div>
-                        <div className="w-24 bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                          <div
-                            className={`h-2.5 rounded-full ${client.points >= threshold ? "bg-success" : "bg-primary"}`}
-                            style={{ width: `${Math.min((client.points / threshold) * 100, 100)}%` }}
-                          />
-                        </div>
-                        {client.points >= threshold && (
-                          <span className="text-xs font-medium text-success">🎁 Récompense</span>
-                        )}
+                        {c.points >= threshold && <span className="text-xs font-semibold text-success">🎁</span>}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-text-muted">{formatDate(client.last_visit)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-text-muted hover:text-primary transition-colors p-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-muted">{formatDate(c.last_visit)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <button className="p-2 rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors">
                         <MoreVertical className="w-5 h-5" />
                       </button>
                     </td>
@@ -155,30 +143,20 @@ export default function ClientsPage() {
           </table>
         </div>
 
-        <div className="p-4 border-t border-slate-100 flex items-center justify-between text-sm text-text-muted">
+        <div className="p-4 border-t border-white/5 flex items-center justify-between text-sm text-text-muted">
           <span>
             {filtered.length === 0
               ? "0 client"
-              : `Affichage de ${(page - 1) * perPage + 1} à ${Math.min(page * perPage, filtered.length)} sur ${filtered.length} clients`}
+              : `Affichage ${(page - 1) * perPage + 1}–${Math.min(page * perPage, filtered.length)} sur ${filtered.length}`}
           </span>
           <div className="flex gap-2">
-            <button
-              onClick={() => setPage(p => Math.max(p - 1, 1))}
-              disabled={page === 1}
-              className="px-3 py-1 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
-            >
-              Précédent
-            </button>
-            <button
-              onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-              disabled={page >= totalPages}
-              className="px-3 py-1 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
-            >
-              Suivant
-            </button>
+            <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}
+                    className="px-3 py-1.5 rounded-lg btn-ghost text-xs disabled:opacity-40">Précédent</button>
+            <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page >= totalPages}
+                    className="px-3 py-1.5 rounded-lg btn-ghost text-xs disabled:opacity-40">Suivant</button>
           </div>
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 }

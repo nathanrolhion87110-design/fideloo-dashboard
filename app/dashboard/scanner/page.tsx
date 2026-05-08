@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Search, User, Award, CheckCircle2, QrCode } from "lucide-react";
+import { Search, User, Award, CheckCircle2, QrCode, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
+import GlassCard from "../../../components/GlassCard";
+import GlowButton from "../../../components/GlowButton";
+import GradientText from "../../../components/GradientText";
 
 interface ScanEntry { time: string; name: string; points: string }
+interface ApiClient { id: string; name: string; email?: string | null; points: number; }
 
 export default function ScannerPage() {
   const { merchant } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeClient, setActiveClient] = useState<any>(null);
+  const [activeClient, setActiveClient] = useState<ApiClient | null>(null);
   const [showReward, setShowReward] = useState(false);
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -22,245 +26,187 @@ export default function ScannerPage() {
   const handleSearch = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    setLoading(true);
-    setError("");
-    setActiveClient(null);
+    setLoading(true); setError(""); setActiveClient(null);
     try {
-      const res = await api.get(`/customers/find/${encodeURIComponent(searchQuery.trim())}`);
-      if (res.data && res.data.length > 0) {
-        setActiveClient(res.data[0]);
-      } else {
-        setError("Aucun client trouvé. Vérifiez le nom ou l'email.");
-      }
-    } catch {
-      setError("Erreur lors de la recherche.");
-    } finally {
-      setLoading(false);
-    }
+      const res = await api.get<ApiClient[]>(`/customers/find/${encodeURIComponent(searchQuery.trim())}`);
+      if (res.data && res.data.length > 0) setActiveClient(res.data[0]);
+      else setError("Aucun client trouvé. Vérifiez le nom ou l'email.");
+    } catch { setError("Erreur lors de la recherche."); }
+    finally { setLoading(false); }
   };
 
   const addPoints = async (pts: number) => {
     if (!activeClient || adding || pts <= 0) return;
     setAdding(true);
     try {
-      const res = await api.post("/transactions", {
-        customer_id: activeClient.id,
-        points: pts,
-        note: "Scanner caisse"
+      const res = await api.post<{ newPoints?: number }>("/transactions", {
+        customer_id: activeClient.id, points: pts, note: "Scanner caisse"
       });
-
       const newPoints = res.data.newPoints ?? activeClient.points + pts;
+      const previous = activeClient.points;
       setActiveClient({ ...activeClient, points: newPoints });
-
       const threshold = merchant?.reward_threshold || 10;
-      if (newPoints >= threshold && activeClient.points < threshold) {
-        setShowReward(true);
-        setTimeout(() => setShowReward(false), 3500);
+      if (newPoints >= threshold && previous < threshold) {
+        setShowReward(true); setTimeout(() => setShowReward(false), 3500);
       }
-
       const now = new Date();
-      const entry: ScanEntry = {
+      setRecentScans((prev) => [{
         time: now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
         name: activeClient.name.split(" ").slice(0, 2).join(" "),
-        points: `+${pts}`
-      };
-      setRecentScans(prev => [entry, ...prev.slice(0, 4)]);
+        points: `+${pts}`,
+      }, ...prev].slice(0, 5));
       setCustomPoints("");
-    } catch {
-      setError("Erreur lors de l'ajout de points.");
-    } finally {
-      setAdding(false);
-    }
+    } catch { setError("Erreur lors de l'ajout de points."); }
+    finally { setAdding(false); }
   };
 
-  const handleCustomAdd = () => {
-    const pts = parseInt(customPoints, 10);
-    if (pts > 0) addPoints(pts);
-  };
+  const handleCustomAdd = () => { const n = parseInt(customPoints, 10); if (n > 0) addPoints(n); };
 
   const threshold = merchant?.reward_threshold || 10;
   const progress = activeClient ? Math.min((activeClient.points / threshold) * 100, 100) : 0;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8 fade-in-up">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-text-main">Scanner un client</h1>
+        <h1 className="heading-display text-4xl"><GradientText>Scanner un client</GradientText></h1>
         <p className="text-text-muted mt-2">Recherchez un client pour lui ajouter des points</p>
       </div>
 
       <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-6 w-6 text-slate-400" />
-        </div>
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted pointer-events-none" />
         <input
-          type="text"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className="block w-full pl-12 pr-36 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm text-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-          placeholder="Nom, email ou ID client..."
+          type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+          className="input-dark pl-12 pr-36 w-full rounded-2xl py-4 text-base shadow-lg"
+          placeholder="Nom, email ou ID client…"
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="absolute inset-y-2 right-2 px-6 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-70"
-        >
-          {loading ? "..." : "Rechercher"}
-        </button>
+        <div className="absolute inset-y-2 right-2">
+          <GlowButton type="submit" disabled={loading}>{loading ? "…" : "Rechercher"}</GlowButton>
+        </div>
       </form>
 
-      {error && (
-        <p className="text-center text-error text-sm font-medium">{error}</p>
-      )}
+      {error && <p className="text-center text-error text-sm font-medium">{error}</p>}
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <AnimatePresence mode="wait">
             {activeClient ? (
-              <motion.div
-                key={activeClient.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white border border-slate-100 rounded-3xl shadow-lg overflow-hidden relative"
-              >
-                {showReward && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-success/10 z-10 flex items-center justify-center backdrop-blur-sm"
-                  >
-                    <motion.div
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center text-center"
-                    >
-                      <Award className="w-16 h-16 text-accent mb-4" />
-                      <h3 className="text-2xl font-bold text-text-main">Récompense atteinte !</h3>
-                      <p className="text-text-muted mt-2">
-                        {activeClient.name} a droit à : <strong>{merchant?.reward_description}</strong>
-                      </p>
+              <motion.div key={activeClient.id}
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .96 }}>
+                <GlassCard variant="strong" className="overflow-hidden relative">
+                  {showReward && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-10 flex items-center justify-center"
+                      style={{ background: "rgba(16,185,129,0.10)", backdropFilter: "blur(8px)" }}>
+                      <motion.div initial={{ scale: .8 }} animate={{ scale: 1 }}
+                        className="p-8 rounded-2xl glass-strong flex flex-col items-center text-center">
+                        <Award className="w-16 h-16 mb-4" style={{ color: "#F59E0B" }} />
+                        <h3 className="text-2xl font-extrabold text-text-main">Récompense atteinte !</h3>
+                        <p className="text-text-muted mt-2">
+                          {activeClient.name} a droit à : <strong className="text-text-main">{merchant?.reward_description}</strong>
+                        </p>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )}
+                  )}
 
-                <div className="p-8">
-                  <div className="flex items-center gap-6 mb-8">
-                    <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="w-10 h-10 text-primary" />
+                  <div className="p-8">
+                    <div className="flex items-center gap-6 mb-8">
+                      <div className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 pulse-glow"
+                           style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.4), rgba(37,99,235,0.4))",
+                                    border: "1px solid rgba(124,58,237,0.4)" }}>
+                        <User className="w-10 h-10" style={{ color: "#A78BFA" }} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-extrabold text-text-main">{activeClient.name}</h2>
+                        <p className="text-text-muted">{activeClient.email || "Pas d'email"}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-text-main">{activeClient.name}</h2>
-                      <p className="text-text-muted">{activeClient.email || "Pas d'email"}</p>
+
+                    <div className="mb-10">
+                      <div className="flex justify-between items-end mb-3">
+                        <span className="font-medium text-text-main">Progression</span>
+                        <span className="text-3xl font-extrabold"><GradientText>{activeClient.points}</GradientText>
+                          <span className="text-lg text-text-muted">/{threshold}</span></span>
+                      </div>
+                      <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                        <motion.div className="h-full rounded-full"
+                          animate={{ width: `${progress}%` }} transition={{ type: "spring", bounce: 0, duration: .8 }}
+                          style={{ background: activeClient.points >= threshold
+                              ? "linear-gradient(90deg, #10B981, #34D399)"
+                              : "linear-gradient(90deg, #7C3AED, #2563EB)",
+                            boxShadow: "0 0 20px rgba(124,58,237,0.6)" }} />
+                      </div>
+                      {activeClient.points >= threshold && (
+                        <p className="text-sm font-semibold mt-2 flex items-center gap-1" style={{ color: "#34D399" }}>
+                          <Award className="w-4 h-4" /> Récompense disponible !
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                      {[1, 2, 5, 10].map((pts) => (
+                        <button key={pts} onClick={() => addPoints(pts)} disabled={adding}
+                          className="card-lift py-4 rounded-2xl flex flex-col items-center gap-2 group disabled:opacity-50"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(124,58,237,0.2)" }}>
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-extrabold text-xl group-hover:scale-110 transition-transform"
+                               style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)",
+                                        boxShadow: "0 0 18px rgba(124,58,237,0.4)" }}>
+                            +{pts}
+                          </div>
+                          <span className="text-xs font-medium text-text-main">{pts} point{pts > 1 ? "s" : ""}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input type="number" value={customPoints} onChange={(e) => setCustomPoints(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleCustomAdd()}
+                        placeholder="Montant personnalisé" min={1}
+                        className="input-dark flex-1 rounded-xl py-2.5 px-4 text-sm" />
+                      <GlowButton onClick={handleCustomAdd} disabled={adding || !customPoints || parseInt(customPoints) <= 0}>
+                        Ajouter
+                      </GlowButton>
                     </div>
                   </div>
-
-                  <div className="mb-10">
-                    <div className="flex justify-between items-end mb-3">
-                      <span className="font-medium text-text-main">Progression</span>
-                      <span className="text-3xl font-bold text-primary">
-                        {activeClient.points}
-                        <span className="text-lg text-slate-400">/{threshold}</span>
-                      </span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
-                      <motion.div
-                        className={`h-full rounded-full ${activeClient.points >= threshold ? "bg-success" : "bg-primary"}`}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.8 }}
-                      />
-                    </div>
-                    {activeClient.points >= threshold && (
-                      <p className="text-sm text-success font-medium mt-2 flex items-center gap-1">
-                        <Award className="w-4 h-4" /> Récompense disponible !
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                    {[1, 2, 5, 10].map(pts => (
-                      <button
-                        key={pts}
-                        onClick={() => addPoints(pts)}
-                        disabled={adding}
-                        className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-50 border border-slate-200 rounded-2xl hover:bg-indigo-50 hover:border-primary/40 transition-all group disabled:opacity-50"
-                      >
-                        <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-primary font-bold text-xl group-hover:scale-110 transition-transform">
-                          +{pts}
-                        </div>
-                        <span className="text-xs font-medium text-text-main">
-                          {pts} point{pts > 1 ? "s" : ""}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={customPoints}
-                      onChange={e => setCustomPoints(e.target.value)}
-                      onKeyDown={e => e.key === "Enter" && handleCustomAdd()}
-                      placeholder="Montant personnalisé"
-                      min="1"
-                      className="flex-1 rounded-xl border-slate-200 bg-slate-50 py-2.5 px-4 text-sm text-text-main focus:border-primary focus:ring-primary focus:bg-white"
-                    />
-                    <button
-                      onClick={handleCustomAdd}
-                      disabled={adding || !customPoints || parseInt(customPoints) <= 0}
-                      className="px-5 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-                    >
-                      Ajouter
-                    </button>
-                  </div>
-                </div>
+                </GlassCard>
               </motion.div>
             ) : (
-              <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl min-h-[420px] flex flex-col items-center justify-center text-text-muted p-8 text-center gap-4">
-                <QrCode className="w-16 h-16 text-slate-300" />
-                <p>Recherchez un client par nom ou email pour afficher sa carte et ajouter des points.</p>
-              </div>
+              <GlassCard className="min-h-[420px] flex flex-col items-center justify-center text-center p-8 gap-4">
+                <QrCode className="w-16 h-16" style={{ color: "rgba(167,139,250,0.5)" }} />
+                <p className="text-text-muted max-w-sm">
+                  Recherchez un client par nom ou email pour afficher sa carte et ajouter des points.
+                </p>
+              </GlassCard>
             )}
           </AnimatePresence>
         </div>
 
-        <div className="bg-white border border-slate-100 rounded-3xl shadow-sm p-6 h-fit">
+        <GlassCard className="p-6 h-fit">
           <h3 className="font-bold text-text-main mb-6 flex items-center gap-2">
-            <HistoryIcon className="w-5 h-5 text-slate-400" />
-            Scans cette session
+            <Clock className="w-5 h-5 text-text-muted" /> Scans cette session
           </h3>
           {recentScans.length === 0 ? (
-            <p className="text-sm text-text-muted text-center py-4">Aucun scan pour l'instant</p>
+            <p className="text-sm text-text-muted text-center py-4">Aucun scan pour l&apos;instant</p>
           ) : (
-            <div className="space-y-3">
-              {recentScans.map((scan, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors">
+            <div className="space-y-2">
+              {recentScans.map((s, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.04] transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                         style={{ background: "rgba(16,185,129,0.15)", color: "#34D399" }}>
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-text-main">{scan.name}</div>
-                      <div className="text-xs text-text-muted">{scan.time}</div>
+                      <div className="text-sm font-medium text-text-main">{s.name}</div>
+                      <div className="text-xs text-text-muted">{s.time}</div>
                     </div>
                   </div>
-                  <div className="font-bold text-primary text-sm">{scan.points}</div>
+                  <div className="font-bold text-sm" style={{ color: "#A78BFA" }}>{s.points}</div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </GlassCard>
       </div>
     </div>
-  );
-}
-
-function HistoryIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M12 7v5l4 2" />
-    </svg>
   );
 }
