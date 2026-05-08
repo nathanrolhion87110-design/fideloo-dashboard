@@ -47,6 +47,7 @@ export default function JoinPage() {
     setSubmitting(true);
     setError("");
     try {
+      console.log("[Join] Création client pour merchant", merchantId);
       const res = await fetch(`${API_URL}/customers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,14 +55,19 @@ export default function JoinPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur lors de l'inscription");
+      console.log("[Join] Client créé, id =", data.id);
       setCustomerId(data.id);
       setStep("success");
     } catch (err: unknown) {
+      console.error("[Join] Erreur création client:", err);
       setError(err instanceof Error ? err.message : "Erreur réseau");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Détection iOS pour adapter l'UI (Apple Wallet uniquement utile sur iPhone/iPad)
+  const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
 
   const color = merchant?.primary_color || "#6366F1";
 
@@ -224,6 +230,7 @@ export default function JoinPage() {
                   {customerId && (
                     <a
                       href={`${API_URL}/passes/apple/${customerId}`}
+                      onClick={() => console.log("[Join] Téléchargement Apple Wallet pass pour", customerId)}
                       className="w-full flex items-center justify-center gap-3 bg-black text-white px-4 py-4 rounded-xl hover:bg-black/90 transition-colors font-medium text-lg shadow-md"
                     >
                       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="fill-white">
@@ -233,7 +240,10 @@ export default function JoinPage() {
                       Ajouter à Apple Wallet
                     </a>
                   )}
-                  {customerId && (
+                  {customerId && !isIOS && (
+                    <GoogleWalletButton customerId={customerId} apiUrl={API_URL} />
+                  )}
+                  {customerId && isIOS && (
                     <GoogleWalletButton customerId={customerId} apiUrl={API_URL} />
                   )}
                 </div>

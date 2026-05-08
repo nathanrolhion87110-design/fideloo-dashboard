@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Lock, Store, Tag, Loader2 } from "lucide-react";
@@ -15,22 +15,26 @@ export default function RegisterPage() {
   const [businessType, setBusinessType] = useState("restaurant");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
   const [appleReady, setAppleReady] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+  const googleScriptLoadedRef = useRef(false);
 
   // ─── Google OAuth ────────────────────────────────────────────────────────────
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
+    console.log("[Google][register] Credential reçu (longueur:", credential.length, "), envoi au backend...");
     setError("");
     setLoading(true);
     try {
-      const res = await api.post("/merchants/auth/google", { credential, mode: "register" });
+      const res = await api.post("/merchants/auth/google", { token: credential, credential, mode: "register" });
+      console.log("[Google][register] Backend OK, merchant =", res.data.merchant?.email);
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { error?: string } } };
-      console.error("[Google] Erreur auth:", e.response?.data?.error || err);
+      const e = err as { response?: { status?: number; data?: { error?: string } } };
+      console.error("[Google][register] Erreur backend:", e.response?.status, e.response?.data?.error || err);
       setError(e.response?.data?.error || "Erreur Google OAuth");
     } finally {
       setLoading(false);
@@ -40,57 +44,114 @@ export default function RegisterPage() {
   useEffect(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
-      console.warn("[Google] NEXT_PUBLIC_GOOGLE_CLIENT_ID non défini — bouton Google désactivé");
+      console.warn("[Google][register] NEXT_PUBLIC_GOOGLE_CLIENT_ID non défini — bouton Google désactivé");
       return;
     }
-    console.log("[Google] Chargement SDK GSI...");
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-    script.onload = () => {
-      console.log("[Google] SDK chargé");
+    if (googleScriptLoadedRef.current) return;
+
+    const initGsi = () => {
       if (!window.google) {
-        console.error("[Google] window.google introuvable après chargement du SDK");
+        console.error("[Google][register] window.google introuvable après chargement du SDK");
         return;
       }
       try {
         window.google.accounts.id.initialize({
           client_id: clientId,
-          callback: (response: { credential: string }) => handleGoogleCredential(response.credential),
+          callback: (response: { credential: string }) => {
+            console.log("[Google][register] Callback déclenché");
+            handleGoogleCredential(response.credential);
+          },
+          ux_mode: "popup",
+          auto_select: false,
+          cancel_on_tap_outside: true,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn-register"),
-          { theme: "outline", size: "large", width: "100%", text: "signup_with", locale: "fr" }
-        );
-        console.log("[Google] Bouton rendu avec succès");
+        setGoogleReady(true);
+        console.log("[Google][register] SDK initialisé, prêt à recevoir un clic. clientId=", clientId);
       } catch (e) {
-        console.error("[Google] Erreur initialize/renderButton:", e);
+        console.error("[Google][register] Erreur initialize:", e);
       }
     };
-    script.onerror = (e) => console.error("[Google] Erreur chargement SDK:", e);
-    return () => { if (document.head.contains(script)) document.head.removeChild(script); };
+
+    if (window.google?.accounts?.id) {
+      googleScriptLoadedRef.current = true;
+      initGsi();
+      return;
+    }
+
+    console.log("[Google][register] Chargement SDK GSI...");
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      console.log("[Google][register] SDK GSI chargé");
+      googleScriptLoadedRef.current = true;
+      initGsi();
+    };
+    script.onerror = (e) => console.error("[Google][register] Erreur chargement SDK:", e);
+    document.head.appendChild(script);
+
+    return () => {
+      if (script.parentNode) script.parentNode.removeChild(script);
+    };
   }, [handleGoogleCredential]);
+
+  const handleGoogleClick = () => {
+    console.log("[Google][register] Clic sur le bouton Google");
+    if (!window.google?.accounts?.id) {
+      console.error("[Google][register] SDK Google non chargé au moment du clic");
+      setError("SDK Google non chargé. Rechargez la page.");
+      return;
+    }
+    try {
+      window.google.accounts.id.prompt((notification) => {
+        console.log("[Google][register] Prompt notification:", {
+          notDisplayed: notification.isNotDisplayed(),
+          notDisplayedReason: notification.isNotDisplayed() ? notification.getNotDisplayedReason() : null,
+          skipped: notification.isSkippedMoment(),
+          skippedReason: notification.isSkippedMoment() ? notification.getSkippedReason() : null,
+          dismissed: notification.isDismissedMoment(),
+          dismissedReason: notification.isDismissedMoment() ? notification.getDismissedReason() : null,
+        });
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.warn("[Google][register] Prompt non affiché, fallback renderButton");
+          const container = document.getElementById("google-fallback-btn-register");
+          if (container && window.google) {
+            container.innerHTML = "";
+            window.google.accounts.id.renderButton(container, {
+              theme: "outline",
+              size: "large",
+              width: 320,
+              text: "signup_with",
+              locale: "fr",
+            });
+            container.style.display = "flex";
+          }
+        }
+      });
+    } catch (e) {
+      console.error("[Google][register] Erreur prompt():", e);
+    }
+  };
 
   // ─── Apple Sign In ───────────────────────────────────────────────────────────
 
   useEffect(() => {
     const serviceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
     if (!serviceId) {
-      console.warn("[Apple] NEXT_PUBLIC_APPLE_SERVICE_ID non défini — bouton Apple désactivé");
+      console.warn("[Apple][register] NEXT_PUBLIC_APPLE_SERVICE_ID non défini — bouton Apple désactivé");
       return;
     }
-    console.log("[Apple] Chargement SDK Apple Sign In...");
+    console.log("[Apple][register] Chargement SDK Apple Sign In...");
     const script = document.createElement("script");
     script.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
     script.onload = () => {
-      console.log("[Apple] SDK chargé");
+      console.log("[Apple][register] SDK chargé");
       if (!window.AppleID) {
-        console.error("[Apple] window.AppleID introuvable après chargement du SDK");
+        console.error("[Apple][register] window.AppleID introuvable après chargement du SDK");
         return;
       }
       try {
@@ -101,41 +162,45 @@ export default function RegisterPage() {
           usePopup: true,
         });
         setAppleReady(true);
-        console.log("[Apple] init() appelé avec succès, serviceId:", serviceId);
+        console.log("[Apple][register] init() OK, serviceId:", serviceId);
       } catch (e) {
-        console.error("[Apple] Erreur init():", e);
+        console.error("[Apple][register] Erreur init():", e);
       }
     };
-    script.onerror = (e) => console.error("[Apple] Erreur chargement SDK:", e);
+    script.onerror = (e) => console.error("[Apple][register] Erreur chargement SDK:", e);
     return () => { if (document.head.contains(script)) document.head.removeChild(script); };
   }, []);
 
   const handleAppleSignIn = async () => {
+    console.log("[Apple][register] Clic sur le bouton Apple");
     if (!window.AppleID) {
-      console.error("[Apple] window.AppleID non disponible au moment du clic");
+      console.error("[Apple][register] window.AppleID non disponible au moment du clic");
+      setError("SDK Apple non chargé. Rechargez la page.");
       return;
     }
     setError("");
     setLoading(true);
     try {
-      console.log("[Apple] Déclenchement signIn()...");
+      console.log("[Apple][register] Déclenchement signIn()...");
       const data = await window.AppleID.auth.signIn();
-      console.log("[Apple] signIn() réussi, envoi au backend...");
+      console.log("[Apple][register] signIn() réussi, identityToken length:", data.authorization?.id_token?.length);
       const res = await api.post("/merchants/auth/apple", {
+        token: data.authorization.id_token,
         identityToken: data.authorization.id_token,
         user: data.user,
         mode: "register",
       });
+      console.log("[Apple][register] Backend OK, merchant =", res.data.merchant?.email);
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const appleErr = err as { error?: string };
       if (appleErr.error === "popup_closed_by_user" || appleErr.error === "user_trigger_new_signin_flow") {
-        console.log("[Apple] Popup fermée par l'utilisateur");
+        console.log("[Apple][register] Popup fermée par l'utilisateur");
         setLoading(false);
         return;
       }
-      console.error("[Apple] Erreur signIn:", err);
+      console.error("[Apple][register] Erreur signIn:", err);
       const axiosErr = err as { response?: { data?: { error?: string } } };
       setError(axiosErr.response?.data?.error || "Erreur Apple Sign In");
     } finally {
@@ -185,18 +250,33 @@ export default function RegisterPage() {
         </div>
 
         <div className="mt-8 space-y-3">
-          {/* Google Sign-In — toujours rendu, le SDK gère la visibilité */}
-          <div id="google-signin-btn-register" className="w-full flex justify-center min-h-[44px]" />
-          {!googleClientId && (
+          {/* Google Sign-In — bouton custom qui déclenche prompt() */}
+          {googleClientId ? (
+            <button
+              type="button"
+              onClick={handleGoogleClick}
+              disabled={loading || !googleReady}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 transition-colors font-medium text-text-main disabled:opacity-60"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+              )}
+              Continuer avec Google
+            </button>
+          ) : (
             <button disabled className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-text-muted font-medium cursor-not-allowed opacity-60">
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
               Continuer avec Google (non configuré)
             </button>
           )}
+          <div id="google-fallback-btn-register" style={{ display: "none" }} className="w-full justify-center" />
 
           {/* Apple Sign-In */}
           {appleServiceId ? (
             <button
+              type="button"
               onClick={handleAppleSignIn}
               disabled={loading || !appleReady}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black text-white rounded-xl hover:bg-black/90 transition-colors font-medium disabled:opacity-60"

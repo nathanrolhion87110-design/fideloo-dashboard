@@ -47,7 +47,11 @@ export default function DashboardHome() {
     { name: "Récompenses utilisées", value: loading ? "..." : rewardsUsed.toString(), icon: CreditCard },
   ];
 
-  const qrData = `${process.env.NEXT_PUBLIC_APP_URL || "https://fideloo.app"}/join/${merchant?.id}`;
+  // URL d'inscription publique (jamais codée en dur — toujours via NEXT_PUBLIC_APP_URL)
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
+  const qrData = `${appUrl}/join/${merchant?.id}`;
 
   const handleDownloadQR = () => {
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
