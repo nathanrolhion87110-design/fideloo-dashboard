@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Smartphone, QrCode, Zap, BarChart3, Palette, Bell,
-  Check, ChevronDown, Sparkles
+  Check, ChevronDown, Sparkles, Menu, X
 } from "lucide-react";
 import AnimatedBackground from "../components/AnimatedBackground";
 import GlassCard from "../components/GlassCard";
@@ -44,6 +44,7 @@ export default function LandingPage() {
 
 /* ─── NAVBAR ───────────────────────────────────────────────────────────── */
 function Navbar({ scrolled }: { scrolled: boolean }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <header
       className={[
@@ -51,27 +52,69 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
         scrolled ? "py-2" : "py-4",
       ].join(" ")}
     >
-      <div className={["max-w-6xl mx-auto px-4 sm:px-6 transition-all rounded-2xl",
+      <div className={["max-w-6xl mx-auto px-3 sm:px-6 transition-all rounded-2xl",
         scrolled ? "glass" : "bg-transparent"].join(" ")}>
-        <div className="h-14 flex items-center justify-between px-4">
+        <div className="h-14 flex items-center justify-between px-3 sm:px-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-extrabold pulse-glow"
                  style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
             <span className="font-extrabold text-lg tracking-tight text-text-main">Fideloo</span>
           </Link>
+
+          {/* Liens desktop */}
           <nav className="hidden md:flex items-center gap-7 text-sm">
             <a href="#features" className="text-text-muted hover:text-text-main transition-colors">Fonctionnalités</a>
             <a href="#pricing" className="text-text-muted hover:text-text-main transition-colors">Tarifs</a>
             <a href="#faq" className="text-text-muted hover:text-text-main transition-colors">FAQ</a>
             <Link href="/login" className="text-text-muted hover:text-text-main transition-colors">Se connecter</Link>
           </nav>
-          <Link href="/register">
+
+          {/* CTA desktop */}
+          <Link href="/register" className="hidden sm:block">
             <GlowButton size="sm">
-              Commencer gratuitement <ArrowRight className="w-4 h-4" />
+              Commencer <ArrowRight className="w-4 h-4" />
             </GlowButton>
           </Link>
+
+          {/* Burger mobile */}
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            onClick={() => setMobileOpen((v) => !v)}
+            className="md:hidden p-2 rounded-lg text-text-main hover:bg-white/5 transition-colors"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Drawer mobile */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden mx-3 mt-2 glass rounded-2xl p-3"
+          >
+            <nav className="flex flex-col text-base">
+              <a onClick={() => setMobileOpen(false)} href="#features"
+                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Fonctionnalités</a>
+              <a onClick={() => setMobileOpen(false)} href="#pricing"
+                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Tarifs</a>
+              <a onClick={() => setMobileOpen(false)} href="#faq"
+                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">FAQ</a>
+              <Link onClick={() => setMobileOpen(false)} href="/login"
+                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Se connecter</Link>
+              <Link onClick={() => setMobileOpen(false)} href="/register"
+                className="mt-2 mx-1">
+                <GlowButton fullWidth>Commencer gratuitement <ArrowRight className="w-4 h-4" /></GlowButton>
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
@@ -92,7 +135,7 @@ function Hero() {
       </motion.div>
 
       <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .05 }}
-        className="heading-display text-4xl sm:text-6xl lg:text-7xl mb-6 max-w-4xl mx-auto">
+        className="heading-display text-[2rem] leading-[1.1] sm:text-5xl lg:text-7xl mb-6 max-w-4xl mx-auto break-words">
         Fidélisez vos clients avec une <GradientText>carte qui s&apos;ajoute</GradientText> dans leur téléphone
       </motion.h1>
 
@@ -337,7 +380,7 @@ function Pricing() {
             <h3 className="text-lg font-bold text-text-main mb-1">Pro</h3>
             <p className="text-sm text-text-muted mb-6">Pour scaler votre fidélité</p>
             <div className="mb-6 flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold tracking-tight"><GradientText>29€</GradientText></span>
+              <span className="text-5xl font-extrabold tracking-tight"><GradientText>70€</GradientText></span>
               <span className="text-text-muted">/mois</span>
             </div>
             <ul className="space-y-3 text-sm text-text-main mb-8">

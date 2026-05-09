@@ -183,7 +183,7 @@ export default function PricingPage() {
               <div className="mb-6">
                 <p className="text-sm font-medium text-white/70 uppercase tracking-wider mb-2">Pro</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-white">29€</span>
+                  <span className="text-5xl font-bold text-white">70€</span>
                   <span className="text-white/70">/mois</span>
                 </div>
                 <p className="text-sm text-white/70 mt-2">Pour développer votre clientèle</p>

@@ -355,7 +355,7 @@ function SettingsPage() {
                         </p>
                       )}
                     </div>
-                    <div className="text-3xl font-extrabold"><GradientText>29€</GradientText>
+                    <div className="text-3xl font-extrabold"><GradientText>70€</GradientText>
                       <span className="text-base font-medium text-text-muted">/mois</span></div>
                   </div>
                   <ul className="space-y-2 text-sm text-text-main">
@@ -397,7 +397,7 @@ function SettingsPage() {
                           <h3 className="text-2xl font-extrabold text-text-main">Plan Pro</h3>
                           <p className="text-sm text-text-muted mt-1">Pour scaler votre fidélité</p>
                         </div>
-                        <div className="text-3xl font-extrabold"><GradientText>29€</GradientText>
+                        <div className="text-3xl font-extrabold"><GradientText>70€</GradientText>
                           <span className="text-base font-medium text-text-muted">/mois</span></div>
                       </div>
                       <ul className="space-y-2 text-sm text-text-main">
@@ -408,7 +408,7 @@ function SettingsPage() {
                         <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Support prioritaire</li>
                       </ul>
                       <GlowButton fullWidth size="lg" onClick={handleUpgrade} disabled={checkoutLoading}>
-                        {checkoutLoading ? "Redirection vers Stripe…" : "Passer au Plan Pro — 29€/mois"}
+                        {checkoutLoading ? "Redirection vers Stripe…" : "Passer au Plan Pro — 70€/mois"}
                       </GlowButton>
                       <p className="text-xs text-text-muted text-center">Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment</p>
                     </div>

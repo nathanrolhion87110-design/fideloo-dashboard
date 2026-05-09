@@ -10,16 +10,43 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://fideloo-dashboard-teal.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Fideloo — Carte de fidélité digitale premium",
+  metadataBase: new URL(SITE_URL),
+  title: "Fideloo — Carte de fidélité digitale pour votre commerce",
   description:
-    "Lancez votre programme de fidélité Apple Wallet & Google Wallet en 2 minutes. Une expérience premium pour vos clients.",
+    "Créez une carte de fidélité numérique qui s'ajoute dans Apple Wallet et Google Wallet. Sans app, sans friction. Essai gratuit.",
+  keywords: ["carte fidélité", "Apple Wallet", "Google Wallet", "fidélisation client", "commerce", "loyalty card", "fidélité digitale"],
+  authors: [{ name: "Fideloo" }],
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    title: "Fideloo — Carte de fidélité digitale",
+    description: "La carte de fidélité qui s'ajoute dans Apple Wallet et Google Wallet",
+    type: "website",
+    locale: "fr_FR",
+    url: SITE_URL,
+    siteName: "Fideloo",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fideloo — Carte de fidélité digitale",
+    description: "La carte de fidélité qui s'ajoute dans Apple Wallet et Google Wallet",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  icons: { icon: "/favicon.ico" },
 };
 
 export const viewport: Viewport = {
   themeColor: "#0A0A0F",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

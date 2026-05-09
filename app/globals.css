@@ -51,6 +51,9 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
+  /* Aucun débordement horizontal sur mobile */
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -61,6 +64,11 @@ body {
     radial-gradient(ellipse at bottom right, rgba(37, 99, 235, 0.08), transparent 60%);
   background-size: 40px 40px, auto, auto;
   background-attachment: fixed;
+}
+
+/* Cibles tactiles confortables (≥ 44px) sur mobile */
+@media (max-width: 640px) {
+  button, a.btn-glow, a.btn-ghost, .btn-glow, .btn-ghost { min-height: 44px; }
 }
 
 ::selection {

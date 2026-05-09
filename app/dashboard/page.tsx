@@ -42,8 +42,13 @@ export default function DashboardHome() {
     .sort((a, b) => new Date(b.last_visit || b.created_at).getTime() - new Date(a.last_visit || a.created_at).getTime())
     .slice(0, 5);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
-  const qrData = `${appUrl}/join/${merchant?.id}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    || (typeof window !== "undefined" ? window.location.origin : "https://fideloo-dashboard-teal.vercel.app");
+  const joinUrl = `${appUrl}/join/${merchant?.id}`;
+  const qrData = joinUrl;
+  if (typeof window !== "undefined" && merchant?.id) {
+    console.log("[QR] URL générée:", joinUrl);
+  }
 
   const handleDownloadQR = () => {
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(qrData)}&color=ffffff&bgcolor=0a0a0f`;
