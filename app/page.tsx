@@ -1,217 +1,464 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, QrCode, Gift, Wallet, CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight, Smartphone, QrCode, Zap, BarChart3, Palette, Bell,
+  Check, ChevronDown, Sparkles
+} from "lucide-react";
+import AnimatedBackground from "../components/AnimatedBackground";
+import GlassCard from "../components/GlassCard";
+import GlowButton from "../components/GlowButton";
+import GradientText from "../components/GradientText";
 
 export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background-main/80 backdrop-blur-md border-b border-slate-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">
-              F
-            </div>
-            <span className="font-bold text-xl tracking-tight text-text-main">Fideloo</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium text-text-muted hover:text-text-main transition-colors">
-              Se connecter
-            </Link>
-            <Link href="/register" className="text-sm font-medium bg-primary text-white px-4 py-2 rounded-full hover:bg-primary/90 transition-all shadow-sm">
-              Créer un compte
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-screen overflow-x-hidden">
+      <AnimatedBackground />
 
-      <main className="flex-grow pt-16">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white -z-10" />
-          <div className="max-w-5xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-text-main mb-6">
-                La carte de fidélité <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">digitale</span> pour votre commerce
-              </h1>
-              <p className="text-xl text-text-muted max-w-2xl mx-auto mb-10">
-                Fidélisez vos clients avec une carte qui s'ajoute directement dans Apple Wallet et Google Wallet. Sans application à télécharger.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/register" className="group flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                  Commencer gratuitement
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link href="#comment-ca-marche" className="text-text-muted font-medium px-8 py-4 rounded-full hover:bg-slate-100 transition-colors">
-                  Comment ça marche ?
-                </Link>
-              </div>
-            </motion.div>
+      <Navbar scrolled={scrolled} />
 
-            {/* Wallet Mockups Illustration */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="mt-20 relative max-w-3xl mx-auto"
-            >
-              <div className="aspect-[16/9] bg-slate-900 rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden relative flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-sidebar to-slate-800 opacity-50" />
-                {/* Mockup d'une carte Apple Wallet */}
-                <div className="relative z-10 w-72 h-44 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-xl flex flex-col p-4 text-white transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500 cursor-pointer">
-                  <div className="flex justify-between items-start">
-                    <div className="font-bold text-lg">Mon Commerce</div>
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <QrCode className="w-6 h-6" />
-                    </div>
-                  </div>
-                  <div className="mt-auto flex justify-between items-end">
-                    <div>
-                      <div className="text-sm opacity-80">Points</div>
-                      <div className="text-3xl font-bold">8/10</div>
-                    </div>
-                    <div className="text-2xl">☕</div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section id="comment-ca-marche" className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-text-main mb-4">Un parcours sans friction</h2>
-              <p className="text-lg text-text-muted max-w-2xl mx-auto">
-                De l'inscription de votre commerce à la récompense de vos clients, tout est pensé pour être simple et rapide.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-12">
-              {[
-                {
-                  icon: QrCode,
-                  title: "1. Le client scanne",
-                  description: "Affichez votre QR code en caisse. Vos clients le scannent en une seconde."
-                },
-                {
-                  icon: Wallet,
-                  title: "2. Ajout au Wallet",
-                  description: "La carte s'ajoute directement dans Apple Wallet ou Google Wallet, sans application."
-                },
-                {
-                  icon: Gift,
-                  title: "3. Cumul de points",
-                  description: "À chaque visite, scannez leur carte pour ajouter des points jusqu'à la récompense."
-                }
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.2 }}
-                  className="flex flex-col items-center text-center p-6 rounded-2xl hover:bg-slate-50 transition-colors"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6 text-primary">
-                    <step.icon className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-xl font-bold text-text-main mb-3">{step.title}</h3>
-                  <p className="text-text-muted leading-relaxed">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Features & Trust */}
-        <section className="py-24 bg-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16">
-            <div className="flex-1">
-              <h2 className="text-3xl font-bold text-text-main mb-6">Pourquoi choisir Fideloo ?</h2>
-              <ul className="space-y-6">
-                {[
-                  "100% en français et adapté aux commerces locaux",
-                  "Aucune application à faire télécharger à vos clients",
-                  "Notifications push pour relancer vos clients inactifs",
-                  "Analytiques détaillées de votre clientèle",
-                ].map((feature, i) => (
-                  <motion.li 
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3 text-lg text-text-muted"
-                  >
-                    <CheckCircle2 className="w-6 h-6 text-success flex-shrink-0" />
-                    <span>{feature}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex-1 relative">
-               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-[3rem] transform rotate-3 scale-105" />
-               <div className="relative bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-slate-100 rounded-full overflow-hidden">
-                         <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-text-main">Marie L.</div>
-                        <div className="text-sm text-text-muted">Gérante de Boulangerie</div>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-text-main italic text-lg leading-relaxed">
-                    "Fideloo a complètement changé notre approche. Avant, nos clients perdaient leurs cartes papier. Maintenant, ils l'ont tous dans leur téléphone. Nos visites ont augmenté de 20% en 3 mois."
-                  </p>
-               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing CTA */}
-        <section className="py-24 bg-white text-center">
-           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-             <h2 className="text-4xl font-bold text-text-main mb-6">Prêt à digitaliser votre fidélité ?</h2>
-             <p className="text-xl text-text-muted mb-10">
-               Rejoignez les commerçants qui ont déjà modernisé leur relation client.
-             </p>
-             <Link href="/register" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-primary/90 transition-all shadow-lg hover:-translate-y-0.5">
-                Créer ma carte de fidélité
-                <ArrowRight className="w-5 h-5" />
-             </Link>
-           </div>
-        </section>
+      <main className="pt-24">
+        <Hero />
+        <Features />
+        <Steps />
+        <Pricing />
+        <Faq openFaq={openFaq} setOpenFaq={setOpenFaq} />
+        <FinalCTA />
+        <Footer />
       </main>
+    </div>
+  );
+}
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-primary flex items-center justify-center text-white font-bold text-sm">
-              F
+/* ─── NAVBAR ───────────────────────────────────────────────────────────── */
+function Navbar({ scrolled }: { scrolled: boolean }) {
+  return (
+    <header
+      className={[
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled ? "py-2" : "py-4",
+      ].join(" ")}
+    >
+      <div className={["max-w-6xl mx-auto px-4 sm:px-6 transition-all rounded-2xl",
+        scrolled ? "glass" : "bg-transparent"].join(" ")}>
+        <div className="h-14 flex items-center justify-between px-4">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-extrabold pulse-glow"
+                 style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
+            <span className="font-extrabold text-lg tracking-tight text-text-main">Fideloo</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-7 text-sm">
+            <a href="#features" className="text-text-muted hover:text-text-main transition-colors">Fonctionnalités</a>
+            <a href="#pricing" className="text-text-muted hover:text-text-main transition-colors">Tarifs</a>
+            <a href="#faq" className="text-text-muted hover:text-text-main transition-colors">FAQ</a>
+            <Link href="/login" className="text-text-muted hover:text-text-main transition-colors">Se connecter</Link>
+          </nav>
+          <Link href="/register">
+            <GlowButton size="sm">
+              Commencer gratuitement <ArrowRight className="w-4 h-4" />
+            </GlowButton>
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ─── HERO ──────────────────────────────────────────────────────────────── */
+function Hero() {
+  return (
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto pt-12 pb-24 text-center">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }}
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8"
+        style={{
+          background: "rgba(124,58,237,0.12)",
+          border: "1px solid rgba(124,58,237,0.3)",
+          color: "#A78BFA"
+        }}>
+        <Sparkles className="w-3.5 h-3.5" />
+        La carte de fidélité du futur
+      </motion.div>
+
+      <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .05 }}
+        className="heading-display text-4xl sm:text-6xl lg:text-7xl mb-6 max-w-4xl mx-auto">
+        Fidélisez vos clients avec une <GradientText>carte qui s&apos;ajoute</GradientText> dans leur téléphone
+      </motion.h1>
+
+      <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .1 }}
+        className="text-lg text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
+        Fideloo permet à votre commerce de créer une carte de fidélité numérique qui s&apos;ajoute directement dans
+        Apple Wallet et Google Wallet. <span className="text-text-main">Sans app, sans friction.</span>
+      </motion.p>
+
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .15 }}
+        className="flex flex-col sm:flex-row gap-3 justify-center mb-14">
+        <Link href="/register">
+          <GlowButton size="lg">
+            Commencer gratuitement <ArrowRight className="w-4 h-4" />
+          </GlowButton>
+        </Link>
+        <a href="#features">
+          <GlowButton size="lg" variant="ghost">Voir les fonctionnalités</GlowButton>
+        </a>
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .8, delay: .25 }}
+        className="flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-text-muted mb-16">
+        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Sans application</span>
+        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Apple & Google Wallet</span>
+        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Mise à jour temps réel</span>
+        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Sans engagement</span>
+      </motion.div>
+
+      <WalletMockup />
+    </section>
+  );
+}
+
+/* ─── Mockup carte Wallet ──────────────────────────────────────────────── */
+function WalletMockup() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .3 }}
+      className="relative max-w-md mx-auto">
+      <div className="absolute inset-0 -m-12 rounded-[3rem] blur-3xl"
+        style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.35), transparent 70%)" }} />
+      <div className="relative rounded-3xl overflow-hidden shadow-2xl"
+        style={{
+          background: "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)",
+          boxShadow: "0 40px 80px rgba(124,58,237,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset"
+        }}>
+        <div className="p-6 text-white">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <div className="text-xs opacity-70 uppercase tracking-wider">Carte fidélité</div>
+              <div className="font-extrabold text-xl mt-1">Boulangerie Dubois</div>
             </div>
-            <span className="font-bold text-text-main">Fideloo</span>
+            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center font-bold">
+              D
+            </div>
           </div>
-          <div className="text-slate-500 text-sm">
-            © {new Date().getFullYear()} Fideloo. Tous droits réservés.
+          <div className="mb-8">
+            <div className="text-xs opacity-70 mb-1">Récompense</div>
+            <div className="font-bold">1 viennoiserie offerte</div>
           </div>
-          <div className="flex gap-6 text-sm text-slate-500">
-            <Link href="#" className="hover:text-primary transition-colors">Mentions légales</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Contact</Link>
+          <div className="flex justify-between items-end">
+            <div>
+              <div className="text-xs opacity-70 mb-1">Points</div>
+              <div className="text-4xl font-extrabold">7/10</div>
+            </div>
+            <div className="w-20 h-20 rounded bg-white p-2 flex items-center justify-center">
+              <div className="w-full h-full grid grid-cols-3 gap-0.5" aria-hidden>
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="bg-black rounded-sm" style={{ opacity: (i % 3 === 1) ? 0.2 : 1 }} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </footer>
-    </div>
+        <div className="px-6 py-3" style={{ background: "rgba(0,0,0,0.2)" }}>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="font-semibold">Apple Wallet</span>
+            <span className="opacity-50">·</span>
+            <span className="opacity-70">Touchez pour ouvrir</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── FEATURES ─────────────────────────────────────────────────────────── */
+const features = [
+  { Icon: Smartphone, title: "Apple Wallet & Google Wallet",
+    desc: "La carte s'ajoute directement dans le téléphone du client, sans app à télécharger." },
+  { Icon: QrCode, title: "QR Code intelligent",
+    desc: "Affichez votre QR code en caisse. Le client scanne et s'inscrit en 30 secondes." },
+  { Icon: Zap, title: "Mise à jour en temps réel",
+    desc: "Ajoutez des points depuis votre dashboard, la carte du client se met à jour instantanément." },
+  { Icon: BarChart3, title: "Analytics complets",
+    desc: "Suivez vos clients fidèles, leur fréquence de visite et vos récompenses distribuées." },
+  { Icon: Palette, title: "Personnalisable",
+    desc: "Choisissez les couleurs de votre carte, votre logo et vos récompenses." },
+  { Icon: Bell, title: "Notifications push",
+    desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
+];
+
+function Features() {
+  return (
+    <section id="features" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
+      <div className="text-center mb-16">
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+          <GradientText>Tout ce dont votre commerce a besoin</GradientText>
+        </h2>
+        <p className="text-text-muted max-w-2xl mx-auto">
+          Une plateforme conçue pour les commerçants qui veulent fidéliser sans complexité technique.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {features.map((f, i) => (
+          <motion.div key={f.title}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: .5, delay: i * .05 }}>
+            <GlassCard className="p-7 h-full" lift>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                style={{
+                  background: "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(37,99,235,0.18))",
+                  border: "1px solid rgba(124,58,237,0.35)",
+                  boxShadow: "0 0 20px rgba(124,58,237,0.25)"
+                }}>
+                <f.Icon className="w-6 h-6" style={{ color: "#A78BFA" }} />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-text-main">{f.title}</h3>
+              <p className="text-sm text-text-muted leading-relaxed">{f.desc}</p>
+            </GlassCard>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── STEPS ────────────────────────────────────────────────────────────── */
+const steps = [
+  { n: "01", title: "Créez votre compte",
+    desc: "Inscrivez-vous gratuitement avec votre email, Google ou Apple en moins de 30 secondes." },
+  { n: "02", title: "Configurez votre carte",
+    desc: "Choisissez votre couleur, ajoutez votre logo et définissez votre récompense." },
+  { n: "03", title: "Partagez votre QR code",
+    desc: "Affichez-le en caisse. Vos clients s'inscrivent et reçoivent leur carte instantanément." },
+];
+
+function Steps() {
+  return (
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
+      <div className="text-center mb-16">
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+          <GradientText>Lancez-vous en 3 minutes</GradientText>
+        </h2>
+        <p className="text-text-muted">Aucune compétence technique requise.</p>
+      </div>
+      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div aria-hidden className="hidden md:block absolute top-12 left-[16%] right-[16%] h-px"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent)" }} />
+        {steps.map((s, i) => (
+          <motion.div key={s.n}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: .5, delay: i * .1 }}
+            className="relative">
+            <GlassCard className="p-7 text-center" lift>
+              <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center text-white font-extrabold text-xl mb-5 pulse-glow"
+                style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>
+                {s.n}
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-text-main">{s.title}</h3>
+              <p className="text-sm text-text-muted leading-relaxed">{s.desc}</p>
+            </GlassCard>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── PRICING ──────────────────────────────────────────────────────────── */
+function Pricing() {
+  const handleCheckoutPro = async () => {
+    const merchantStr = typeof window !== "undefined" ? localStorage.getItem("fideloo_merchant") : null;
+    if (!merchantStr) { window.location.href = "/register"; return; }
+    try {
+      const merchant = JSON.parse(merchantStr) as { id: string };
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem("fideloo_token");
+      const res = await fetch(`${apiUrl}/stripe/create-checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ merchantId: merchant.id }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert(data.error || "Erreur lors de la création de la session Stripe");
+    } catch (e) {
+      console.error(e);
+      window.location.href = "/register";
+    }
+  };
+
+  return (
+    <section id="pricing" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
+      <div className="text-center mb-16">
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+          <GradientText>Des tarifs simples et transparents</GradientText>
+        </h2>
+        <p className="text-text-muted">Sans engagement. Annulable à tout moment.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Plan Gratuit */}
+        <GlassCard className="p-8" lift>
+          <h3 className="text-lg font-bold text-text-main mb-1">Gratuit</h3>
+          <p className="text-sm text-text-muted mb-6">Pour démarrer votre fidélité</p>
+          <div className="mb-6 flex items-baseline gap-1">
+            <span className="text-5xl font-extrabold tracking-tight text-text-main">0€</span>
+            <span className="text-text-muted">/mois</span>
+          </div>
+          <ul className="space-y-3 text-sm text-text-main mb-8">
+            <Bullet>Jusqu&apos;à 50 clients</Bullet>
+            <Bullet>1 commerce</Bullet>
+            <Bullet>Apple Wallet & Google Wallet</Bullet>
+            <Bullet>QR code personnalisé</Bullet>
+            <Bullet>Support email</Bullet>
+          </ul>
+          <Link href="/register" className="block">
+            <GlowButton variant="ghost" fullWidth size="lg">Commencer gratuitement</GlowButton>
+          </Link>
+        </GlassCard>
+
+        {/* Plan Pro */}
+        <div className="relative">
+          <div className="absolute -inset-px rounded-2xl pulse-glow"
+            style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }} aria-hidden />
+          <div className="relative rounded-2xl glass-strong p-8" style={{ borderColor: "rgba(124,58,237,0.5)" }}>
+            <div className="absolute -top-3 right-6 px-3 py-1 rounded-full text-xs font-bold text-white"
+              style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>
+              Populaire
+            </div>
+            <h3 className="text-lg font-bold text-text-main mb-1">Pro</h3>
+            <p className="text-sm text-text-muted mb-6">Pour scaler votre fidélité</p>
+            <div className="mb-6 flex items-baseline gap-1">
+              <span className="text-5xl font-extrabold tracking-tight"><GradientText>29€</GradientText></span>
+              <span className="text-text-muted">/mois</span>
+            </div>
+            <ul className="space-y-3 text-sm text-text-main mb-8">
+              <Bullet>Clients <strong>illimités</strong></Bullet>
+              <Bullet>Commerces <strong>illimités</strong></Bullet>
+              <Bullet>Analytics avancés</Bullet>
+              <Bullet>Notifications push</Bullet>
+              <Bullet>Mise à jour temps réel</Bullet>
+              <Bullet>Support prioritaire</Bullet>
+            </ul>
+            <GlowButton fullWidth size="lg" onClick={handleCheckoutPro}>
+              Passer au Pro <ArrowRight className="w-4 h-4" />
+            </GlowButton>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3">
+      <Check className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#34D399" }} />
+      <span className="leading-relaxed">{children}</span>
+    </li>
+  );
+}
+
+/* ─── FAQ ──────────────────────────────────────────────────────────────── */
+const faqs = [
+  { q: "Est-ce que mes clients ont besoin d'une app ?",
+    a: "Non. La carte s'ajoute directement dans Apple Wallet ou Google Wallet, déjà installés sur tous les smartphones." },
+  { q: "Comment les clients s'inscrivent-ils ?",
+    a: "Ils scannent votre QR code et remplissent un formulaire simple (nom + email). Ils reçoivent leur carte en moins de 30 secondes." },
+  { q: "Puis-je personnaliser ma carte ?",
+    a: "Oui : couleurs, logo, nom du commerce, image de bannière et récompense — tout est entièrement personnalisable depuis votre dashboard." },
+  { q: "Comment mettre à jour les points ?",
+    a: "Depuis votre dashboard, vous cherchez le client par nom ou email, puis vous cliquez pour ajouter des points. La carte du client se met à jour instantanément sur son téléphone." },
+  { q: "Y a-t-il un engagement ?",
+    a: "Non. Le plan Pro est mensuel et annulable à tout moment depuis vos paramètres." },
+];
+
+function Faq({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: number | null) => void }) {
+  return (
+    <section id="faq" className="px-4 sm:px-6 max-w-3xl mx-auto py-24">
+      <div className="text-center mb-12">
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+          <GradientText>Questions fréquentes</GradientText>
+        </h2>
+      </div>
+      <div className="space-y-3">
+        {faqs.map((f, i) => (
+          <GlassCard key={i} className="overflow-hidden">
+            <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
+              className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors hover:bg-white/[0.03]">
+              <span className="font-semibold text-text-main">{f.q}</span>
+              <ChevronDown
+                className={["w-5 h-5 transition-transform", openFaq === i ? "rotate-180 text-[#A78BFA]" : "text-text-muted"].join(" ")}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {openFaq === i && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }} transition={{ duration: .25 }}>
+                  <div className="px-6 pb-5 text-sm text-text-muted leading-relaxed">{f.a}</div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </GlassCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── CTA FINAL ────────────────────────────────────────────────────────── */
+function FinalCTA() {
+  return (
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
+      <div className="relative rounded-[2rem] overflow-hidden p-10 sm:p-16 text-center"
+        style={{
+          background: "linear-gradient(135deg, rgba(124,58,237,0.4) 0%, rgba(37,99,235,0.3) 100%), #16161F",
+          border: "1px solid rgba(124,58,237,0.4)",
+          boxShadow: "0 50px 100px rgba(124,58,237,0.3)"
+        }}>
+        <div aria-hidden className="absolute inset-0 -z-10"
+          style={{ background: "radial-gradient(ellipse at top, rgba(124,58,237,0.4), transparent 60%)" }} />
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4 text-text-main">
+          Prêt à fidéliser vos clients ?
+        </h2>
+        <p className="text-text-muted max-w-xl mx-auto mb-8">
+          Rejoignez les commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
+        </p>
+        <Link href="/register">
+          <GlowButton size="lg">
+            Créer mon compte gratuitement <ArrowRight className="w-4 h-4" />
+          </GlowButton>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+/* ─── FOOTER ───────────────────────────────────────────────────────────── */
+function Footer() {
+  return (
+    <footer className="px-4 sm:px-6 max-w-6xl mx-auto pb-12 pt-6">
+      <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-muted">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md flex items-center justify-center text-white font-extrabold text-sm"
+            style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
+          <span className="font-semibold text-text-main">Fideloo</span>
+          <span>· © {new Date().getFullYear()}</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <a href="#" className="hover:text-text-main transition-colors">Mentions légales</a>
+          <a href="#" className="hover:text-text-main transition-colors">Confidentialité</a>
+          <a href="mailto:contact@fideloo.app" className="hover:text-text-main transition-colors">Contact</a>
+        </div>
+      </div>
+    </footer>
   );
 }

@@ -15,7 +15,7 @@ export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [color, setColor] = useState(merchant?.primary_color || "#6366F1");
   const [businessName, setBusinessName] = useState(merchant?.business_name || "Mon Commerce");
-  const [businessType, setBusinessType] = useState((merchant as any)?.business_type || "restaurant");
+  const [businessType, setBusinessType] = useState(merchant?.business_type || "restaurant");
   const [pointsThreshold, setPointsThreshold] = useState(merchant?.reward_threshold || 10);
   const [rewardDesc, setRewardDesc] = useState(merchant?.reward_description || "1 café offert");
   const [saving, setSaving] = useState(false);

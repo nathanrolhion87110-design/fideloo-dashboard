@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Store, CreditCard, Palette, Shield, Save, Upload, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { Store, CreditCard, Palette, Shield, Save, Upload, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
 import GlassCard from "../../../components/GlassCard";
@@ -11,18 +12,68 @@ import GradientText from "../../../components/GradientText";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
+interface PlanStatus { plan: "free" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
+
 interface MerchantUpdate {
   business_name?: string; business_type?: string;
   primary_color?: string; reward_threshold?: number; reward_description?: string;
   logo_url?: string; strip_url?: string;
 }
 
-export default function SettingsPage() {
+export default function SettingsPageWrapper() {
+  return (
+    <Suspense fallback={<div className="text-text-muted">Chargement…</div>}>
+      <SettingsPage />
+    </Suspense>
+  );
+}
+
+function SettingsPage() {
   const { merchant, updateMerchant } = useAuth();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("commerce");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [planStatus, setPlanStatus] = useState<PlanStatus | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  // Si on revient de Stripe avec ?upgraded=true → ouvrir l'onglet abonnement + message
+  useEffect(() => {
+    if (searchParams?.get("upgraded") === "true") {
+      setActiveTab("abonnement");
+      setSuccessMsg("🎉 Bienvenue sur le plan Pro ! Votre abonnement est actif.");
+      setTimeout(() => setSuccessMsg(""), 6000);
+    }
+  }, [searchParams]);
+
+  // Charger le statut Stripe
+  useEffect(() => {
+    if (!merchant) return;
+    api.get<PlanStatus>(`/stripe/status/${merchant.id}`)
+      .then((r) => setPlanStatus(r.data))
+      .catch(() => setPlanStatus({ plan: "free", plan_expires_at: null, has_stripe_customer: false }));
+  }, [merchant]);
+
+  const handleUpgrade = async () => {
+    if (!merchant) return;
+    setCheckoutLoading(true);
+    try {
+      const res = await api.post<{ url?: string; error?: string }>("/stripe/create-checkout", { merchantId: merchant.id });
+      if (res.data.url) window.location.href = res.data.url;
+      else alert(res.data.error || "Impossible de démarrer le paiement");
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { error?: string } } };
+      alert(err.response?.data?.error || "Erreur Stripe");
+    } finally { setCheckoutLoading(false); }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      const res = await api.post<{ url?: string }>("/stripe/portal");
+      if (res.data.url) window.location.href = res.data.url;
+    } catch (e) { console.error(e); alert("Impossible d'ouvrir le portail Stripe."); }
+  };
 
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("restaurant");
@@ -283,25 +334,87 @@ export default function SettingsPage() {
 
           {activeTab === "abonnement" && (
             <div className="max-w-2xl space-y-6">
-              <div className="p-6 rounded-2xl"
-                   style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.18), rgba(37,99,235,0.10))",
-                            border: "1px solid rgba(124,58,237,0.3)" }}>
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <h3 className="text-lg font-extrabold text-text-main">Plan Gratuit</h3>
-                    <p className="text-sm text-text-muted mt-1">Limité à 50 clients maximum</p>
+              {!planStatus ? (
+                <div className="text-text-muted text-sm">Chargement du statut d&apos;abonnement…</div>
+              ) : planStatus.plan === "pro" ? (
+                <div className="p-6 rounded-2xl space-y-5"
+                     style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.22), rgba(37,99,235,0.12))",
+                              border: "1px solid rgba(124,58,237,0.4)" }}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
+                           style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)", color: "white" }}>
+                        <Sparkles className="w-3.5 h-3.5" /> Plan Pro
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-text-main">Votre plan Pro est actif</h3>
+                      {planStatus.plan_expires_at && (
+                        <p className="text-sm text-text-muted mt-1">
+                          Prochaine échéance : <strong className="text-text-main">
+                            {new Date(planStatus.plan_expires_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                          </strong>
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-3xl font-extrabold"><GradientText>29€</GradientText>
+                      <span className="text-base font-medium text-text-muted">/mois</span></div>
                   </div>
-                  <div className="text-3xl font-extrabold"><GradientText>0€</GradientText>
-                    <span className="text-base font-medium text-text-muted">/mois</span></div>
+                  <ul className="space-y-2 text-sm text-text-main">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Clients illimités</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Notifications push</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Mise à jour temps réel</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Support prioritaire</li>
+                  </ul>
+                  <GlowButton variant="ghost" fullWidth onClick={handleManageSubscription}>
+                    <ExternalLink className="w-4 h-4" /> Gérer mon abonnement
+                  </GlowButton>
                 </div>
-                <div className="mt-6 mb-2 flex justify-between text-sm font-medium text-text-muted">
-                  <span>Utilisation (Clients)</span><span>— / 50</span>
+              ) : (
+                <div className="grid grid-cols-1 gap-5">
+                  {/* Plan actuel : Gratuit */}
+                  <div className="p-6 rounded-2xl"
+                       style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-extrabold text-text-main">Plan Gratuit</h3>
+                        <p className="text-sm text-text-muted mt-1">Limité à 50 clients</p>
+                      </div>
+                      <div className="text-2xl font-extrabold text-text-main">0€<span className="text-sm font-medium text-text-muted">/mois</span></div>
+                    </div>
+                  </div>
+
+                  {/* Plan Pro avec CTA */}
+                  <div className="relative">
+                    <div className="absolute -inset-px rounded-2xl pulse-glow"
+                         style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }} aria-hidden />
+                    <div className="relative p-6 rounded-2xl space-y-5"
+                         style={{ background: "rgba(22,22,31,0.95)", border: "1px solid rgba(124,58,237,0.4)" }}>
+                      <div className="flex justify-between items-start gap-3">
+                        <div>
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
+                               style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)", color: "white" }}>
+                            <Sparkles className="w-3.5 h-3.5" /> Recommandé
+                          </div>
+                          <h3 className="text-2xl font-extrabold text-text-main">Plan Pro</h3>
+                          <p className="text-sm text-text-muted mt-1">Pour scaler votre fidélité</p>
+                        </div>
+                        <div className="text-3xl font-extrabold"><GradientText>29€</GradientText>
+                          <span className="text-base font-medium text-text-muted">/mois</span></div>
+                      </div>
+                      <ul className="space-y-2 text-sm text-text-main">
+                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Clients <strong>illimités</strong></li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Notifications push</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Mise à jour temps réel</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Analytics avancés</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Support prioritaire</li>
+                      </ul>
+                      <GlowButton fullWidth size="lg" onClick={handleUpgrade} disabled={checkoutLoading}>
+                        {checkoutLoading ? "Redirection vers Stripe…" : "Passer au Plan Pro — 29€/mois"}
+                      </GlowButton>
+                      <p className="text-xs text-text-muted text-center">Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full h-2 rounded-full overflow-hidden mb-6" style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <div className="h-full rounded-full" style={{ width: "0%", background: "linear-gradient(90deg, #7C3AED, #2563EB)" }} />
-                </div>
-                <GlowButton fullWidth size="lg">Passer au Plan Pro (Illimité)</GlowButton>
-              </div>
+              )}
             </div>
           )}
         </div>

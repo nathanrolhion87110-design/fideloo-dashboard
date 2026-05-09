@@ -46,8 +46,9 @@ function ResetPasswordForm() {
       await api.post("/merchants/reset-password", { token, password });
       setDone(true);
       setTimeout(() => router.push("/login"), 3000);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Lien invalide ou expiré.");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || "Lien invalide ou expiré.");
     } finally {
       setLoading(false);
     }

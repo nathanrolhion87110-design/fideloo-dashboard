@@ -19,8 +19,9 @@ export default function ForgotPasswordPage() {
     try {
       await api.post("/merchants/forgot-password", { email });
       setSent(true);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Une erreur est survenue.");
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || "Une erreur est survenue.");
     } finally {
       setLoading(false);
     }
