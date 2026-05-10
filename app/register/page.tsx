@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("restaurant");
+  const [honeypot, setHoneypot] = useState(""); // anti-bots
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
@@ -120,7 +121,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(""); setLoading(true);
     try {
-      const r = await api.post("/merchants/register", { email, password, business_name: businessName, business_type: businessType });
+      const r = await api.post("/merchants/register", {
+        email, password,
+        business_name: businessName, business_type: businessType,
+        website: honeypot, // honeypot anti-bots (champ caché)
+      });
       login(r.data.token, r.data.merchant);
       router.push("/onboarding");
     } catch (err: unknown) {
@@ -178,6 +183,13 @@ export default function RegisterPage() {
         )}
 
         <form className="space-y-3" onSubmit={handleRegister}>
+          {/* Honeypot anti-bots — invisible aux humains, rempli par les bots */}
+          <input
+            type="text" name="website" tabIndex={-1} autoComplete="off"
+            value={honeypot} onChange={(e) => setHoneypot(e.target.value)}
+            aria-hidden="true"
+            style={{ position: "absolute", left: "-9999px", top: "-9999px", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
+          />
           <FormField icon={Store}>
             <input type="text" required value={businessName} onChange={(e) => setBusinessName(e.target.value)}
               className="input-dark pl-10 w-full rounded-xl py-3 text-sm" placeholder="Nom du commerce" />

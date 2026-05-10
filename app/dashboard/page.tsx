@@ -43,7 +43,7 @@ export default function DashboardHome() {
     .slice(0, 5);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL
-    || (typeof window !== "undefined" ? window.location.origin : "https://fideloo-dashboard-teal.vercel.app");
+    || (typeof window !== "undefined" ? window.location.origin : "https://fideloo-dashboard-njfq.vercel.app");
   const joinUrl = `${appUrl}/join/${merchant?.id}`;
   const qrData = joinUrl;
   if (typeof window !== "undefined" && merchant?.id) {

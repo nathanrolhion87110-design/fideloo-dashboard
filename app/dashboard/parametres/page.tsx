@@ -37,6 +37,7 @@ function SettingsPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [planStatus, setPlanStatus] = useState<PlanStatus | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [customerCount, setCustomerCount] = useState<number | null>(null);
 
   // Si on revient de Stripe avec ?upgraded=true → ouvrir l'onglet abonnement + message
   useEffect(() => {
@@ -47,12 +48,15 @@ function SettingsPage() {
     }
   }, [searchParams]);
 
-  // Charger le statut Stripe
+  // Charger le statut Stripe + compter les clients pour la barre Free
   useEffect(() => {
     if (!merchant) return;
     api.get<PlanStatus>(`/stripe/status/${merchant.id}`)
       .then((r) => setPlanStatus(r.data))
       .catch(() => setPlanStatus({ plan: "free", plan_expires_at: null, has_stripe_customer: false }));
+    api.get<{ length: number } | unknown[]>(`/customers/${merchant.id}`)
+      .then((r) => setCustomerCount(Array.isArray(r.data) ? r.data.length : 0))
+      .catch(() => setCustomerCount(0));
   }, [merchant]);
 
   const handleUpgrade = async () => {
@@ -367,19 +371,47 @@ function SettingsPage() {
                   <GlowButton variant="ghost" fullWidth onClick={handleManageSubscription}>
                     <ExternalLink className="w-4 h-4" /> Gérer mon abonnement
                   </GlowButton>
+                  <button onClick={handleManageSubscription}
+                          className="block mx-auto text-xs text-text-muted hover:text-text-main transition-colors underline">
+                    Annuler mon abonnement
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-5">
                   {/* Plan actuel : Gratuit */}
                   <div className="p-6 rounded-2xl"
                        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-4">
                       <div>
                         <h3 className="text-lg font-extrabold text-text-main">Plan Gratuit</h3>
                         <p className="text-sm text-text-muted mt-1">Limité à 50 clients</p>
                       </div>
                       <div className="text-2xl font-extrabold text-text-main">0€<span className="text-sm font-medium text-text-muted">/mois</span></div>
                     </div>
+                    {customerCount !== null && (
+                      <>
+                        <div className="flex justify-between text-xs font-medium text-text-muted mb-2">
+                          <span>Clients utilisés</span>
+                          <span><strong className="text-text-main">{customerCount}</strong> / 50</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                          <div className="h-full rounded-full transition-all"
+                               style={{
+                                 width: `${Math.min((customerCount / 50) * 100, 100)}%`,
+                                 background: customerCount >= 50
+                                   ? "linear-gradient(90deg, #EF4444, #F59E0B)"
+                                   : customerCount >= 40
+                                     ? "linear-gradient(90deg, #F59E0B, #FCD34D)"
+                                     : "linear-gradient(90deg, #7C3AED, #2563EB)",
+                               }} />
+                        </div>
+                        {customerCount >= 50 && (
+                          <p className="text-xs mt-3" style={{ color: "#FCA5A5" }}>
+                            ⚠️ Limite atteinte — passez au Plan Pro pour continuer à enregistrer des clients.
+                          </p>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   {/* Plan Pro avec CTA */}

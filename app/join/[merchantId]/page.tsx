@@ -26,6 +26,7 @@ export default function JoinPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // anti-bots
 
   useEffect(() => {
     fetch(`${API_URL}/merchants/${merchantId}`)
@@ -43,10 +44,16 @@ export default function JoinPage() {
       const res = await fetch(`${API_URL}/customers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ merchant_id: merchantId, name, email, birthday: birthday || null }),
+        body: JSON.stringify({
+          merchant_id: merchantId, name, email, birthday: birthday || null,
+          website: honeypot, // anti-bots
+        }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur lors de l'inscription");
+      if (res.status === 403) {
+        throw new Error(data.message || data.error || "Ce commerce a atteint sa limite de clients. Contactez le commerçant.");
+      }
+      if (!res.ok) throw new Error(data.error || data.message || "Erreur lors de l'inscription");
       console.log("[Join] Client créé id =", data.id);
       setCustomerId(data.id);
       setStep("success");
@@ -132,6 +139,13 @@ export default function JoinPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot anti-bots */}
+                <input
+                  type="text" name="website" tabIndex={-1} autoComplete="off"
+                  value={honeypot} onChange={(e) => setHoneypot(e.target.value)}
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "-9999px", top: "-9999px", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
+                />
                 <div>
                   <label className="block text-sm font-medium text-text-main mb-1.5">Prénom et nom</label>
                   <input type="text" required value={name} onChange={(e) => setName(e.target.value)}

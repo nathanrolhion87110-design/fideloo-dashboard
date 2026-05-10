@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Smartphone, QrCode, Zap, BarChart3, Palette, Bell,
-  Check, ChevronDown, Sparkles, Menu, X
+  Check, ChevronDown, Sparkles, Menu, X, Lock, MessageCircle
 } from "lucide-react";
 import AnimatedBackground from "../components/AnimatedBackground";
 import GlassCard from "../components/GlassCard";
@@ -31,6 +31,7 @@ export default function LandingPage() {
 
       <main className="pt-24">
         <Hero />
+        <WhyFideloo />
         <Features />
         <Steps />
         <Pricing />
@@ -38,6 +39,70 @@ export default function LandingPage() {
         <FinalCTA />
         <Footer />
       </main>
+      <CookieBanner />
+    </div>
+  );
+}
+
+/* ─── Pourquoi Fideloo (3 arguments) ─────────────────────────────────── */
+function WhyFideloo() {
+  const items = [
+    { Icon: Smartphone, title: "Sans application",
+      desc: "La carte s'ajoute dans Apple Wallet ou Google Wallet — déjà installés sur tous les smartphones." },
+    { Icon: Lock, title: "Conforme RGPD",
+      desc: "Données hébergées en Europe, aucun cookie de tracking, droits clients respectés." },
+    { Icon: MessageCircle, title: "Support réactif",
+      desc: "Une question ? Un humain vous répond depuis le chat ou par email sous 24h." },
+  ];
+  return (
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-16">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {items.map((it, i) => (
+          <motion.div key={it.title}
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: .5, delay: i * .07 }}>
+            <GlassCard className="p-6 h-full">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
+                   style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(37,99,235,0.18))",
+                            border: "1px solid rgba(124,58,237,0.35)" }}>
+                <it.Icon className="w-5 h-5" style={{ color: "#A78BFA" }} />
+              </div>
+              <h3 className="font-bold text-text-main mb-1">{it.title}</h3>
+              <p className="text-sm text-text-muted leading-relaxed">{it.desc}</p>
+            </GlassCard>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── Bannière cookies RGPD ──────────────────────────────────────────── */
+function CookieBanner() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!localStorage.getItem("fideloo_cookie_ok")) setShow(true);
+  }, []);
+
+  const accept = () => {
+    if (typeof window !== "undefined") localStorage.setItem("fideloo_cookie_ok", "1");
+    setShow(false);
+  };
+
+  if (!show) return null;
+  return (
+    <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
+      <div className="glass-strong max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <p className="text-sm text-text-muted flex-1">
+          Nous utilisons uniquement des cookies fonctionnels essentiels au service.{" "}
+          <Link href="/politique-confidentialite" className="text-[#A78BFA] hover:text-white underline">
+            En savoir plus
+          </Link>
+        </p>
+        <GlowButton size="sm" onClick={accept}>J&apos;accepte</GlowButton>
+      </div>
     </div>
   );
 }
@@ -496,10 +561,11 @@ function Footer() {
           <span className="font-semibold text-text-main">Fideloo</span>
           <span>· © {new Date().getFullYear()}</span>
         </div>
-        <div className="flex items-center gap-6">
-          <a href="#" className="hover:text-text-main transition-colors">Mentions légales</a>
-          <a href="#" className="hover:text-text-main transition-colors">Confidentialité</a>
-          <a href="mailto:contact@fideloo.app" className="hover:text-text-main transition-colors">Contact</a>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <Link href="/mentions-legales" className="hover:text-text-main transition-colors">Mentions légales</Link>
+          <Link href="/politique-confidentialite" className="hover:text-text-main transition-colors">Politique de confidentialité</Link>
+          <Link href="/cgu" className="hover:text-text-main transition-colors">CGU</Link>
+          <a href="mailto:contact@fideloo.fr" className="hover:text-text-main transition-colors">Contact</a>
         </div>
       </div>
     </footer>
