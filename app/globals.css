@@ -238,6 +238,21 @@ h1, h2, h3, h4 {
 }
 .btn-apple-wallet:hover { background: #1a1a1a; border-color: rgba(255, 255, 255, 0.18); }
 
+/* ─── Marquee (défilement horizontal infini) ─────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track { animation: marquee 28s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+
+/* ─── Badge border glow animé ─────────────────────────────────────────────── */
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(124,58,237,0.35); box-shadow: 0 0 10px rgba(124,58,237,0.2); }
+  50%       { border-color: rgba(167,139,250,0.7); box-shadow: 0 0 20px rgba(124,58,237,0.5); }
+}
+.badge-glow { animation: borderGlow 3s ease-in-out infinite; }
+
 /* ─── Backwards compat (anciens noms tailwind) ──────────────────────────── */
 .bg-background-main { background-color: var(--color-background); }
 .text-text-main { color: var(--color-text-main); }

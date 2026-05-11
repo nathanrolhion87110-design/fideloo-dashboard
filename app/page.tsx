@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Smartphone, QrCode, Zap, BarChart3, Palette, Bell,
-  Check, ChevronDown, Sparkles, Menu, X, Lock, MessageCircle
+  Check, ChevronDown, Sparkles, Menu, X, Lock, MessageCircle, Star,
 } from "lucide-react";
 import AnimatedBackground from "../components/AnimatedBackground";
 import GlassCard from "../components/GlassCard";
@@ -26,11 +26,10 @@ export default function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       <AnimatedBackground />
-
       <Navbar scrolled={scrolled} />
-
       <main className="pt-24">
         <Hero />
+        <Marquee />
         <WhyFideloo />
         <Features />
         <Steps />
@@ -44,136 +43,68 @@ export default function LandingPage() {
   );
 }
 
-/* ─── Pourquoi Fideloo (3 arguments) ─────────────────────────────────── */
-function WhyFideloo() {
-  const items = [
-    { Icon: Smartphone, title: "Sans application",
-      desc: "La carte s'ajoute dans Apple Wallet ou Google Wallet — déjà installés sur tous les smartphones." },
-    { Icon: Lock, title: "Conforme RGPD",
-      desc: "Données hébergées en Europe, aucun cookie de tracking, droits clients respectés." },
-    { Icon: MessageCircle, title: "Support réactif",
-      desc: "Une question ? Un humain vous répond depuis le chat ou par email sous 24h." },
-  ];
-  return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-16">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {items.map((it, i) => (
-          <motion.div key={it.title}
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            transition={{ duration: .5, delay: i * .07 }}>
-            <GlassCard className="p-6 h-full">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
-                   style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(37,99,235,0.18))",
-                            border: "1px solid rgba(124,58,237,0.35)" }}>
-                <it.Icon className="w-5 h-5" style={{ color: "#A78BFA" }} />
-              </div>
-              <h3 className="font-bold text-text-main mb-1">{it.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed">{it.desc}</p>
-            </GlassCard>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ─── Bannière cookies RGPD ──────────────────────────────────────────── */
-function CookieBanner() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!localStorage.getItem("fideloo_cookie_ok")) setShow(true);
-  }, []);
-
-  const accept = () => {
-    if (typeof window !== "undefined") localStorage.setItem("fideloo_cookie_ok", "1");
-    setShow(false);
-  };
-
-  if (!show) return null;
-  return (
-    <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
-      <div className="glass-strong max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-        <p className="text-sm text-text-muted flex-1">
-          Nous utilisons uniquement des cookies fonctionnels essentiels au service.{" "}
-          <Link href="/politique-confidentialite" className="text-[#A78BFA] hover:text-white underline">
-            En savoir plus
-          </Link>
-        </p>
-        <GlowButton size="sm" onClick={accept}>J&apos;accepte</GlowButton>
-      </div>
-    </div>
-  );
-}
-
 /* ─── NAVBAR ───────────────────────────────────────────────────────────── */
 function Navbar({ scrolled }: { scrolled: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <header
-      className={[
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "py-2" : "py-4",
-      ].join(" ")}
-    >
-      <div className={["max-w-6xl mx-auto px-3 sm:px-6 transition-all rounded-2xl",
-        scrolled ? "glass" : "bg-transparent"].join(" ")}>
+    <header className={["fixed top-0 left-0 right-0 z-50 transition-all duration-300", scrolled ? "py-2" : "py-4"].join(" ")}>
+      <div className={["max-w-6xl mx-auto px-3 sm:px-6 transition-all rounded-2xl", scrolled ? "glass" : "bg-transparent"].join(" ")}>
         <div className="h-14 flex items-center justify-between px-3 sm:px-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-extrabold pulse-glow"
-                 style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
-            <span className="font-extrabold text-lg tracking-tight text-text-main">Fideloo</span>
+              style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
+            <span className="font-extrabold text-lg tracking-tight" style={{ color: "#FAFAFA" }}>Fideloo</span>
           </Link>
 
-          {/* Liens desktop */}
           <nav className="hidden md:flex items-center gap-7 text-sm">
-            <a href="#features" className="text-text-muted hover:text-text-main transition-colors">Fonctionnalités</a>
-            <a href="#pricing" className="text-text-muted hover:text-text-main transition-colors">Tarifs</a>
-            <a href="#faq" className="text-text-muted hover:text-text-main transition-colors">FAQ</a>
-            <Link href="/login" className="text-text-muted hover:text-text-main transition-colors">Se connecter</Link>
+            {["Fonctionnalités", "Tarifs", "FAQ"].map((label, i) => (
+              <a key={label} href={["#features", "#pricing", "#faq"][i]}
+                className="transition-colors"
+                style={{ color: "#A1A1AA" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#FAFAFA")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#A1A1AA")}>
+                {label}
+              </a>
+            ))}
+            <Link href="/login" className="transition-colors"
+              style={{ color: "#A1A1AA" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#FAFAFA")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#A1A1AA")}>
+              Se connecter
+            </Link>
           </nav>
 
-          {/* CTA desktop */}
           <Link href="/register" className="hidden sm:block">
-            <GlowButton size="sm">
-              Commencer <ArrowRight className="w-4 h-4" />
-            </GlowButton>
+            <GlowButton size="sm">Commencer <ArrowRight className="w-4 h-4" /></GlowButton>
           </Link>
 
-          {/* Burger mobile */}
-          <button
-            type="button"
-            aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
-            onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 rounded-lg text-text-main hover:bg-white/5 transition-colors"
-          >
+          <button type="button" aria-label={mobileOpen ? "Fermer" : "Menu"}
+            onClick={() => setMobileOpen(v => !v)}
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ color: "#FAFAFA" }}>
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* Drawer mobile */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden mx-3 mt-2 glass rounded-2xl p-3"
-          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }} className="md:hidden mx-3 mt-2 glass rounded-2xl p-3">
             <nav className="flex flex-col text-base">
-              <a onClick={() => setMobileOpen(false)} href="#features"
-                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Fonctionnalités</a>
-              <a onClick={() => setMobileOpen(false)} href="#pricing"
-                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Tarifs</a>
-              <a onClick={() => setMobileOpen(false)} href="#faq"
-                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">FAQ</a>
+              {[["#features", "Fonctionnalités"], ["#pricing", "Tarifs"], ["#faq", "FAQ"]].map(([href, label]) => (
+                <a key={label} onClick={() => setMobileOpen(false)} href={href}
+                  className="px-4 py-3 rounded-xl transition-colors"
+                  style={{ color: "#FAFAFA" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                  {label}
+                </a>
+              ))}
               <Link onClick={() => setMobileOpen(false)} href="/login"
-                className="px-4 py-3 rounded-xl text-text-main hover:bg-white/5">Se connecter</Link>
-              <Link onClick={() => setMobileOpen(false)} href="/register"
-                className="mt-2 mx-1">
+                className="px-4 py-3 rounded-xl transition-colors"
+                style={{ color: "#FAFAFA" }}>Se connecter</Link>
+              <Link onClick={() => setMobileOpen(false)} href="/register" className="mt-2 mx-1">
                 <GlowButton fullWidth>Commencer gratuitement <ArrowRight className="w-4 h-4" /></GlowButton>
               </Link>
             </nav>
@@ -187,149 +118,228 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
 /* ─── HERO ──────────────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto pt-12 pb-24 text-center">
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8"
-        style={{
-          background: "rgba(124,58,237,0.12)",
-          border: "1px solid rgba(124,58,237,0.3)",
-          color: "#A78BFA"
-        }}>
-        <Sparkles className="w-3.5 h-3.5" />
-        La carte de fidélité du futur
-      </motion.div>
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto pt-16 pb-24">
+      <div className="flex flex-col lg:flex-row items-center gap-16">
+        {/* Colonne texte */}
+        <div className="flex-1 text-center lg:text-left">
+          {/* Badge animé */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8 badge-glow"
+            style={{
+              background: "rgba(124,58,237,0.10)",
+              border: "1px solid rgba(124,58,237,0.35)",
+              color: "#A78BFA",
+            }}>
+            <Sparkles className="w-3.5 h-3.5" />
+            ✦ Nouveau — Cartes dans Apple &amp; Google Wallet
+          </motion.div>
 
-      <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .05 }}
-        className="heading-display text-[2rem] leading-[1.1] sm:text-5xl lg:text-7xl mb-6 max-w-4xl mx-auto break-words">
-        Fidélisez vos clients avec une <GradientText>carte qui s&apos;ajoute</GradientText> dans leur téléphone
-      </motion.h1>
+          {/* H1 */}
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .05 }}
+            className="heading-display mb-6"
+            style={{ fontSize: "clamp(2.25rem, 5.5vw, 4rem)", lineHeight: 1.08, color: "#FAFAFA" }}>
+            La carte de fidélité que vos clients{" "}
+            <GradientText>adorent utiliser</GradientText>
+          </motion.h1>
 
-      <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .1 }}
-        className="text-lg text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-        Fideloo permet à votre commerce de créer une carte de fidélité numérique qui s&apos;ajoute directement dans
-        Apple Wallet et Google Wallet. <span className="text-text-main">Sans app, sans friction.</span>
-      </motion.p>
+          {/* Sous-titre */}
+          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .1 }}
+            className="text-lg leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0"
+            style={{ color: "#A1A1AA" }}>
+            Fideloo transforme votre programme de fidélité en une carte numérique dans le téléphone de vos clients.{" "}
+            <span style={{ color: "#FAFAFA" }}>Zéro app. Zéro friction. 100% efficace.</span>
+          </motion.p>
 
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .15 }}
-        className="flex flex-col sm:flex-row gap-3 justify-center mb-14">
-        <Link href="/register">
-          <GlowButton size="lg">
-            Commencer gratuitement <ArrowRight className="w-4 h-4" />
-          </GlowButton>
-        </Link>
-        <a href="#features">
-          <GlowButton size="lg" variant="ghost">Voir les fonctionnalités</GlowButton>
-        </a>
-      </motion.div>
+          {/* CTAs */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .15 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
+            <Link href="/register">
+              <GlowButton size="lg">
+                Créer ma carte gratuite <ArrowRight className="w-4 h-4" />
+              </GlowButton>
+            </Link>
+            <a href="#features">
+              <GlowButton size="lg" variant="ghost">Voir comment ça marche</GlowButton>
+            </a>
+          </motion.div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .8, delay: .25 }}
-        className="flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-text-muted mb-16">
-        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Sans application</span>
-        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Apple & Google Wallet</span>
-        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Mise à jour temps réel</span>
-        <span className="flex items-center gap-2"><Check className="w-4 h-4 text-success" /> Sans engagement</span>
-      </motion.div>
+          {/* Social proof */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .7, delay: .25 }}
+            className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 text-sm"
+            style={{ color: "#71717A" }}>
+            <span className="flex items-center gap-2">
+              <Star className="w-4 h-4" style={{ color: "#F59E0B", fill: "#F59E0B" }} />
+              500+ commerces actifs
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-2">
+              <Lock className="w-3.5 h-3.5" style={{ color: "#10B981" }} />
+              Sans carte bancaire
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5" style={{ color: "#7C3AED" }} />
+              Prêt en 2 minutes
+            </span>
+          </motion.div>
+        </div>
 
-      <WalletMockup />
+        {/* Mockup iPhone */}
+        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7, delay: .2 }}
+          className="flex-shrink-0 relative">
+          <div className="absolute inset-0 -m-16 rounded-full blur-3xl"
+            style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.3), transparent 70%)" }} />
+          <IPhoneMockup />
+        </motion.div>
+      </div>
     </section>
   );
 }
 
-/* ─── Mockup carte Wallet ──────────────────────────────────────────────── */
-function WalletMockup() {
+/* ─── iPhone Mockup ──────────────────────────────────────────────────────── */
+function IPhoneMockup() {
   return (
-    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, delay: .3 }}
-      className="relative max-w-md mx-auto">
-      <div className="absolute inset-0 -m-12 rounded-[3rem] blur-3xl"
-        style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.35), transparent 70%)" }} />
-      <div className="relative rounded-3xl overflow-hidden shadow-2xl"
+    <div className="relative z-10" style={{ width: 280 }}>
+      {/* Cadre iPhone */}
+      <div className="relative rounded-[3rem] overflow-hidden shadow-2xl"
         style={{
-          background: "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)",
-          boxShadow: "0 40px 80px rgba(124,58,237,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset"
+          background: "#0D0D14",
+          border: "1.5px solid rgba(255,255,255,0.12)",
+          padding: "12px 8px",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05) inset, inset 0 1px 0 rgba(255,255,255,0.1)",
         }}>
-        <div className="p-6 text-white">
-          <div className="flex justify-between items-start mb-8">
+        {/* Notch */}
+        <div className="flex justify-center mb-3">
+          <div className="rounded-full" style={{ width: 100, height: 12, background: "#000", borderRadius: 8 }} />
+        </div>
+
+        {/* Écran : carte Apple Wallet */}
+        <div className="rounded-[2rem] overflow-hidden"
+          style={{
+            background: "linear-gradient(160deg, #7C3AED 0%, #4F46E5 50%, #2563EB 100%)",
+            boxShadow: "0 10px 40px rgba(124,58,237,0.5)",
+            padding: "24px 20px 20px",
+            minHeight: 340,
+          }}>
+          {/* En-tête carte */}
+          <div className="flex justify-between items-start mb-6">
             <div>
-              <div className="text-xs opacity-70 uppercase tracking-wider">Carte fidélité</div>
-              <div className="font-extrabold text-xl mt-1">Boulangerie Dubois</div>
+              <div className="text-xs font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)", letterSpacing: "0.1em" }}>
+                CARTE FIDÉLITÉ
+              </div>
+              <div className="font-extrabold text-base leading-tight" style={{ color: "#fff" }}>
+                Boulangerie Martin
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center font-bold">
-              D
+            <div className="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm"
+              style={{ background: "rgba(255,255,255,0.2)", color: "#fff", backdropFilter: "blur(10px)" }}>
+              B
             </div>
           </div>
-          <div className="mb-8">
-            <div className="text-xs opacity-70 mb-1">Récompense</div>
-            <div className="font-bold">1 viennoiserie offerte</div>
+
+          {/* Récompense */}
+          <div className="rounded-2xl p-4 mb-6"
+            style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(10px)" }}>
+            <div className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>Récompense</div>
+            <div className="font-bold text-sm" style={{ color: "#fff" }}>🥐 1 viennoiserie offerte</div>
           </div>
+
+          {/* Points */}
           <div className="flex justify-between items-end">
             <div>
-              <div className="text-xs opacity-70 mb-1">Points</div>
-              <div className="text-4xl font-extrabold">7/10</div>
+              <div className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>Points</div>
+              <div className="font-extrabold" style={{ fontSize: 40, color: "#fff", lineHeight: 1 }}>
+                7<span style={{ fontSize: 22, color: "rgba(255,255,255,0.5)" }}>/10</span>
+              </div>
+              {/* Barre de progression */}
+              <div className="mt-2 rounded-full overflow-hidden" style={{ width: 120, height: 5, background: "rgba(255,255,255,0.2)" }}>
+                <div className="h-full rounded-full" style={{ width: "70%", background: "#fff" }} />
+              </div>
             </div>
-            <div className="w-20 h-20 rounded bg-white p-2 flex items-center justify-center">
-              <div className="w-full h-full grid grid-cols-3 gap-0.5" aria-hidden>
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="bg-black rounded-sm" style={{ opacity: (i % 3 === 1) ? 0.2 : 1 }} />
+            {/* QR code stylisé */}
+            <div className="rounded-xl flex items-center justify-center"
+              style={{ width: 56, height: 56, background: "#fff", padding: 5 }}>
+              <div className="grid gap-0.5" style={{ gridTemplateColumns: "repeat(4,1fr)", width: "100%", height: "100%" }}>
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div key={i} className="rounded-sm"
+                    style={{ background: [0,1,4,5,10,11,14,15,2,7,8,13].includes(i) ? "#111" : "transparent" }} />
                 ))}
               </div>
             </div>
           </div>
         </div>
-        <div className="px-6 py-3" style={{ background: "rgba(0,0,0,0.2)" }}>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-semibold">Apple Wallet</span>
-            <span className="opacity-50">·</span>
-            <span className="opacity-70">Touchez pour ouvrir</span>
-          </div>
+
+        {/* Barre du bas */}
+        <div className="flex justify-center mt-3">
+          <div className="rounded-full" style={{ width: 80, height: 4, background: "rgba(255,255,255,0.2)" }} />
         </div>
       </div>
-    </motion.div>
+
+      {/* Label Apple Wallet flottant */}
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold glass"
+        style={{ color: "#A78BFA", border: "1px solid rgba(124,58,237,0.4)" }}>
+        📱 Apple Wallet · Google Wallet
+      </div>
+    </div>
   );
 }
 
-/* ─── FEATURES ─────────────────────────────────────────────────────────── */
-const features = [
-  { Icon: Smartphone, title: "Apple Wallet & Google Wallet",
-    desc: "La carte s'ajoute directement dans le téléphone du client, sans app à télécharger." },
-  { Icon: QrCode, title: "QR Code intelligent",
-    desc: "Affichez votre QR code en caisse. Le client scanne et s'inscrit en 30 secondes." },
-  { Icon: Zap, title: "Mise à jour en temps réel",
-    desc: "Ajoutez des points depuis votre dashboard, la carte du client se met à jour instantanément." },
-  { Icon: BarChart3, title: "Analytics complets",
-    desc: "Suivez vos clients fidèles, leur fréquence de visite et vos récompenses distribuées." },
-  { Icon: Palette, title: "Personnalisable",
-    desc: "Choisissez les couleurs de votre carte, votre logo et vos récompenses." },
-  { Icon: Bell, title: "Notifications push",
-    desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
-];
+/* ─── MARQUEE ─────────────────────────────────────────────────────────────── */
+function Marquee() {
+  const items = [
+    "Boulangerie", "Restaurant", "Coiffeur", "Café", "Pizzeria",
+    "Boutique", "Épicerie", "Salon de beauté", "Fleuriste", "Pharmacie",
+  ];
+  const doubled = [...items, ...items];
 
-function Features() {
   return (
-    <section id="features" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <div className="text-center mb-16">
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
-          <GradientText>Tout ce dont votre commerce a besoin</GradientText>
-        </h2>
-        <p className="text-text-muted max-w-2xl mx-auto">
-          Une plateforme conçue pour les commerçants qui veulent fidéliser sans complexité technique.
-        </p>
+    <section className="py-14 overflow-hidden" style={{ background: "#0D0D14", borderTop: "1px solid rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] mb-8"
+        style={{ color: "#52525B" }}>
+        Ils utilisent Fideloo
+      </p>
+      <div className="overflow-hidden">
+        <div className="flex whitespace-nowrap marquee-track">
+          {doubled.map((label, i) => (
+            <span key={i} className="inline-flex items-center gap-4 px-8 text-2xl font-extrabold"
+              style={{ color: "rgba(255,255,255,0.08)" }}>
+              {label}
+              <span style={{ color: "rgba(124,58,237,0.3)" }}>·</span>
+            </span>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {features.map((f, i) => (
-          <motion.div key={f.title}
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: .5, delay: i * .05 }}>
-            <GlassCard className="p-7 h-full" lift>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+    </section>
+  );
+}
+
+/* ─── POURQUOI FIDELOO ────────────────────────────────────────────────────── */
+function WhyFideloo() {
+  const items = [
+    { Icon: Smartphone, title: "Sans application",
+      desc: "La carte s'ajoute dans Apple Wallet ou Google Wallet — déjà installés sur tous les smartphones." },
+    { Icon: Lock, title: "Conforme RGPD",
+      desc: "Données hébergées en Europe, aucun cookie de tracking, droits clients respectés." },
+    { Icon: MessageCircle, title: "Support réactif",
+      desc: "Un humain vous répond depuis le chat ou par email sous 24h." },
+  ];
+  return (
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-20">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {items.map((it, i) => (
+          <motion.div key={it.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: .5, delay: i * .07 }}>
+            <GlassCard className="p-6 h-full" lift>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
                 style={{
-                  background: "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(37,99,235,0.18))",
+                  background: "linear-gradient(135deg, rgba(124,58,237,0.22), rgba(37,99,235,0.15))",
                   border: "1px solid rgba(124,58,237,0.35)",
-                  boxShadow: "0 0 20px rgba(124,58,237,0.25)"
+                  boxShadow: "0 0 16px rgba(124,58,237,0.2)",
                 }}>
-                <f.Icon className="w-6 h-6" style={{ color: "#A78BFA" }} />
+                <it.Icon className="w-5 h-5" style={{ color: "#A78BFA" }} />
               </div>
-              <h3 className="text-lg font-bold mb-2 text-text-main">{f.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed">{f.desc}</p>
+              <h3 className="font-bold mb-2" style={{ color: "#FAFAFA" }}>{it.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "#A1A1AA" }}>{it.desc}</p>
             </GlassCard>
           </motion.div>
         ))}
@@ -338,10 +348,61 @@ function Features() {
   );
 }
 
-/* ─── STEPS ────────────────────────────────────────────────────────────── */
+/* ─── FEATURES ──────────────────────────────────────────────────────────── */
+const features = [
+  { Icon: Smartphone, title: "Apple Wallet & Google Wallet",
+    desc: "La carte s'ajoute en 1 tap dans le téléphone natif du client, sans app à télécharger." },
+  { Icon: QrCode, title: "QR Code instantané",
+    desc: "Affichez votre QR en caisse. Le client scanne et s'inscrit en 30 secondes." },
+  { Icon: Zap, title: "Mise à jour temps réel",
+    desc: "Ajoutez des points en 1 clic. La carte se met à jour instantanément sur le téléphone." },
+  { Icon: BarChart3, title: "Analytics détaillés",
+    desc: "Suivez vos meilleurs clients, la fréquence de visite et vos récompenses distribuées." },
+  { Icon: Palette, title: "100% personnalisable",
+    desc: "Couleurs, logo, récompenses : votre carte à votre image en quelques clics." },
+  { Icon: Bell, title: "Notifications push",
+    desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
+];
+
+function Features() {
+  return (
+    <section id="features" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
+      <div className="text-center mb-16">
+        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="heading-display text-3xl sm:text-5xl mb-4">
+          <GradientText>Tout ce qu&apos;il vous faut pour fidéliser</GradientText>
+        </motion.h2>
+        <p className="max-w-2xl mx-auto" style={{ color: "#A1A1AA" }}>
+          Une plateforme conçue pour les commerçants qui veulent fidéliser sans complexité technique.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {features.map((f, i) => (
+          <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }} transition={{ duration: .5, delay: i * .05 }}>
+            <GlassCard className="p-7 h-full" lift>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                style={{
+                  background: "linear-gradient(135deg, rgba(124,58,237,0.22), rgba(37,99,235,0.15))",
+                  border: "1px solid rgba(124,58,237,0.35)",
+                  boxShadow: "0 0 20px rgba(124,58,237,0.2)",
+                }}>
+                <f.Icon className="w-6 h-6" style={{ color: "#A78BFA" }} />
+              </div>
+              <h3 className="text-lg font-bold mb-2" style={{ color: "#FAFAFA" }}>{f.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "#A1A1AA" }}>{f.desc}</p>
+            </GlassCard>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── STEPS ─────────────────────────────────────────────────────────────── */
 const steps = [
   { n: "01", title: "Créez votre compte",
-    desc: "Inscrivez-vous gratuitement avec votre email, Google ou Apple en moins de 30 secondes." },
+    desc: "Inscrivez-vous gratuitement avec email, Google ou Apple en moins de 30 secondes." },
   { n: "02", title: "Configurez votre carte",
     desc: "Choisissez votre couleur, ajoutez votre logo et définissez votre récompense." },
   { n: "03", title: "Partagez votre QR code",
@@ -352,26 +413,25 @@ function Steps() {
   return (
     <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
       <div className="text-center mb-16">
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="heading-display text-3xl sm:text-5xl mb-4">
           <GradientText>Lancez-vous en 3 minutes</GradientText>
-        </h2>
-        <p className="text-text-muted">Aucune compétence technique requise.</p>
+        </motion.h2>
+        <p style={{ color: "#A1A1AA" }}>Aucune compétence technique requise.</p>
       </div>
       <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
         <div aria-hidden className="hidden md:block absolute top-12 left-[16%] right-[16%] h-px"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent)" }} />
+          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent)" }} />
         {steps.map((s, i) => (
-          <motion.div key={s.n}
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: .5, delay: i * .1 }}
-            className="relative">
+          <motion.div key={s.n} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }} transition={{ duration: .5, delay: i * .1 }}>
             <GlassCard className="p-7 text-center" lift>
               <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center text-white font-extrabold text-xl mb-5 pulse-glow"
                 style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>
                 {s.n}
               </div>
-              <h3 className="text-lg font-bold mb-2 text-text-main">{s.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed">{s.desc}</p>
+              <h3 className="text-lg font-bold mb-2" style={{ color: "#FAFAFA" }}>{s.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "#A1A1AA" }}>{s.desc}</p>
             </GlassCard>
           </motion.div>
         ))}
@@ -380,75 +440,79 @@ function Steps() {
   );
 }
 
-/* ─── PRICING ──────────────────────────────────────────────────────────── */
+/* ─── PRICING ───────────────────────────────────────────────────────────── */
 function Pricing() {
   const handleCheckoutPro = async () => {
     const merchantStr = typeof window !== "undefined" ? localStorage.getItem("fideloo_merchant") : null;
     if (!merchantStr) { window.location.href = "/register"; return; }
     try {
       const merchant = JSON.parse(merchantStr) as { id: string };
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const token = localStorage.getItem("fideloo_token");
-      const res = await fetch(`${apiUrl}/stripe/create-checkout`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stripe/create-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ merchantId: merchant.id }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else alert(data.error || "Erreur lors de la création de la session Stripe");
-    } catch (e) {
-      console.error(e);
-      window.location.href = "/register";
-    }
+      else alert(data.error || "Erreur Stripe");
+    } catch { window.location.href = "/register"; }
   };
 
   return (
     <section id="pricing" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
       <div className="text-center mb-16">
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="heading-display text-3xl sm:text-5xl mb-4">
           <GradientText>Des tarifs simples et transparents</GradientText>
-        </h2>
-        <p className="text-text-muted">Sans engagement. Annulable à tout moment.</p>
+        </motion.h2>
+        <p style={{ color: "#A1A1AA" }}>Sans engagement. Annulable à tout moment.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        {/* Plan Gratuit */}
-        <GlassCard className="p-8" lift>
-          <h3 className="text-lg font-bold text-text-main mb-1">Gratuit</h3>
-          <p className="text-sm text-text-muted mb-6">Pour démarrer votre fidélité</p>
-          <div className="mb-6 flex items-baseline gap-1">
-            <span className="text-5xl font-extrabold tracking-tight text-text-main">0€</span>
-            <span className="text-text-muted">/mois</span>
-          </div>
-          <ul className="space-y-3 text-sm text-text-main mb-8">
-            <Bullet>Jusqu&apos;à 50 clients</Bullet>
-            <Bullet>1 commerce</Bullet>
-            <Bullet>Apple Wallet & Google Wallet</Bullet>
-            <Bullet>QR code personnalisé</Bullet>
-            <Bullet>Support email</Bullet>
-          </ul>
-          <Link href="/register" className="block">
-            <GlowButton variant="ghost" fullWidth size="lg">Commencer gratuitement</GlowButton>
-          </Link>
-        </GlassCard>
+        {/* Gratuit */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <GlassCard className="p-8 h-full flex flex-col" lift>
+            <h3 className="text-lg font-bold mb-1" style={{ color: "#FAFAFA" }}>Gratuit</h3>
+            <p className="text-sm mb-6" style={{ color: "#A1A1AA" }}>Pour démarrer votre fidélité</p>
+            <div className="mb-6 flex items-baseline gap-1">
+              <span className="text-5xl font-extrabold tracking-tight" style={{ color: "#FAFAFA" }}>0€</span>
+              <span style={{ color: "#A1A1AA" }}>/mois</span>
+            </div>
+            <ul className="space-y-3 text-sm mb-8 flex-1" style={{ color: "#FAFAFA" }}>
+              <Bullet>Jusqu&apos;à 50 clients</Bullet>
+              <Bullet>1 commerce</Bullet>
+              <Bullet>Apple Wallet &amp; Google Wallet</Bullet>
+              <Bullet>QR code personnalisé</Bullet>
+              <Bullet>Support email</Bullet>
+            </ul>
+            <Link href="/register" className="block">
+              <GlowButton variant="ghost" fullWidth size="lg">Commencer gratuitement</GlowButton>
+            </Link>
+          </GlassCard>
+        </motion.div>
 
-        {/* Plan Pro */}
-        <div className="relative">
+        {/* Pro */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ delay: .1 }}
+          className="relative">
           <div className="absolute -inset-px rounded-2xl pulse-glow"
             style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }} aria-hidden />
-          <div className="relative rounded-2xl glass-strong p-8" style={{ borderColor: "rgba(124,58,237,0.5)" }}>
+          <div className="relative rounded-2xl glass-strong p-8 h-full flex flex-col"
+            style={{ borderColor: "rgba(124,58,237,0.5)" }}>
             <div className="absolute -top-3 right-6 px-3 py-1 rounded-full text-xs font-bold text-white"
               style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>
-              Populaire
+              ✦ Populaire
             </div>
-            <h3 className="text-lg font-bold text-text-main mb-1">Pro</h3>
-            <p className="text-sm text-text-muted mb-6">Pour scaler votre fidélité</p>
+            <h3 className="text-lg font-bold mb-1" style={{ color: "#FAFAFA" }}>Pro</h3>
+            <p className="text-sm mb-6" style={{ color: "#A1A1AA" }}>Pour scaler votre fidélité</p>
             <div className="mb-6 flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold tracking-tight"><GradientText>70€</GradientText></span>
-              <span className="text-text-muted">/mois</span>
+              <span className="text-5xl font-extrabold tracking-tight">
+                <GradientText>70€</GradientText>
+              </span>
+              <span style={{ color: "#A1A1AA" }}>/mois</span>
             </div>
-            <ul className="space-y-3 text-sm text-text-main mb-8">
+            <ul className="space-y-3 text-sm mb-8 flex-1" style={{ color: "#FAFAFA" }}>
               <Bullet>Clients <strong>illimités</strong></Bullet>
               <Bullet>Commerces <strong>illimités</strong></Bullet>
               <Bullet>Analytics avancés</Bullet>
@@ -460,7 +524,7 @@ function Pricing() {
               Passer au Pro <ArrowRight className="w-4 h-4" />
             </GlowButton>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -469,13 +533,13 @@ function Pricing() {
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-3">
-      <Check className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#34D399" }} />
+      <Check className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#10B981" }} />
       <span className="leading-relaxed">{children}</span>
     </li>
   );
 }
 
-/* ─── FAQ ──────────────────────────────────────────────────────────────── */
+/* ─── FAQ ───────────────────────────────────────────────────────────────── */
 const faqs = [
   { q: "Est-ce que mes clients ont besoin d'une app ?",
     a: "Non. La carte s'ajoute directement dans Apple Wallet ou Google Wallet, déjà installés sur tous les smartphones." },
@@ -484,7 +548,7 @@ const faqs = [
   { q: "Puis-je personnaliser ma carte ?",
     a: "Oui : couleurs, logo, nom du commerce, image de bannière et récompense — tout est entièrement personnalisable depuis votre dashboard." },
   { q: "Comment mettre à jour les points ?",
-    a: "Depuis votre dashboard, vous cherchez le client par nom ou email, puis vous cliquez pour ajouter des points. La carte du client se met à jour instantanément sur son téléphone." },
+    a: "Depuis votre dashboard, vous cherchez le client par nom ou email, puis vous cliquez pour ajouter des points. La carte se met à jour instantanément." },
   { q: "Y a-t-il un engagement ?",
     a: "Non. Le plan Pro est mensuel et annulable à tout moment depuis vos paramètres." },
 ];
@@ -493,25 +557,27 @@ function Faq({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: 
   return (
     <section id="faq" className="px-4 sm:px-6 max-w-3xl mx-auto py-24">
       <div className="text-center mb-12">
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4">
+        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="heading-display text-3xl sm:text-5xl mb-4">
           <GradientText>Questions fréquentes</GradientText>
-        </h2>
+        </motion.h2>
       </div>
       <div className="space-y-3">
         {faqs.map((f, i) => (
           <GlassCard key={i} className="overflow-hidden">
             <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors hover:bg-white/[0.03]">
-              <span className="font-semibold text-text-main">{f.q}</span>
-              <ChevronDown
-                className={["w-5 h-5 transition-transform", openFaq === i ? "rotate-180 text-[#A78BFA]" : "text-text-muted"].join(" ")}
-              />
+              className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors"
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+              <span className="font-semibold" style={{ color: "#FAFAFA" }}>{f.q}</span>
+              <ChevronDown className={["w-5 h-5 transition-transform", openFaq === i ? "rotate-180" : ""].join(" ")}
+                style={{ color: openFaq === i ? "#A78BFA" : "#A1A1AA" }} />
             </button>
             <AnimatePresence initial={false}>
               {openFaq === i && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }} transition={{ duration: .25 }}>
-                  <div className="px-6 pb-5 text-sm text-text-muted leading-relaxed">{f.a}</div>
+                  <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: "#A1A1AA" }}>{f.a}</div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -522,52 +588,94 @@ function Faq({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: 
   );
 }
 
-/* ─── CTA FINAL ────────────────────────────────────────────────────────── */
+/* ─── CTA FINAL ─────────────────────────────────────────────────────────── */
 function FinalCTA() {
   return (
     <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <div className="relative rounded-[2rem] overflow-hidden p-10 sm:p-16 text-center"
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        className="relative rounded-[2rem] overflow-hidden p-10 sm:p-16 text-center"
         style={{
-          background: "linear-gradient(135deg, rgba(124,58,237,0.4) 0%, rgba(37,99,235,0.3) 100%), #16161F",
-          border: "1px solid rgba(124,58,237,0.4)",
-          boxShadow: "0 50px 100px rgba(124,58,237,0.3)"
+          background: "linear-gradient(135deg, rgba(124,58,237,0.35) 0%, rgba(37,99,235,0.25) 100%), #111119",
+          border: "1px solid rgba(124,58,237,0.35)",
+          boxShadow: "0 50px 100px rgba(124,58,237,0.25)",
         }}>
         <div aria-hidden className="absolute inset-0 -z-10"
-          style={{ background: "radial-gradient(ellipse at top, rgba(124,58,237,0.4), transparent 60%)" }} />
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4 text-text-main">
+          style={{ background: "radial-gradient(ellipse at top, rgba(124,58,237,0.35), transparent 60%)" }} />
+        <h2 className="heading-display text-3xl sm:text-5xl mb-4" style={{ color: "#FAFAFA" }}>
           Prêt à fidéliser vos clients ?
         </h2>
-        <p className="text-text-muted max-w-xl mx-auto mb-8">
-          Rejoignez les commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
+        <p className="max-w-xl mx-auto mb-8" style={{ color: "#A1A1AA" }}>
+          Rejoignez les 500+ commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
         </p>
         <Link href="/register">
           <GlowButton size="lg">
             Créer mon compte gratuitement <ArrowRight className="w-4 h-4" />
           </GlowButton>
         </Link>
-      </div>
+      </motion.div>
     </section>
   );
 }
 
-/* ─── FOOTER ───────────────────────────────────────────────────────────── */
+/* ─── FOOTER ────────────────────────────────────────────────────────────── */
 function Footer() {
   return (
     <footer className="px-4 sm:px-6 max-w-6xl mx-auto pb-12 pt-6">
-      <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-muted">
+      <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.05)", color: "#71717A" }}>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md flex items-center justify-center text-white font-extrabold text-sm"
             style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
-          <span className="font-semibold text-text-main">Fideloo</span>
+          <span className="font-semibold" style={{ color: "#FAFAFA" }}>Fideloo</span>
           <span>· © {new Date().getFullYear()}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          <Link href="/mentions-legales" className="hover:text-text-main transition-colors">Mentions légales</Link>
-          <Link href="/politique-confidentialite" className="hover:text-text-main transition-colors">Politique de confidentialité</Link>
-          <Link href="/cgu" className="hover:text-text-main transition-colors">CGU</Link>
-          <a href="mailto:contact@fideloo.fr" className="hover:text-text-main transition-colors">Contact</a>
+          {[
+            ["/mentions-legales", "Mentions légales"],
+            ["/politique-confidentialite", "Politique de confidentialité"],
+            ["/cgu", "CGU"],
+          ].map(([href, label]) => (
+            <Link key={href} href={href}
+              className="transition-colors"
+              onMouseEnter={e => (e.currentTarget.style.color = "#FAFAFA")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#71717A")}>
+              {label}
+            </Link>
+          ))}
+          <a href="mailto:contact@fideloo.fr"
+            className="transition-colors"
+            onMouseEnter={e => (e.currentTarget.style.color = "#FAFAFA")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#71717A")}>
+            Contact
+          </a>
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ─── Bannière cookies RGPD ──────────────────────────────────────────────── */
+function CookieBanner() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (!localStorage.getItem("fideloo_cookie_ok")) setShow(true);
+  }, []);
+  const accept = () => {
+    localStorage.setItem("fideloo_cookie_ok", "1");
+    setShow(false);
+  };
+  if (!show) return null;
+  return (
+    <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
+      <div className="glass-strong max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <p className="text-sm flex-1" style={{ color: "#A1A1AA" }}>
+          Nous utilisons uniquement des cookies fonctionnels essentiels au service.{" "}
+          <Link href="/politique-confidentialite" className="underline" style={{ color: "#A78BFA" }}>
+            En savoir plus
+          </Link>
+        </p>
+        <GlowButton size="sm" onClick={accept}>J&apos;accepte</GlowButton>
+      </div>
+    </div>
   );
 }
