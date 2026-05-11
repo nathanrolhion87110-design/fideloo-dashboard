@@ -64,12 +64,12 @@ export default function JoinPage() {
   };
 
   const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const color = merchant?.primary_color || "#7C3AED";
+  const color = merchant?.primary_color || "#C9A84C";
 
   if (loadingMerchant) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#A78BFA" }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#C9A84C" }} />
       </div>
     );
   }

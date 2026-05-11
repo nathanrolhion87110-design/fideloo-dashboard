@@ -11,8 +11,8 @@ import GradientText from "../../../components/GradientText";
 interface Customer { id: string; name: string; email?: string | null; points: number; created_at: string; }
 interface Transaction { id: string; customer_id: string; points: number; created_at: string; }
 
-const CHART_PURPLE = "#A78BFA";
-const CHART_BLUE = "#60A5FA";
+const CHART_PURPLE = "#C9A84C";
+const CHART_BLUE = "#E8705A";
 
 export default function AnalyticsPage() {
   const { merchant } = useAuth();
@@ -60,8 +60,8 @@ export default function AnalyticsPage() {
   const topClients = [...customers].sort((a, b) => b.points - a.points).slice(0, 5);
 
   const kpis = [
-    { title: "Nouveaux clients", value: recentCustomers.length, color: "#A78BFA" },
-    { title: "Points distribués", value: totalPoints, color: "#7C3AED" },
+    { title: "Nouveaux clients", value: recentCustomers.length, color: "#C9A84C" },
+    { title: "Points distribués", value: totalPoints, color: "#C9A84C" },
     { title: "Récompenses utilisées", value: negativeTx.length, color: "#F59E0B" },
     { title: "Taux de rétention", value: retention, suffix: "%", color: "#34D399" },
   ];
@@ -107,18 +107,18 @@ export default function AnalyticsPage() {
                 <LineChart data={clientData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                   <defs>
                     <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#7C3AED" />
-                      <stop offset="100%" stopColor="#2563EB" />
+                      <stop offset="0%" stopColor="#C9A84C" />
+                      <stop offset="100%" stopColor="#E8705A" />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#8A8070" }} tickLine={false} axisLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#8A8070" }} tickLine={false} axisLine={false} />
                   <Tooltip
-                    contentStyle={{ borderRadius: "12px", border: "1px solid rgba(124,58,237,0.4)", background: "rgba(22,22,31,0.95)", color: "#F1F5F9", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
+                    contentStyle={{ borderRadius: "12px", border: "1px solid rgba(201,168,76,0.4)", background: "rgba(8,8,8,0.95)", color: "#F5F0E8", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
                     formatter={(value) => [`${Number(value)} client${Number(value) === 1 ? 's' : ''}`, 'Nouveaux clients']}
                   />
-                  <Line type="monotone" dataKey="clients" stroke="url(#lineGradient)" strokeWidth={3} dot={false} activeDot={{ r: 5, fill: "#A78BFA" }} />
+                  <Line type="monotone" dataKey="clients" stroke="url(#lineGradient)" strokeWidth={3} dot={false} activeDot={{ r: 5, fill: "#C9A84C" }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -137,15 +137,15 @@ export default function AnalyticsPage() {
                 <BarChart data={pointsData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                   <defs>
                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#7C3AED" stopOpacity={1} />
-                      <stop offset="100%" stopColor="#2563EB" stopOpacity={0.6} />
+                      <stop offset="0%" stopColor="#C9A84C" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#E8705A" stopOpacity={0.6} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#94A3B8" }} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#8A8070" }} tickLine={false} axisLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#8A8070" }} tickLine={false} axisLine={false} />
                   <Tooltip
-                    contentStyle={{ borderRadius: "12px", border: "1px solid rgba(124,58,237,0.4)", background: "rgba(22,22,31,0.95)", color: "#F1F5F9", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
+                    contentStyle={{ borderRadius: "12px", border: "1px solid rgba(201,168,76,0.4)", background: "rgba(8,8,8,0.95)", color: "#F5F0E8", fontSize: "13px", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
                     formatter={(value) => [`${Number(value)} point${Number(value) !== 1 ? "s" : ""}`, "Distribués"]}
                   />
                   <Bar dataKey="points" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
@@ -179,7 +179,7 @@ export default function AnalyticsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-text-muted">#{i + 1}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-main">{c.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-text-muted">{c.email || "—"}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-right" style={{ color: "#A78BFA" }}>{c.points}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-right" style={{ color: "#C9A84C" }}>{c.points}</td>
                   </tr>
                 ))}
               </tbody>

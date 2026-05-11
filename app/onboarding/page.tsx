@@ -12,7 +12,7 @@ export default function Onboarding() {
   const router = useRouter();
 
   const [step, setStep] = useState(1);
-  const [color, setColor] = useState(merchant?.primary_color || "#7C3AED");
+  const [color, setColor] = useState(merchant?.primary_color || "#C9A84C");
   const [businessName, setBusinessName] = useState(merchant?.business_name || "Mon Commerce");
   const [businessType, setBusinessType] = useState(merchant?.business_type || "restaurant");
   const [pointsThreshold, setPointsThreshold] = useState(merchant?.reward_threshold || 10);
@@ -46,27 +46,27 @@ export default function Onboarding() {
     }
   };
 
-  const inputClass = "block w-full rounded-xl py-3 px-4 text-[#F1F5F9] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] transition-colors"
-    + " bg-[#16161F] border border-[rgba(124,58,237,0.3)] placeholder-[#475569]";
+  const inputClass = "block w-full rounded-xl py-3 px-4 text-[#F5F0E8] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] transition-colors"
+    + " bg-[#141414] border border-[rgba(201,168,76,0.2)] placeholder-[#8A8070]";
 
   const steps = ["Design", "Infos", "Récompense", "Prêt"];
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#0A0A0F" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#080808" }}>
       {/* Barre de progression */}
       <div className="border-b py-4 px-6 fixed top-0 w-full z-50"
-        style={{ backgroundColor: "#0D0D14", borderColor: "rgba(124,58,237,0.2)" }}>
+        style={{ backgroundColor: "#0F0F0F", borderColor: "rgba(201,168,76,0.15)" }}>
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="font-bold flex items-center gap-2" style={{ color: "#F1F5F9" }}>
             <div className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-white"
-              style={{ backgroundColor: "#7C3AED" }}>F</div>
+              style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>F</div>
             Fideloo
           </div>
           <div className="flex items-center gap-2 text-sm" style={{ color: "#94A3B8" }}>
             {steps.map((label, i) => (
               <span key={label} className="flex items-center gap-2">
                 {i > 0 && <ChevronRight className="w-4 h-4" style={{ color: "#475569" }} />}
-                <span style={step >= i + 1 ? { color: "#7C3AED", fontWeight: 600 } : {}}>
+                <span style={step >= i + 1 ? { color: "#C9A84C", fontWeight: 600 } : {}}>
                   {label}
                 </span>
               </span>
@@ -77,7 +77,7 @@ export default function Onboarding() {
           <div className="w-full rounded-full h-1.5" style={{ backgroundColor: "#1E1E2E" }}>
             <div
               className="h-1.5 rounded-full transition-all duration-500"
-              style={{ width: `${(step / 4) * 100}%`, backgroundColor: "#7C3AED" }}
+              style={{ width: `${(step / 4) * 100}%`, background: "linear-gradient(90deg, #C9A84C, #E8C87A)" }}
             />
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Onboarding() {
       <div className="flex-1 max-w-4xl w-full mx-auto mt-28 mb-12 flex flex-col md:flex-row gap-12 px-6">
         {/* Carte formulaire */}
         <div className="flex-1 p-8 rounded-[2rem] shadow-xl flex flex-col justify-center"
-          style={{ backgroundColor: "#16161F", border: "1px solid rgba(124,58,237,0.2)" }}>
+          style={{ backgroundColor: "#141414", border: "1px solid rgba(201,168,76,0.15)" }}>
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div
@@ -126,7 +126,7 @@ export default function Onboarding() {
                   </label>
                   <button
                     className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed rounded-xl transition-colors"
-                    style={{ borderColor: "rgba(124,58,237,0.3)", color: "#94A3B8" }}
+                    style={{ borderColor: "rgba(201,168,76,0.3)", color: "#8A8070" }}
                   >
                     <Upload className="w-5 h-5" />
                     Ajouter une image (depuis les Paramètres)
@@ -137,10 +137,10 @@ export default function Onboarding() {
                 </div>
                 <button
                   onClick={nextStep}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-medium text-white transition-all mt-8"
-                  style={{ backgroundColor: "#7C3AED" }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#6D28D9")}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#7C3AED")}
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-bold transition-all mt-8"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.9")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >
                   J'aime cette carte <ArrowRight className="w-4 h-4" />
                 </button>
@@ -196,10 +196,10 @@ export default function Onboarding() {
                 </div>
                 <button
                   onClick={nextStep}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-medium text-white transition-all mt-8"
-                  style={{ backgroundColor: "#7C3AED" }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#6D28D9")}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#7C3AED")}
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-bold transition-all mt-8"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.9")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >
                   Continuer <ArrowRight className="w-4 h-4" />
                 </button>
@@ -226,7 +226,7 @@ export default function Onboarding() {
                   <div>
                     <label className="block text-sm font-medium mb-1" style={{ color: "#94A3B8" }}>
                       Points nécessaires :{" "}
-                      <span className="font-bold" style={{ color: "#7C3AED" }}>{pointsThreshold}</span>
+                      <span className="font-bold" style={{ color: "#C9A84C" }}>{pointsThreshold}</span>
                     </label>
                     <input
                       type="range"
@@ -234,7 +234,7 @@ export default function Onboarding() {
                       max="20"
                       value={pointsThreshold}
                       onChange={e => setPointsThreshold(Number(e.target.value))}
-                      className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#7C3AED]"
+                      className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#C9A84C]"
                       style={{ backgroundColor: "#1E1E2E" }}
                     />
                     <div className="flex justify-between text-xs mt-1" style={{ color: "#475569" }}>
@@ -256,10 +256,10 @@ export default function Onboarding() {
                 </div>
                 <button
                   onClick={nextStep}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-medium text-white transition-all mt-8"
-                  style={{ backgroundColor: "#7C3AED" }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#6D28D9")}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#7C3AED")}
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-bold transition-all mt-8"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.9")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >
                   Vérifier ma configuration <ArrowRight className="w-4 h-4" />
                 </button>
@@ -282,7 +282,7 @@ export default function Onboarding() {
                   Votre carte est configurée. Téléchargez votre QR code depuis le dashboard et commencez à fidéliser dès aujourd'hui.
                 </p>
                 <div className="p-4 rounded-xl text-left"
-                  style={{ backgroundColor: "#0D0D14", border: "1px solid rgba(124,58,237,0.2)" }}>
+                  style={{ backgroundColor: "#0F0F0F", border: "1px solid rgba(201,168,76,0.15)" }}>
                   <h3 className="font-bold mb-3" style={{ color: "#F1F5F9" }}>Résumé :</h3>
                   <ul className="text-sm space-y-2" style={{ color: "#94A3B8" }}>
                     <li>• <strong style={{ color: "#F1F5F9" }}>Commerce :</strong> {businessName}</li>
@@ -297,10 +297,10 @@ export default function Onboarding() {
                 <button
                   onClick={handleComplete}
                   disabled={saving}
-                  className="w-full flex justify-center items-center gap-2 py-4 px-4 rounded-xl shadow-md text-base font-bold text-white transition-all mt-8 disabled:opacity-70"
-                  style={{ backgroundColor: "#7C3AED" }}
-                  onMouseEnter={e => !saving && (e.currentTarget.style.backgroundColor = "#6D28D9")}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#7C3AED")}
+                  className="w-full flex justify-center items-center gap-2 py-4 px-4 rounded-xl shadow-md text-base font-bold transition-all mt-8 disabled:opacity-70"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}
+                  onMouseEnter={e => !saving && (e.currentTarget.style.opacity = "0.9")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
                 >
                   {saving ? "Enregistrement..." : "Accéder à mon dashboard →"}
                 </button>

@@ -54,7 +54,7 @@ export default function NotificationsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <GlassCard className="p-6">
           <h2 className="text-lg font-bold text-text-main mb-6 flex items-center gap-2">
-            <Plus className="w-5 h-5" style={{ color: "#A78BFA" }} /> Nouvelle Notification
+            <Plus className="w-5 h-5" style={{ color: "#C9A84C" }} /> Nouvelle Notification
           </h2>
 
           <AnimatePresence>
@@ -94,12 +94,12 @@ export default function NotificationsPage() {
             <Bell className="w-4 h-4" /> Aperçu iPhone
           </div>
           <div className="w-full max-w-[320px] backdrop-blur-xl rounded-[2rem] p-4 mt-8"
-               style={{ background: "rgba(15,15,22,0.8)", border: "1px solid rgba(255,255,255,0.06)",
-                        boxShadow: "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.15)" }}>
+               style={{ background: "rgba(8,8,8,0.9)", border: "1px solid rgba(201,168,76,0.1)",
+                        boxShadow: "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(201,168,76,0.1)" }}>
             <div className="flex justify-between items-center mb-2 px-1">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-extrabold text-white"
-                     style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)" }}>F</div>
+                <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-extrabold"
+                     style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>F</div>
                 <span className="text-xs text-text-muted uppercase tracking-wider">Fideloo</span>
               </div>
               <span className="text-xs text-text-muted">Maintenant</span>

@@ -106,7 +106,7 @@ export default function ClientsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-full flex items-center justify-center font-bold text-white text-sm shrink-0"
-                             style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.7), rgba(37,99,235,0.7))" }}>
+                             style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.5), rgba(154,122,46,0.5))" }}>
                           {c.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                         </div>
                         <div>
@@ -124,7 +124,7 @@ export default function ClientsPage() {
                                  width: `${Math.min((c.points / threshold) * 100, 100)}%`,
                                  background: c.points >= threshold
                                    ? "linear-gradient(90deg, #10B981, #34D399)"
-                                   : "linear-gradient(90deg, #7C3AED, #2563EB)",
+                                   : "linear-gradient(90deg, #C9A84C, #E8C87A)",
                                }} />
                         </div>
                         {c.points >= threshold && <span className="text-xs font-semibold text-success">🎁</span>}

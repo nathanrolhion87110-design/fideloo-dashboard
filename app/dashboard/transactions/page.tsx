@@ -116,7 +116,7 @@ export default function TransactionsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {tx.points > 0 ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium"
-                              style={{ background: "rgba(124,58,237,0.18)", color: "#A78BFA", border: "1px solid rgba(124,58,237,0.3)" }}>
+                              style={{ background: "rgba(201,168,76,0.18)", color: "#C9A84C", border: "1px solid rgba(201,168,76,0.3)" }}>
                           <ArrowUpRight className="w-4 h-4" /> +{tx.points} pts
                         </span>
                       ) : (

@@ -25,7 +25,7 @@ export default function PolitiqueConfidentialite() {
 
         <GlassCard variant="strong" className="p-8 space-y-6 text-text-main">
           <Section title="1. Responsable du traitement">
-            <p>Nathan Rolhion — <a href="mailto:contact@fideloo.fr" className="text-[#A78BFA] hover:text-white">contact@fideloo.fr</a></p>
+            <p>Nathan Rolhion — <a href="mailto:contact@fideloo.fr" className="text-[#C9A84C] hover:text-white">contact@fideloo.fr</a></p>
           </Section>
 
           <Section title="2. Données collectées">
@@ -69,7 +69,7 @@ export default function PolitiqueConfidentialite() {
             </ul>
             <p className="text-text-muted mt-2">
               Pour exercer ces droits, contactez-nous à{" "}
-              <a href="mailto:contact@fideloo.fr" className="text-[#A78BFA] hover:text-white">contact@fideloo.fr</a>.
+              <a href="mailto:contact@fideloo.fr" className="text-[#C9A84C] hover:text-white">contact@fideloo.fr</a>.
               Vous pouvez également déposer une réclamation auprès de la CNIL (cnil.fr).
             </p>
           </Section>
@@ -92,7 +92,7 @@ export default function PolitiqueConfidentialite() {
           </Section>
 
           <Section title="9. Délégué à la Protection des Données (DPO)">
-            <p>Nathan Rolhion — <a href="mailto:contact@fideloo.fr" className="text-[#A78BFA] hover:text-white">contact@fideloo.fr</a></p>
+            <p>Nathan Rolhion — <a href="mailto:contact@fideloo.fr" className="text-[#C9A84C] hover:text-white">contact@fideloo.fr</a></p>
           </Section>
         </GlassCard>
 
