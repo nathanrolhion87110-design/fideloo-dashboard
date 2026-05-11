@@ -10,7 +10,7 @@
   --color-secondary: #2563EB;
   --color-accent: #F59E0B;
 
-  --color-background: #0A0A0F;
+  --color-background: #05050A;
   --color-background-soft: #111118;
   --color-surface: #16161F;
   --color-surface-hover: #1B1B27;
@@ -46,7 +46,7 @@
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 html, body {
-  background: var(--color-background);
+  background: #05050A; /* var(--color-background) */
   color: var(--color-text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
