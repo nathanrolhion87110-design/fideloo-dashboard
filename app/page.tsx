@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  ArrowRight, Zap,
-  Check, ChevronDown, Menu, X, Lock, Star, Sparkles, Send,
-} from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Menu, X, Star, Sparkles, Send, QrCode, Gift, Shield } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -21,24 +18,35 @@ const FEATURES = [
   { emoji: "🔔", title: "Notifications push", desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
 ];
 
+const WHEEL_PRIZES = [
+  { label: "Café offert", color: "#22C55E", textColor: "#080808" },
+  { label: "10% réduction", color: "#16A34A", textColor: "#080808" },
+  { label: "Dessert offert", color: "#22C55E", textColor: "#080808" },
+  { label: "5% réduction", color: "#161616", textColor: "#4ADE80" },
+  { label: "Boisson offerte", color: "#22C55E", textColor: "#080808" },
+  { label: "15% réduction", color: "#16A34A", textColor: "#080808" },
+  { label: "Cadeau surprise", color: "#22C55E", textColor: "#080808" },
+  { label: "Jouez encore", color: "#161616", textColor: "#4ADE80" },
+];
+
 const PLANS = [
   {
     id: "standard", name: "Standard", badge: "Pour démarrer",
     monthly: 50, annual: 40,
     features: ["Jusqu'à 50 clients", "1 commerce", "Apple & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email"],
-    cta: "Commencer gratuitement", ctaHref: "/register" as string | null, highlight: false,
+    cta: "Commencer gratuitement", ctaHref: "/register" as string | null, highlight: false, whiteBtn: false,
   },
   {
     id: "pro", name: "Pro", badge: "Le plus populaire", extraBadge: "🎁 14 jours offerts",
     monthly: 80, annual: 64,
     features: ["Clients illimités", "Commerces illimités", "Analytics avancés", "Notifications push", "Mise à jour temps réel", "Support prioritaire"],
-    cta: "Essai 14 jours gratuits →", ctaHref: null, highlight: true,
+    cta: "Essai 14 jours gratuits →", ctaHref: null, highlight: true, whiteBtn: false,
   },
   {
     id: "business", name: "Business", badge: "Pour les enseignes",
     monthly: 150, annual: 120,
-    features: ["Tout Pro inclus", "Multi-sites illimités", "API dédiée", "Onboarding personnalisé", "Manager dédié", "SLA 99,9%"],
-    cta: "Nous contacter", ctaHref: "#contact" as string | null, highlight: false,
+    features: ["Tout Pro inclus", "Roue de la chance", "Multi-sites illimités", "API dédiée", "Onboarding personnalisé", "Manager dédié"],
+    cta: "Nous contacter", ctaHref: "#contact" as string | null, highlight: false, whiteBtn: true,
   },
 ];
 
@@ -48,10 +56,21 @@ const FAQS = [
   { q: "Puis-je personnaliser ma carte ?", a: "Oui : couleurs, logo, nom du commerce et récompense — tout est entièrement personnalisable depuis votre dashboard." },
   { q: "Comment mettre à jour les points ?", a: "Depuis votre dashboard, vous cherchez le client et cliquez pour ajouter des points. La carte se met à jour instantanément sur leur téléphone." },
   { q: "Y a-t-il un engagement ?", a: "Aucun. Le plan Pro est mensuel et annulable à tout moment depuis vos paramètres ou le portail Stripe." },
-  { q: "Mes données et celles de mes clients sont-elles sécurisées ?", a: "Oui. Les données sont hébergées sur Supabase (région Frankfurt, UE), chiffrées au repos et en transit. Nous sommes conformes au RGPD." },
+  { q: "Mes données et celles de mes clients sont-elles sécurisées ?", a: "Oui. Les données sont hébergées sur Supabase (région Frankfurt, UE), chiffrées au repos et en transit. Conformes RGPD." },
   { q: "Puis-je importer mes clients existants ?", a: "Oui, contactez-nous à contact@fideloo.fr et nous vous aidons à migrer vos clients depuis votre système actuel." },
-  { q: "Que se passe-t-il si je dépasse la limite du plan gratuit ?", a: "Vos clients existants restent actifs. Vous ne pouvez simplement plus en ajouter de nouveaux au-delà de 50. Passez au Pro en 1 clic pour débloquer les clients illimités." },
+  { q: "Que se passe-t-il si je dépasse la limite du plan gratuit ?", a: "Vos clients existants restent actifs. Vous ne pouvez plus en ajouter au-delà de 50. Passez au Pro en 1 clic pour les clients illimités." },
 ];
+
+const G = "#22C55E";
+const G2 = "#16A34A";
+const GS = "rgba(34,197,94,0.10)";
+const GB = "rgba(34,197,94,0.25)";
+const BG = "#080808";
+const SURF = "#111111";
+const SURF2 = "#161616";
+const LINE = "rgba(255,255,255,0.07)";
+const T = "#F5F5F5";
+const TD = "rgba(245,245,245,0.55)";
 
 /* ─── PAGE ──────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
@@ -84,15 +103,10 @@ export default function LandingPage() {
   useEffect(() => {
     const sections = ["features", "pricing", "faq", "contact"];
     const obs = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id); });
-      },
+      entries => entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id); }),
       { rootMargin: "-40% 0px -55% 0px" }
     );
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) obs.observe(el);
-    });
+    sections.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
     return () => obs.disconnect();
   }, []);
 
@@ -103,6 +117,7 @@ export default function LandingPage() {
         <Hero />
         <MarqueeSection />
         <FeaturesSection />
+        <LoyaltyWheelDemo />
         <PricingSection />
         <FaqSection openFaq={openFaq} setOpenFaq={setOpenFaq} />
         <AppStoreSection />
@@ -110,7 +125,9 @@ export default function LandingPage() {
         <CtaFinal />
         <Footer />
       </main>
-      {showCookies && <CookieBanner onAccept={() => { localStorage.setItem("fideloo_cookie_ok", "1"); setShowCookies(false); }} />}
+      {showCookies && (
+        <CookieBanner onAccept={() => { localStorage.setItem("fideloo_cookie_ok", "1"); setShowCookies(false); }} />
+      )}
     </>
   );
 }
@@ -126,51 +143,62 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
   ];
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-      style={{ background: scrolled ? "rgba(10,10,11,0.92)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none" }}
-    >
-      <div className="container h-16 flex items-center justify-between gap-6">
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{ background: scrolled ? "rgba(8,8,8,0.95)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? `1px solid ${LINE}` : "none" }}>
+      <div className="container h-16 flex items-center justify-between gap-4">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
-          <span className="font-semibold text-base tracking-tight" style={{ color: "var(--text)" }}>Fideloo</span>
+            style={{ background: G, color: "#080808" }}>F</div>
+          <span className="font-semibold text-base tracking-tight" style={{ color: T }}>Fideloo</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm flex-1 justify-center">
+        {/* Pill nav — desktop */}
+        <nav className="hidden md:flex items-center p-1.5 rounded-full"
+          style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${LINE}` }}>
           {navLinks.map(({ href, label, id }) => (
             <a key={href} href={href}
-              style={{ color: activeSection === id ? "var(--violet)" : "var(--text-dim)", fontWeight: activeSection === id ? 500 : 400, transition: "color 0.2s" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-              onMouseLeave={e => (e.currentTarget.style.color = activeSection === id ? "var(--violet)" : "var(--text-dim)")}>
+              className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+              style={{
+                background: activeSection === id ? "rgba(34,197,94,0.15)" : "transparent",
+                color: activeSection === id ? G : TD,
+              }}
+              onMouseEnter={e => { if (activeSection !== id) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(34,197,94,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = G; } }}
+              onMouseLeave={e => { if (activeSection !== id) { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; (e.currentTarget as HTMLAnchorElement).style.color = TD; } }}>
               {label}
             </a>
           ))}
         </nav>
 
+        {/* Right actions — desktop */}
         <div className="hidden md:flex items-center gap-2 shrink-0">
           <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all"
-            style={{ background: "#000", color: "#fff", border: "1px solid rgba(255,255,255,0.15)" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#1a1a1a")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#000")}>
-            <AppleLogoSVG size={14} />
+            style={{ background: "#111", color: "#fff", border: `1px solid ${LINE}` }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
+            <AppleLogoSVG size={13} />
             App Store
           </a>
-          <Link href="/login" className="px-3 py-2 text-sm rounded-xl transition-colors"
-            style={{ color: "var(--text-dim)" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
-            Se connecter
+          <Link href="/login" className="px-3 py-2 text-sm font-medium transition-colors rounded-xl"
+            style={{ color: TD, opacity: 0.8 }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={e => (e.currentTarget.style.opacity = "0.8")}>
+            Connexion
           </Link>
-          <Link href="/register" className="btn btn-accent btn-sm">
-            S&apos;inscrire <ArrowRight className="w-3.5 h-3.5" />
+          <Link href="/register"
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold transition-all"
+            style={{ background: G, color: "#080808", boxShadow: `0 4px 16px rgba(34,197,94,0.3)` }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.03)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(34,197,94,0.4)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(34,197,94,0.3)"; }}>
+            Essai gratuit <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
+        {/* Mobile toggle */}
         <button type="button" aria-label={mobileOpen ? "Fermer" : "Menu"}
           onClick={() => setMobileOpen(v => !v)}
-          className="md:hidden p-2 rounded-lg" style={{ color: "var(--text)" }}>
+          className="md:hidden p-2 rounded-lg" style={{ color: T }}>
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
@@ -180,17 +208,19 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
           <nav className="flex flex-col gap-1 text-sm">
             {navLinks.map(({ href, label }) => (
               <a key={label} href={href} onClick={() => setMobileOpen(false)}
-                className="px-4 py-3 rounded-xl transition-colors" style={{ color: "var(--text)" }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                className="px-4 py-3 rounded-xl transition-colors font-medium" style={{ color: T }}
+                onMouseEnter={e => (e.currentTarget.style.background = GS)}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                 {label}
               </a>
             ))}
-            <Link href="/login" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl" style={{ color: "var(--text)" }}>
-              Se connecter
+            <Link href="/login" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl" style={{ color: TD }}>
+              Connexion
             </Link>
-            <Link href="/register" onClick={() => setMobileOpen(false)} className="btn btn-accent btn-md mt-1 mx-1 justify-center">
-              S&apos;inscrire gratuitement <ArrowRight className="w-4 h-4" />
+            <Link href="/register" onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-center gap-2 mt-1 mx-1 py-3 rounded-full font-bold text-sm"
+              style={{ background: G, color: "#080808" }}>
+              Essai gratuit <ArrowRight className="w-4 h-4" />
             </Link>
           </nav>
         </div>
@@ -202,45 +232,57 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
 /* ─── HERO ──────────────────────────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="relative overflow-hidden section-dark pt-32 pb-24 grain">
-      <div aria-hidden className="absolute pointer-events-none" style={{ top: "-10%", left: "55%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(60px)" }} />
-      <div aria-hidden className="absolute pointer-events-none float-orb" style={{ top: "20%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.10) 0%, transparent 70%)", filter: "blur(50px)" }} />
-      <div aria-hidden className="absolute pointer-events-none float-orb" style={{ bottom: "5%", right: "10%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)", filter: "blur(40px)", animationDelay: "-4s" }} />
+    <section className="relative overflow-hidden grain pt-32 pb-24" style={{ background: BG }}>
+      <div aria-hidden className="absolute pointer-events-none float-orb"
+        style={{ top: "-8%", left: "50%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 70%)", filter: "blur(70px)" }} />
+      <div aria-hidden className="absolute pointer-events-none float-orb"
+        style={{ top: "25%", left: "-8%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)", filter: "blur(60px)", animationDelay: "-5s" }} />
+      <div aria-hidden className="absolute pointer-events-none float-orb"
+        style={{ bottom: "5%", right: "8%", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)", filter: "blur(50px)", animationDelay: "-9s" }} />
 
       <div className="container relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left fade-in-up">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium mb-8 pulse-glow"
-              style={{ background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.3)", color: "var(--violet)" }}>
+              style={{ background: GS, border: `1px solid ${GB}`, color: G, fontFamily: "Geist Mono, monospace", letterSpacing: "0.06em" }}>
               <Sparkles className="w-3.5 h-3.5" />
               Nouveau — Cartes Apple &amp; Google Wallet
             </div>
 
-            <h1 className="heading-display mb-6" style={{ color: "var(--text)" }}>
-              La fidélité que vos clients{" "}
-              <span className="serif" style={{ color: "var(--violet)" }}>adorent</span>
-              {" "}vraiment
+            <h1 className="heading-display mb-6" style={{ color: T }}>
+              Transformez vos clients{" "}
+              <span className="serif" style={{ color: G }}>occasionnels</span>
+              {" "}en clients{" "}
+              <span className="serif" style={{ color: "#4ADE80" }}>fidèles</span>
             </h1>
 
             <p className="lede mb-10 max-w-xl mx-auto lg:mx-0">
-              Créez une carte de fidélité numérique dans Apple Wallet et Google Wallet.{" "}
-              <span style={{ color: "var(--text)" }}>Zéro app. Zéro friction. 100% efficace.</span>
+              Carte de fidélité digitale dans Apple Wallet et Google Wallet.{" "}
+              <span style={{ color: T }}>Zéro app. Zéro friction. 100% efficace.</span>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
-              <Link href="/register" className="btn btn-accent btn-lg">
+              <Link href="/register"
+                className="flex items-center justify-center gap-2 px-7 py-4 rounded-full font-bold text-base transition-all"
+                style={{ background: G, color: "#080808", boxShadow: "0 0 32px rgba(34,197,94,0.35)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = G2; (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = G; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
                 Créer ma carte gratuite <ArrowRight className="w-4 h-4" />
               </Link>
-              <a href="#features" className="btn btn-ghost btn-lg">
+              <a href="#features"
+                className="flex items-center justify-center gap-2 px-7 py-4 rounded-full font-medium text-base transition-all"
+                style={{ background: "transparent", color: T, border: `1px solid ${GB}` }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = GS; (e.currentTarget as HTMLElement).style.color = G; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = T; }}>
                 Voir comment ça marche
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-sm" style={{ color: "var(--text-dim)" }}>
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-sm" style={{ color: TD }}>
               {[
-                { icon: <Star className="w-3.5 h-3.5" style={{ color: "var(--mint)", fill: "var(--mint)" }} />, text: "500+ commerces actifs" },
-                { icon: <Lock className="w-3.5 h-3.5" style={{ color: "var(--mint)" }} />, text: "Sans carte bancaire" },
-                { icon: <Zap className="w-3.5 h-3.5" style={{ color: "var(--violet)" }} />, text: "Prêt en 2 minutes" },
+                { icon: <Star className="w-3.5 h-3.5" style={{ color: G, fill: G }} />, text: "500+ commerces actifs" },
+                { icon: <Check className="w-3.5 h-3.5" style={{ color: G }} />, text: "Sans carte bancaire" },
+                { icon: <Sparkles className="w-3.5 h-3.5" style={{ color: G }} />, text: "Prêt en 2 minutes" },
               ].map(({ icon, text }, i) => (
                 <span key={i} className="flex items-center gap-1.5">{icon}{text}</span>
               ))}
@@ -248,8 +290,8 @@ function Hero() {
           </div>
 
           <div className="flex-shrink-0 relative fade-in-up" style={{ animationDelay: "0.15s" }}>
-            <div aria-hidden className="absolute inset-0 -m-8 rounded-full blur-3xl opacity-40"
-              style={{ background: "radial-gradient(ellipse, rgba(167,139,250,0.3), transparent 70%)" }} />
+            <div aria-hidden className="absolute inset-0 -m-8 rounded-full blur-3xl opacity-30"
+              style={{ background: "radial-gradient(ellipse, rgba(34,197,94,0.3), transparent 70%)" }} />
             <DashboardMockup />
           </div>
         </div>
@@ -258,64 +300,60 @@ function Hero() {
   );
 }
 
-/* ─── Dashboard Mockup ──────────────────────────────────────────────────── */
+/* ─── DASHBOARD MOCKUP ──────────────────────────────────────────────────── */
 function DashboardMockup() {
   return (
     <div className="relative z-10" style={{ width: 340 }}>
       <div className="rounded-2xl overflow-hidden shadow-2xl"
-        style={{ background: "var(--surface)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,139,250,0.08)" }}>
-        <div className="flex items-center gap-2 px-4 py-3" style={{ background: "var(--bg)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
-          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
-          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
-          <div className="flex-1 mx-3 rounded-md px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.04)", color: "var(--text-dim)" }}>
+        style={{ background: SURF, border: `1px solid ${LINE}`, boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(34,197,94,0.06)" }}>
+        <div className="flex items-center gap-2 px-4 py-3" style={{ background: BG, borderBottom: `1px solid ${LINE}` }}>
+          {[0,1,2].map(i => <div key={i} className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }} />)}
+          <div className="flex-1 mx-3 rounded-md px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.04)", color: TD }}>
             app.fideloo.fr/dashboard
           </div>
         </div>
         <div className="p-4">
           <div className="grid grid-cols-2 gap-2 mb-3">
             {[
-              { label: "Clients", value: "248", delta: "+12", color: "var(--violet)" },
-              { label: "Points", value: "1 840", delta: "+94", color: "var(--mint)" },
+              { label: "Clients", value: "248", delta: "+12", color: G },
+              { label: "Points", value: "1 840", delta: "+94", color: "#4ADE80" },
             ].map(stat => (
-              <div key={stat.label} className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="text-xs mb-1" style={{ color: "var(--text-dim)" }}>{stat.label}</div>
-                <div className="font-semibold text-base" style={{ color: "var(--text)" }}>{stat.value}</div>
+              <div key={stat.label} className="rounded-xl p-3" style={{ background: BG, border: `1px solid ${LINE}` }}>
+                <div className="text-xs mb-1" style={{ color: TD }}>{stat.label}</div>
+                <div className="font-semibold text-base" style={{ color: T }}>{stat.value}</div>
                 <div className="text-xs mt-0.5" style={{ color: stat.color }}>{stat.delta} ce mois</div>
               </div>
             ))}
           </div>
-          <div className="rounded-xl p-3 mb-3" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div className="text-xs mb-2" style={{ color: "var(--text-dim)" }}>Activité — 7 derniers jours</div>
+          <div className="rounded-xl p-3 mb-3" style={{ background: BG, border: `1px solid ${LINE}` }}>
+            <div className="text-xs mb-2" style={{ color: TD }}>Activité — 7 derniers jours</div>
             <svg width="100%" height="40" viewBox="0 0 280 40" preserveAspectRatio="none">
               <defs>
-                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
+                <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22C55E" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#22C55E" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8" fill="none" stroke="#a78bfa" strokeWidth="2" />
-              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8 L280,40 L0,40 Z" fill="url(#chartGrad)" />
+              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8" fill="none" stroke="#22C55E" strokeWidth="2" />
+              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8 L280,40 L0,40 Z" fill="url(#cg2)" />
             </svg>
           </div>
-          <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="rounded-xl overflow-hidden" style={{ background: BG, border: `1px solid ${LINE}` }}>
             {[
               { name: "Marie L.", points: 8, max: 10 },
               { name: "Karim B.", points: 5, max: 10 },
               { name: "Sophie T.", points: 10, max: 10 },
             ].map((c, i) => (
-              <div key={i} className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
+              <div key={i} className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: i < 2 ? `1px solid ${LINE}` : "none" }}>
                 <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                  style={{ background: "var(--violet-soft)", color: "var(--violet)" }}>
-                  {c.name.charAt(0)}
-                </div>
+                  style={{ background: GS, color: G }}>{c.name.charAt(0)}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>{c.name}</div>
+                  <div className="text-xs font-medium truncate" style={{ color: T }}>{c.name}</div>
                   <div className="mt-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${(c.points / c.max) * 100}%`, background: c.points === c.max ? "var(--mint)" : "var(--violet)" }} />
+                    <div className="h-full rounded-full" style={{ width: `${(c.points / c.max) * 100}%`, background: c.points === c.max ? "#4ADE80" : G }} />
                   </div>
                 </div>
-                <div className="text-xs font-semibold flex-shrink-0" style={{ color: c.points === c.max ? "var(--mint)" : "var(--text-dim)" }}>
+                <div className="text-xs font-semibold flex-shrink-0" style={{ color: c.points === c.max ? "#4ADE80" : TD }}>
                   {c.points}/{c.max}
                 </div>
               </div>
@@ -324,7 +362,7 @@ function DashboardMockup() {
         </div>
       </div>
       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium"
-        style={{ background: "var(--surface)", border: "1px solid rgba(167,139,250,0.3)", color: "var(--violet)", boxShadow: "0 8px 32px rgba(167,139,250,0.2)" }}>
+        style={{ background: SURF, border: `1px solid ${GB}`, color: G, boxShadow: "0 8px 32px rgba(34,197,94,0.15)" }}>
         📱 Apple Wallet · Google Wallet
       </div>
     </div>
@@ -335,15 +373,14 @@ function DashboardMockup() {
 function MarqueeSection() {
   const doubled = [...USE_CASES, ...USE_CASES];
   return (
-    <div className="py-12 overflow-hidden" style={{ background: "var(--bg-2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+    <div className="py-12 overflow-hidden" style={{ background: "#0D0D0D", borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
       <p className="eyebrow text-center mb-6">Ils utilisent Fideloo</p>
       <div className="overflow-hidden">
         <div className="flex whitespace-nowrap marquee-track">
           {doubled.map((label, i) => (
             <span key={i} className="inline-flex items-center gap-5 px-6 text-xl font-semibold tracking-tight"
-              style={{ color: "rgba(245,245,243,0.08)" }}>
-              {label}
-              <span style={{ color: "rgba(255,255,255,0.06)" }}>·</span>
+              style={{ color: "rgba(245,245,245,0.07)" }}>
+              {label}<span style={{ color: "rgba(255,255,255,0.05)" }}>·</span>
             </span>
           ))}
         </div>
@@ -352,187 +389,295 @@ function MarqueeSection() {
   );
 }
 
-/* ─── SLOT MACHINE ──────────────────────────────────────────────────────── */
-const SLOT_EMOJIS = ["☕", "🎁", "⭐", "🍕", "💎"];
-
-function SlotReel({ emoji, spinning }: { emoji: string; spinning: boolean }) {
-  const [displayed, setDisplayed] = useState(emoji);
-  const ref = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => {
-    if (spinning) {
-      ref.current = setInterval(() => {
-        setDisplayed(SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
-      }, 80);
-    } else {
-      if (ref.current) { clearInterval(ref.current); ref.current = null; }
-      setDisplayed(emoji);
-    }
-    return () => { if (ref.current) clearInterval(ref.current); };
-  }, [spinning, emoji]);
-  return (
-    <div style={{
-      width: 80, height: 80, borderRadius: 14, fontSize: 36,
-      background: spinning ? "rgba(167,139,250,0.1)" : "#1a1a22",
-      border: spinning ? "1px solid rgba(167,139,250,0.4)" : "1px solid rgba(255,255,255,0.08)",
-      display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
-    }}>
-      {displayed}
-    </div>
-  );
-}
-
-function LoyaltyGameDemo() {
-  const [phase, setPhase] = useState<"idle" | "spinning" | "result">("idle");
-  const [reels, setReels] = useState(["☕", "☕", "☕"]);
-  const [spinning, setSpinning] = useState([false, false, false]);
-  const [outcome, setOutcome] = useState<"jackpot" | "near" | "consolation" | null>(null);
-  const [showReview, setShowReview] = useState(false);
-  const [confetti, setConfetti] = useState(false);
-
-  const spin = () => {
-    if (phase !== "idle") return;
-    setPhase("spinning");
-    setSpinning([true, true, true]);
-    setShowReview(false);
-    setConfetti(false);
-
-    const rand = Math.random();
-    let r: ["jackpot" | "near" | "consolation", string[]] ;
-    if (rand < 0.25) {
-      const e = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
-      r = ["jackpot", [e, e, e]];
-    } else if (rand < 0.65) {
-      const e = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
-      const diff = SLOT_EMOJIS.filter(x => x !== e)[Math.floor(Math.random() * 4)];
-      r = ["near", [e, e, diff]];
-    } else {
-      const pick = () => SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
-      let a = pick(), b = pick(), c = pick();
-      while (b === a) b = pick();
-      while (c === a || c === b) c = pick();
-      r = ["consolation", [a, b, c]];
-    }
-
-    setTimeout(() => { setSpinning([false, true, true]); setReels(prev => [r[1][0], prev[1], prev[2]]); }, 600);
-    setTimeout(() => { setSpinning([false, false, true]); setReels(prev => [prev[0], r[1][1], prev[2]]); }, 1000);
-    setTimeout(() => {
-      setSpinning([false, false, false]);
-      setReels(r[1]);
-      setOutcome(r[0]);
-      setPhase("result");
-      if (r[0] === "jackpot") { setConfetti(true); setTimeout(() => setConfetti(false), 2000); }
-      setTimeout(() => setShowReview(true), 700);
-    }, 1400);
-  };
-
-  const reset = () => { setPhase("idle"); setOutcome(null); setShowReview(false); };
-
-  const outcomeMsg: Record<string, { title: string; sub: string; color: string }> = {
-    jackpot: { title: "🎉 Jackpot ! Café offert !", sub: "Vous avez atteint 10 points !", color: "#34d399" },
-    near: { title: "🌟 Presque ! +2 points", sub: "Plus que 2 passages et c'est gratuit !", color: "#a78bfa" },
-    consolation: { title: "☕ +1 point fidélité", sub: "Revenez vite pour cumuler !", color: "var(--text-dim)" },
-  };
-
-  return (
-    <div className="card-dark p-8 flex flex-col items-center text-center" style={{ minHeight: 340 }}>
-      {confetti && (
-        <style>{`
-          @keyframes confettiFall {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(160px) rotate(720deg); opacity: 0; }
-          }
-          .confetti-piece { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confettiFall 1.5s ease-in forwards; }
-        `}</style>
-      )}
-      <div className="relative">
-        <p className="text-sm font-medium mb-5" style={{ color: "var(--text-dim)" }}>
-          Simulez l&apos;expérience fidélité de vos clients
-        </p>
-        <div className="relative flex gap-3 justify-center mb-6">
-          {confetti && Array.from({ length: 14 }).map((_, i) => (
-            <div key={i} className="confetti-piece pointer-events-none"
-              style={{
-                left: `${10 + i * 6}%`, top: 0,
-                background: ["#a78bfa", "#34d399", "#fbbf24", "#f472b6"][i % 4],
-                animationDelay: `${i * 0.08}s`,
-              }} />
-          ))}
-          {reels.map((e, i) => (
-            <SlotReel key={i} emoji={e} spinning={spinning[i]} />
-          ))}
-        </div>
-      </div>
-
-      {outcome && outcomeMsg[outcome] && (
-        <div className="mb-5 px-5 py-3 rounded-xl w-full" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <p className="font-bold text-base" style={{ color: outcomeMsg[outcome].color }}>{outcomeMsg[outcome].title}</p>
-          <p className="text-sm mt-0.5" style={{ color: "var(--text-dim)" }}>{outcomeMsg[outcome].sub}</p>
-        </div>
-      )}
-
-      {showReview && (
-        <button onClick={() => alert("Merci ! Redirection vers Google Maps… (démo)")}
-          className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold mb-3 transition-all"
-          style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.25)" }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "rgba(251,191,36,0.2)")}
-          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "rgba(251,191,36,0.12)")}>
-          ⭐ Laisser un avis Google
-        </button>
-      )}
-
-      {phase === "idle" ? (
-        <button onClick={spin}
-          className="btn btn-accent btn-md w-full justify-center">
-          Tenter ma chance ☕
-        </button>
-      ) : phase === "result" ? (
-        <button onClick={reset}
-          className="btn btn-ghost btn-md w-full justify-center mt-1">
-          Rejouer
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
 /* ─── FEATURES ──────────────────────────────────────────────────────────── */
 function FeaturesSection() {
   return (
-    <section id="features" className="section-light">
+    <section id="features" style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
         <div className="text-center mb-16 reveal">
-          <p className="eyebrow mb-4" style={{ color: "var(--ink-dim)" }}>Fonctionnalités</p>
-          <h2 className="section-title mb-4" style={{ color: "var(--ink)" }}>
+          <p className="eyebrow mb-4">Fonctionnalités</p>
+          <h2 className="section-title mb-4" style={{ color: T }}>
             Tout pour{" "}
-            <span className="serif" style={{ color: "var(--violet)" }}>fidéliser</span>
+            <span className="serif" style={{ color: G }}>fidéliser</span>
             {" "}sans complexité
           </h2>
-          <p className="lede max-w-2xl mx-auto" style={{ color: "var(--ink-dim)" }}>
+          <p className="lede max-w-2xl mx-auto" style={{ color: TD }}>
             Une plateforme conçue pour les commerçants qui veulent fidéliser sans compétence technique.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <div key={f.title} className="card-light p-7 reveal" style={{ animationDelay: `${i * 0.05}s` }}>
+            <div key={f.title} className="reveal p-7 rounded-[22px] transition-all duration-200 group"
+              style={{ background: SURF, border: `1px solid ${LINE}`, animationDelay: `${i * 0.05}s` }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}>
               <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 text-2xl"
-                style={{ background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.2)" }}>
+                style={{ background: GS, border: `1px solid ${GB}` }}>
                 {f.emoji}
               </div>
-              <h3 className="font-semibold mb-2 text-base" style={{ color: "var(--ink)" }}>{f.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--ink-dim)" }}>{f.desc}</p>
+              <h3 className="font-semibold mb-2 text-base" style={{ color: T }}>{f.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: TD }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── WHEEL SVG ──────────────────────────────────────────────────────────── */
+function WheelSVG({ rotation, spinning, onEnd }: { rotation: number; spinning: boolean; onEnd?: () => void }) {
+  const cx = 150, cy = 150, r = 128, tr = 84;
+  const n = WHEEL_PRIZES.length;
+  const step = (2 * Math.PI) / n;
+
+  return (
+    <svg width="300" height="300" viewBox="0 0 300 300"
+      style={{
+        transform: `rotate(${rotation}deg)`,
+        transition: spinning ? "transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)" : "none",
+        transformOrigin: "150px 150px",
+        display: "block",
+      }}
+      onTransitionEnd={onEnd}>
+      {WHEEL_PRIZES.map((prize, i) => {
+        const a1 = i * step - Math.PI / 2;
+        const a2 = (i + 1) * step - Math.PI / 2;
+        const x1 = cx + r * Math.cos(a1);
+        const y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2);
+        const y2 = cy + r * Math.sin(a2);
+        const mid = a1 + step / 2;
+        const tx = cx + tr * Math.cos(mid);
+        const ty = cy + tr * Math.sin(mid);
+        const rot = (mid * 180 / Math.PI) + 90;
+        return (
+          <g key={i}>
+            <path d={`M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 0,1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`}
+              fill={prize.color} stroke="#080808" strokeWidth="2.5" />
+            <text x={tx.toFixed(2)} y={ty.toFixed(2)} textAnchor="middle" dominantBaseline="middle"
+              fontSize="9" fontWeight="700" fill={prize.textColor} fontFamily="Geist,sans-serif"
+              transform={`rotate(${rot.toFixed(1)},${tx.toFixed(2)},${ty.toFixed(2)})`}>
+              {prize.label}
+            </text>
+          </g>
+        );
+      })}
+      <circle cx={cx} cy={cy} r="18" fill="#080808" stroke="rgba(34,197,94,0.5)" strokeWidth="2.5" />
+      <circle cx={cx} cy={cy} r="6" fill={G} />
+    </svg>
+  );
+}
+
+/* ─── WHEEL MODAL ────────────────────────────────────────────────────────── */
+function WheelModal({ onClose }: { onClose: () => void }) {
+  const [rotation, setRotation] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const [winner, setWinner] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [confetti, setConfetti] = useState(false);
+  const segAngle = 360 / WHEEL_PRIZES.length;
+
+  const spin = () => {
+    if (spinning || showResult) return;
+    const winIdx = Math.floor(Math.random() * WHEEL_PRIZES.length);
+    const winCenter = winIdx * segAngle + segAngle / 2;
+    const targetEff = (360 - winCenter + 360) % 360;
+    const smallRandom = (Math.random() - 0.5) * 20;
+    setWinner(winIdx);
+    setSpinning(true);
+    setRotation(prev => prev + 1800 + targetEff + smallRandom);
+  };
+
+  const onEnd = () => {
+    setSpinning(false);
+    setShowResult(true);
+    setConfetti(true);
+    setTimeout(() => setConfetti(false), 2800);
+  };
+
+  const reset = () => { setShowResult(false); setWinner(null); };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      {confetti && (
+        <style>{`
+          @keyframes cfall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(220px) rotate(540deg); opacity: 0; } }
+          .cp { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: cfall 2s ease-in forwards; pointer-events: none; }
+        `}</style>
+      )}
+
+      <div className="relative w-full max-w-md rounded-3xl p-8 animate-[fadeInUp_0.3s_ease_both]"
+        style={{ background: "#0D0D0D", border: `1px solid ${GB}`, boxShadow: "0 40px 80px rgba(0,0,0,0.8)" }}>
+        {confetti && Array.from({ length: 18 }).map((_, i) => (
+          <div key={i} className="cp"
+            style={{ left: `${8 + i * 5}%`, top: 0, background: [G, "#4ADE80", "#16A34A", "#fff"][i % 4], animationDelay: `${i * 0.1}s` }} />
+        ))}
+
+        <button onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all"
+          style={{ background: "rgba(255,255,255,0.06)", color: TD }}
+          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}>
+          <X className="w-4 h-4" />
+        </button>
+
+        <h3 className="text-xl font-bold mb-1" style={{ color: T }}>Démo — Roue de la chance</h3>
+        <p className="text-sm mb-6" style={{ color: TD }}>Simulez l&apos;expérience de vos clients</p>
+
+        {/* Wheel */}
+        <div className="relative flex justify-center mb-6">
+          {/* Pointer */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10" style={{ width: 0, height: 0, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: `22px solid ${G}`, filter: "drop-shadow(0 2px 4px rgba(34,197,94,0.5))" }} />
+          <div className="relative rounded-full overflow-hidden"
+            style={{ width: 300, height: 300, boxShadow: `0 0 40px rgba(34,197,94,0.15), inset 0 0 0 3px rgba(34,197,94,0.2)` }}>
+            <WheelSVG rotation={rotation} spinning={spinning} onEnd={onEnd} />
+          </div>
+        </div>
+
+        {showResult && winner !== null ? (
+          <div>
+            <div className="rounded-2xl p-5 mb-4 text-center"
+              style={{ background: SURF2, border: `1px solid ${GB}` }}>
+              <p className="font-bold text-lg mb-1" style={{ color: G }}>🎉 Félicitations !</p>
+              <p className="text-base font-semibold mb-0.5" style={{ color: T }}>
+                Vous gagnez : {WHEEL_PRIZES[winner].label}
+              </p>
+            </div>
+            <button onClick={() => alert("Dans l'application réelle, ceci redirige vers votre page Google Reviews")}
+              className="w-full py-3 rounded-full font-bold text-sm mb-2 transition-all"
+              style={{ background: G, color: "#080808", boxShadow: "0 4px 16px rgba(34,197,94,0.3)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(34,197,94,0.45)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(34,197,94,0.3)"; }}>
+              ⭐ Laisser un avis pour récupérer ma récompense
+            </button>
+            <button onClick={reset} className="w-full py-2 text-sm transition-colors" style={{ color: TD }}
+              onMouseEnter={e => (e.currentTarget.style.color = T)}
+              onMouseLeave={e => (e.currentTarget.style.color = TD)}>
+              Rejouer
+            </button>
+            <p className="text-center text-xs mt-3" style={{ color: TD, fontFamily: "Geist Mono, monospace" }}>
+              ✦ Fonctionnalité exclusive Plan Business
+            </p>
+          </div>
+        ) : (
+          <button onClick={spin} disabled={spinning}
+            className="w-full py-4 rounded-full font-bold text-base transition-all disabled:opacity-60"
+            style={{ background: G, color: "#080808", boxShadow: spinning ? "none" : "0 4px 20px rgba(34,197,94,0.35)" }}>
+            {spinning ? "La roue tourne…" : "Tourner la roue !"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── LOYALTY WHEEL DEMO ─────────────────────────────────────────────────── */
+function LoyaltyWheelDemo() {
+  const [showModal, setShowModal] = useState(false);
+  const steps = [
+    { Icon: QrCode, title: "Le client scanne & joue", desc: "Une affiche dédiée avec QR code. Le client s'inscrit, joue à la roue." },
+    { Icon: Gift, title: "Il gagne un cadeau", desc: "Un lot est tiré parmi vos récompenses personnalisées." },
+    { Icon: Shield, title: "Vous validez en caisse", desc: "Le client présente son QR cadeau. Votre caissier valide en 1 clic." },
+  ];
+
+  return (
+    <section style={{ background: BG, padding: "96px 0" }}>
+      <div className="container">
+        {/* Header */}
+        <div className="text-center mb-16 reveal">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-6"
+            style={{ background: GS, border: `1px solid ${GB}`, color: G, fontFamily: "Geist Mono, monospace", letterSpacing: "0.08em" }}>
+            🎮 EXCLUSIF PLAN BUSINESS
+          </div>
+          <h2 className="section-title mb-4" style={{ color: T }}>
+            La Roue de la Chance. Vos clients{" "}
+            <span className="serif" style={{ color: G }}>jouent.</span>
+            {" "}Vos avis{" "}
+            <span className="serif" style={{ color: "#4ADE80" }}>explosent.</span>
+          </h2>
+          <p className="lede max-w-2xl mx-auto" style={{ color: TD }}>
+            Transformez chaque passage en caisse en moment de jeu. Vos clients adorent ça. Google aussi.
+          </p>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 reveal">
+          {[
+            { value: "+3×", label: "avis Google générés" },
+            { value: "100%", label: "anti-fraude — QR crypté" },
+            { value: "0€", label: "commission sur les lots" },
+          ].map(({ value, label }) => (
+            <div key={label} className="text-center p-6 rounded-2xl"
+              style={{ background: SURF, border: `1px solid rgba(34,197,94,0.15)` }}>
+              <div className="text-4xl font-bold mb-1" style={{ color: G }}>{value}</div>
+              <div className="text-xs uppercase tracking-wider" style={{ color: TD, fontFamily: "Geist Mono, monospace" }}>{label}</div>
             </div>
           ))}
         </div>
 
-        {/* Slot machine demo */}
-        <div className="max-w-md mx-auto reveal">
-          <p className="text-center text-sm font-medium mb-4" style={{ color: "var(--ink-dim)" }}>
-            Essayez le mini-jeu fidélité intégré ↓
-          </p>
-          <LoyaltyGameDemo />
+        {/* 3 steps */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+          {steps.map(({ Icon, title, desc }, i) => (
+            <div key={title} className="reveal p-8 rounded-[20px] transition-all duration-200"
+              style={{ background: SURF, border: `1px solid ${LINE}`, animationDelay: `${i * 0.08}s` }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}>
+              <div className="w-12 h-12 flex items-center justify-center rounded-xl mb-5"
+                style={{ background: GS, border: `1px solid ${GB}` }}>
+                <Icon className="w-5 h-5" style={{ color: G }} />
+              </div>
+              <div className="text-xs font-bold mb-2" style={{ color: G, fontFamily: "Geist Mono, monospace" }}>0{i + 1}</div>
+              <h3 className="font-semibold mb-2 text-base" style={{ color: T }}>{title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: TD }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA banner */}
+        <div className="reveal rounded-[20px] p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+          style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)" }}>
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl shrink-0"
+              style={{ background: GS }}>
+              <Star className="w-5 h-5" style={{ color: G, fill: G }} />
+            </div>
+            <div>
+              <p className="font-semibold mb-1" style={{ color: T }}>
+                En moyenne, 90% des clients laissent un avis Google après avoir joué.
+              </p>
+              <p className="text-sm" style={{ color: TD }}>La roue crée un échange émotionnel positif.</p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            <button onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all"
+              style={{ background: "transparent", color: G, border: `1px solid ${GB}` }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = GS; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+              🎮 Voir une démo
+            </button>
+            <a href="#pricing"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all"
+              style={{ background: G, color: "#080808", boxShadow: "0 4px 12px rgba(34,197,94,0.3)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.03)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(34,197,94,0.45)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(34,197,94,0.3)"; }}>
+              Essayer Business →
+            </a>
+          </div>
         </div>
       </div>
+
+      {showModal && <WheelModal onClose={() => setShowModal(false)} />}
     </section>
   );
 }
@@ -540,6 +685,12 @@ function FeaturesSection() {
 /* ─── PRICING ───────────────────────────────────────────────────────────── */
 function PricingSection() {
   const [annual, setAnnual] = useState(false);
+  const [priceVisible, setPriceVisible] = useState(true);
+
+  const toggleAnnual = (val: boolean) => {
+    setPriceVisible(false);
+    setTimeout(() => { setAnnual(val); setPriceVisible(true); }, 160);
+  };
 
   const handleCheckoutPro = async () => {
     const merchantStr = typeof window !== "undefined" ? localStorage.getItem("fideloo_merchant") : null;
@@ -555,41 +706,47 @@ function PricingSection() {
       const data = await res.json();
       if (data.url) window.location.href = data.url;
       else alert(data.error || "Erreur Stripe");
-    } catch {
-      window.location.href = "/register";
-    }
+    } catch { window.location.href = "/register"; }
   };
 
   return (
-    <section id="pricing" className="section-dark">
+    <section id="pricing" style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
         <div className="text-center mb-12 reveal">
           <p className="eyebrow mb-4">Tarifs</p>
-          <h2 className="section-title mb-4" style={{ color: "var(--text)" }}>
+          <h2 className="section-title mb-4" style={{ color: T }}>
             Simple et{" "}
-            <span className="serif" style={{ color: "var(--violet)" }}>transparent</span>
+            <span className="serif" style={{ color: G }}>transparent</span>
           </h2>
-          <p className="lede max-w-xl mx-auto mb-8">Sans engagement. Annulable à tout moment.</p>
+          <p className="lede max-w-xl mx-auto mb-8" style={{ color: TD }}>Sans engagement. Annulable à tout moment.</p>
 
-          {/* Toggle mensuel/annuel */}
-          <div className="inline-flex items-center gap-3 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <button onClick={() => setAnnual(false)}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-              style={{ background: annual ? "transparent" : "rgba(167,139,250,0.15)", color: annual ? "var(--text-dim)" : "var(--violet)", border: annual ? "none" : "1px solid rgba(167,139,250,0.3)" }}>
-              Mensuel
-            </button>
-            <button onClick={() => setAnnual(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
-              style={{ background: !annual ? "transparent" : "rgba(52,211,153,0.15)", color: !annual ? "var(--text-dim)" : "var(--mint)", border: !annual ? "none" : "1px solid rgba(52,211,153,0.3)" }}>
-              Annuel
-              <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: "rgba(52,211,153,0.2)", color: "var(--mint)" }}>−20%</span>
-            </button>
+          {/* Pill toggle */}
+          <div className="inline-flex items-center p-1 rounded-full" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${LINE}` }}>
+            {([false, true] as const).map((val) => (
+              <button key={String(val)} onClick={() => toggleAnnual(val)}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
+                style={{
+                  background: annual === val ? G : "transparent",
+                  color: annual === val ? "#080808" : TD,
+                  fontWeight: annual === val ? 700 : 500,
+                  boxShadow: annual === val ? "0 4px 12px rgba(34,197,94,0.3)" : "none",
+                }}>
+                {val ? "Annuel" : "Mensuel"}
+                {val && (
+                  <span className="text-xs px-2 py-0.5 rounded-full font-bold"
+                    style={{ background: annual ? "rgba(8,8,8,0.2)" : "rgba(34,197,94,0.15)", color: annual ? "#080808" : G, fontFamily: "Geist Mono, monospace" }}>
+                    −20%
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {PLANS.map((plan, i) => (
-            <PricingCard key={plan.id} plan={plan} annual={annual} onCheckoutPro={handleCheckoutPro} delay={i * 0.08} />
+            <PricingCard key={plan.id} plan={plan} annual={annual} priceVisible={priceVisible}
+              onCheckoutPro={handleCheckoutPro} delay={i * 0.08} />
           ))}
         </div>
       </div>
@@ -598,80 +755,80 @@ function PricingSection() {
 }
 
 function PricingCard({
-  plan, annual, onCheckoutPro, delay,
+  plan, annual, priceVisible, onCheckoutPro, delay,
 }: {
-  plan: typeof PLANS[0]; annual: boolean; onCheckoutPro: () => void; delay: number;
+  plan: typeof PLANS[0]; annual: boolean; priceVisible: boolean; onCheckoutPro: () => void; delay: number;
 }) {
   const price = annual ? plan.annual : plan.monthly;
-  const [hovered, setHovered] = useState(false);
 
   const handleCta = () => {
     if (plan.id === "pro") { onCheckoutPro(); return; }
     if (plan.ctaHref) window.location.href = plan.ctaHref;
   };
 
+  const borderColor = plan.highlight ? "rgba(34,197,94,0.5)" : LINE;
+  const boxShadow = plan.highlight ? "0 30px 70px rgba(34,197,94,0.12)" : "none";
+
   return (
-    <div
-      className="reveal relative flex flex-col"
-      style={{ animationDelay: `${delay}s` }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    <div className="reveal relative flex flex-col rounded-[22px] p-8 transition-all duration-200"
+      style={{ background: SURF, border: `1px solid ${borderColor}`, boxShadow, animationDelay: `${delay}s` }}
+      onMouseEnter={e => { if (!plan.highlight) { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; } }}
+      onMouseLeave={e => { if (!plan.highlight) { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; } }}>
+
       {plan.highlight && (
-        <>
-          <div aria-hidden className="absolute -inset-px rounded-[22px]"
-            style={{ background: "linear-gradient(135deg, rgba(167,139,250,0.5), rgba(52,211,153,0.3))", zIndex: 0 }} />
-        </>
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold whitespace-nowrap"
+          style={{ background: G, color: "#080808" }}>
+          {plan.badge}
+        </div>
       )}
-      <div className="relative z-10 flex flex-col h-full rounded-[22px] p-8"
-        style={{
-          background: plan.highlight ? "var(--surface)" : "var(--bg-2)",
-          border: plan.highlight ? "none" : "1px solid rgba(255,255,255,0.06)",
-          boxShadow: plan.highlight ? "0 0 60px rgba(167,139,250,0.15)" : hovered ? "0 0 40px rgba(167,139,250,0.08)" : "none",
-          transition: "box-shadow 0.3s",
-        }}>
-        {plan.highlight && (
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap"
-            style={{ background: "var(--violet)", color: "#ffffff" }}>
-            {plan.badge}
-          </div>
-        )}
-        {plan.extraBadge && (
-          <div className="inline-flex self-start mb-3 px-2.5 py-1 rounded-lg text-xs font-medium"
-            style={{ background: "rgba(52,211,153,0.12)", color: "var(--mint)", border: "1px solid rgba(52,211,153,0.2)" }}>
-            {plan.extraBadge}
-          </div>
-        )}
 
-        <div className="mb-2">
-          <h3 className="font-semibold text-lg" style={{ color: "var(--text)" }}>{plan.name}</h3>
-          {!plan.highlight && <p className="text-sm mt-0.5" style={{ color: "var(--text-dim)" }}>{plan.badge}</p>}
+      {plan.extraBadge && (
+        <div className="inline-flex self-start mb-3 px-2.5 py-1 rounded-lg text-xs font-semibold"
+          style={{ background: "rgba(34,197,94,0.12)", color: G, border: `1px solid rgba(34,197,94,0.3)` }}>
+          {plan.extraBadge}
         </div>
+      )}
 
-        <div className="mb-8 flex items-baseline gap-1">
-          <span className="text-5xl font-bold tracking-tight" style={{ color: plan.highlight ? "var(--violet)" : "var(--text)" }}>
-            {price}€
-          </span>
-          <span style={{ color: "var(--text-dim)" }}>/mois</span>
-          {annual && <span className="text-xs ml-1" style={{ color: "var(--mint)" }}>HT</span>}
-        </div>
-
-        <ul className="space-y-3 text-sm mb-8 flex-1">
-          {plan.features.map(f => (
-            <li key={f} className="flex items-start gap-3">
-              <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--mint)" }} />
-              <span style={{ color: plan.highlight ? "var(--text)" : "var(--text-dim)" }}>{f}</span>
-            </li>
-          ))}
-        </ul>
-
-        <button
-          onClick={handleCta}
-          className={`btn btn-lg justify-center w-full ${plan.highlight ? "btn-accent" : "btn-ghost"}`}
-        >
-          {plan.cta} {plan.highlight && <ArrowRight className="w-4 h-4" />}
-        </button>
+      <div className="mb-2">
+        <h3 className="font-semibold text-lg" style={{ color: T }}>{plan.name}</h3>
+        {!plan.highlight && <p className="text-sm mt-0.5" style={{ color: TD }}>{plan.badge}</p>}
       </div>
+
+      <div className="mb-8 flex items-baseline gap-1"
+        style={{ opacity: priceVisible ? 1 : 0, transform: priceVisible ? "translateY(0)" : "translateY(4px)", transition: "opacity 0.3s, transform 0.3s" }}>
+        <span className="text-5xl font-bold tracking-tight" style={{ color: plan.highlight ? G : T }}>{price}€</span>
+        <span style={{ color: TD }}>/mois</span>
+      </div>
+
+      <ul className="space-y-3 text-sm mb-8 flex-1">
+        {plan.features.map(f => (
+          <li key={f} className="flex items-start gap-3">
+            <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: G }} />
+            <span style={{ color: plan.highlight ? T : TD }}>{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      <button onClick={handleCta}
+        className="w-full py-3.5 rounded-full font-bold text-sm transition-all"
+        style={{
+          background: plan.highlight ? G : plan.whiteBtn ? "#F5F5F5" : "transparent",
+          color: plan.highlight ? "#080808" : plan.whiteBtn ? "#080808" : T,
+          border: plan.highlight || plan.whiteBtn ? "none" : `1px solid ${GB}`,
+          boxShadow: plan.highlight ? "0 4px 16px rgba(34,197,94,0.3)" : "none",
+        }}
+        onMouseEnter={e => {
+          if (plan.highlight) { (e.currentTarget as HTMLElement).style.background = G2; (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; }
+          else if (plan.whiteBtn) { (e.currentTarget as HTMLElement).style.background = "#e5e5e5"; }
+          else { (e.currentTarget as HTMLElement).style.background = GS; (e.currentTarget as HTMLElement).style.color = G; }
+        }}
+        onMouseLeave={e => {
+          if (plan.highlight) { (e.currentTarget as HTMLElement).style.background = G; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }
+          else if (plan.whiteBtn) { (e.currentTarget as HTMLElement).style.background = "#F5F5F5"; }
+          else { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = T; }
+        }}>
+        {plan.cta}
+      </button>
     </div>
   );
 }
@@ -679,36 +836,31 @@ function PricingCard({
 /* ─── FAQ ───────────────────────────────────────────────────────────── */
 function FaqSection({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: number | null) => void }) {
   return (
-    <section id="faq" className="section-light">
+    <section id="faq" style={{ background: BG, padding: "96px 0" }}>
       <div className="container max-w-3xl">
         <div className="text-center mb-16 reveal">
-          <p className="eyebrow mb-4" style={{ color: "var(--ink-dim)" }}>FAQ</p>
-          <h2 className="section-title mb-4" style={{ color: "var(--ink)" }}>
+          <p className="eyebrow mb-4">FAQ</p>
+          <h2 className="section-title mb-4" style={{ color: T }}>
             Questions{" "}
-            <span className="serif" style={{ color: "var(--violet)" }}>fréquentes</span>
+            <span className="serif" style={{ color: G }}>fréquentes</span>
           </h2>
         </div>
 
         <div className="space-y-3">
           {FAQS.map((f, i) => (
-            <div key={i} className="card-light overflow-hidden reveal" style={{ animationDelay: `${i * 0.04}s` }}>
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+            <div key={i} className="reveal overflow-hidden rounded-2xl transition-all duration-200"
+              style={{ background: SURF, border: `1px solid ${LINE}`, animationDelay: `${i * 0.04}s` }}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(34,197,94,0.03)")}
+              onMouseLeave={e => (e.currentTarget.style.background = SURF)}>
+              <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 className="w-full px-6 py-5 flex items-center justify-between text-left"
-                style={{ color: "var(--ink)" }}>
+                style={{ color: T }}>
                 <span className="font-medium pr-4">{f.q}</span>
-                <ChevronDown
-                  className="w-5 h-5 shrink-0 transition-transform duration-200"
-                  style={{ transform: openFaq === i ? "rotate(180deg)" : "none", color: openFaq === i ? "var(--violet)" : "var(--ink-dim)" }}
-                />
+                <ChevronDown className="w-5 h-5 shrink-0 transition-transform duration-200"
+                  style={{ transform: openFaq === i ? "rotate(180deg)" : "none", color: openFaq === i ? G : TD }} />
               </button>
-              <div
-                style={{
-                  maxHeight: openFaq === i ? 300 : 0,
-                  overflow: "hidden",
-                  transition: "max-height 0.3s ease",
-                }}>
-                <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: "var(--ink-dim)" }}>
+              <div style={{ maxHeight: openFaq === i ? 300 : 0, overflow: "hidden", transition: "max-height 0.3s ease" }}>
+                <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: TD, borderTop: `1px solid rgba(255,255,255,0.06)`, paddingTop: 16 }}>
                   {f.a}
                 </div>
               </div>
@@ -723,39 +875,37 @@ function FaqSection({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFa
 /* ─── APP STORE ─────────────────────────────────────────────────────────── */
 function AppStoreSection() {
   return (
-    <section className="section-dark">
+    <section style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
         <div className="relative rounded-[32px] overflow-hidden p-12 sm:p-16 reveal"
-          style={{ background: "#0d0d14", border: "1px solid rgba(255,255,255,0.06)" }}>
+          style={{ background: SURF, border: `1px solid ${LINE}` }}>
           <div aria-hidden className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(167,139,250,0.08) 0%, transparent 60%)" }} />
+            style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(34,197,94,0.06) 0%, transparent 60%)" }} />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
             <div className="flex-1">
               <p className="eyebrow mb-4">Application mobile</p>
-              <h2 className="section-title mb-4" style={{ color: "var(--text)" }}>
+              <h2 className="section-title mb-4" style={{ color: T }}>
                 Gérez votre fidélité{" "}
-                <span className="serif" style={{ color: "var(--mint)" }}>depuis votre poche</span>
+                <span className="serif" style={{ color: G }}>depuis votre poche</span>
               </h2>
-              <p className="lede max-w-lg mb-8" style={{ color: "var(--text-dim)" }}>
+              <p className="lede max-w-lg mb-8" style={{ color: TD }}>
                 Scannez les QR codes, ajoutez des points et suivez vos clients directement depuis l&apos;app Fideloo. Disponible sur iPhone.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-5 py-3.5 rounded-xl font-medium transition-all"
-                  style={{ background: "#000", color: "#fff", border: "1px solid rgba(255,255,255,0.15)" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#1a1a1a")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#000")}>
-                  <AppleLogoSVG size={20} />
-                  <div className="text-left">
-                    <div className="text-xs opacity-70">Disponible sur l&apos;</div>
-                    <div className="text-sm font-semibold">App Store</div>
-                  </div>
-                </a>
-              </div>
+              <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-5 py-3.5 rounded-xl font-medium transition-all"
+                style={{ background: "#000", color: "#fff", border: `1px solid ${LINE}` }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
+                <AppleLogoSVG size={20} />
+                <div className="text-left">
+                  <div className="text-xs opacity-70">Disponible sur l&apos;</div>
+                  <div className="text-sm font-semibold">App Store</div>
+                </div>
+              </a>
             </div>
             <div className="flex-shrink-0">
               <div className="w-36 h-36 rounded-3xl flex items-center justify-center shadow-2xl"
-                style={{ background: "linear-gradient(135deg, var(--violet), #34d399)", boxShadow: "0 30px 60px rgba(167,139,250,0.3)" }}>
+                style={{ background: `linear-gradient(135deg, ${G}, ${G2})`, boxShadow: "0 30px 60px rgba(34,197,94,0.25)" }}>
                 <span className="text-6xl font-black text-white select-none">F</span>
               </div>
             </div>
@@ -791,74 +941,67 @@ function ContactSection() {
       setSuccess(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erreur réseau");
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setSubmitting(false); }
   };
 
   return (
-    <section id="contact" className="section-light">
+    <section id="contact" style={{ background: BG, padding: "96px 0" }}>
       <div className="container max-w-2xl">
         <div className="text-center mb-12 reveal">
-          <p className="eyebrow mb-4" style={{ color: "var(--ink-dim)" }}>Contact</p>
-          <h2 className="section-title mb-4" style={{ color: "var(--ink)" }}>
+          <p className="eyebrow mb-4">Contact</p>
+          <h2 className="section-title mb-4" style={{ color: T }}>
             Une question ?{" "}
-            <span className="serif" style={{ color: "var(--violet)" }}>Écrivez-nous</span>
+            <span className="serif" style={{ color: G }}>Écrivez-nous</span>
           </h2>
-          <p className="lede" style={{ color: "var(--ink-dim)" }}>
-            Notre équipe vous répond sous 24h.
-          </p>
+          <p className="lede" style={{ color: TD }}>Notre équipe vous répond sous 24h.</p>
         </div>
 
-        <div className="card-light p-8 reveal">
+        <div className="reveal rounded-[22px] p-8" style={{ background: SURF, border: `1px solid ${LINE}` }}>
           {success ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ background: "rgba(52,211,153,0.12)", color: "var(--mint)" }}>
-                <Check className="w-8 h-8" />
+                style={{ background: GS }}>
+                <Check className="w-8 h-8" style={{ color: G }} />
               </div>
-              <h3 className="font-bold text-xl mb-2" style={{ color: "var(--ink)" }}>Message envoyé !</h3>
-              <p style={{ color: "var(--ink-dim)" }}>Nous vous répondrons sous 24h à {email}.</p>
+              <h3 className="font-bold text-xl mb-2" style={{ color: T }}>Message envoyé !</h3>
+              <p style={{ color: TD }}>Nous vous répondrons sous 24h à {email}.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Honeypot */}
               <input type="text" name="website" tabIndex={-1} autoComplete="off"
-                value={honeypot} onChange={e => setHoneypot(e.target.value)}
-                aria-hidden="true"
+                value={honeypot} onChange={e => setHoneypot(e.target.value)} aria-hidden="true"
                 style={{ position: "absolute", left: "-9999px", top: "-9999px", width: 0, height: 0, opacity: 0, pointerEvents: "none" }} />
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--ink)" }}>Prénom</label>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: T }}>Prénom</label>
                   <input type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
-                    className="input-field w-full" placeholder="Lucas" />
+                    className="input-field" placeholder="Lucas" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--ink)" }}>Nom</label>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: T }}>Nom</label>
                   <input type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
-                    className="input-field w-full" placeholder="Bernard" />
+                    className="input-field" placeholder="Bernard" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--ink)" }}>Email</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: T }}>Email</label>
                 <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                  className="input-field w-full" placeholder="lucas@moncommerce.fr" />
+                  className="input-field" placeholder="lucas@moncommerce.fr" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--ink)" }}>Message</label>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: T }}>Message</label>
                 <textarea required value={message} onChange={e => setMessage(e.target.value)}
-                  rows={4} className="input-field w-full resize-none" placeholder="Votre message…" />
+                  rows={4} className="input-field resize-none" placeholder="Votre message…" />
               </div>
-
               {error && (
-                <div className="p-3 rounded-xl text-sm" style={{ background: "rgba(239,68,68,0.08)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.2)" }}>
+                <div className="p-3 rounded-xl text-sm"
+                  style={{ background: "rgba(239,68,68,0.08)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.2)" }}>
                   {error}
                 </div>
               )}
-
               <button type="submit" disabled={submitting}
-                className="btn btn-accent btn-lg w-full justify-center disabled:opacity-70">
+                className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-bold text-base transition-all disabled:opacity-60"
+                style={{ background: G, color: "#080808", boxShadow: "0 4px 16px rgba(34,197,94,0.3)" }}>
                 {submitting ? "Envoi en cours…" : <><Send className="w-4 h-4" /> Envoyer le message</>}
               </button>
             </form>
@@ -872,31 +1015,26 @@ function ContactSection() {
 /* ─── CTA FINAL ─────────────────────────────────────────────────────────── */
 function CtaFinal() {
   return (
-    <section className="section-dark">
+    <section style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
         <div className="relative rounded-[32px] overflow-hidden reveal"
-          style={{ background: "var(--surface)", border: "1px solid rgba(167,139,250,0.2)", boxShadow: "0 0 80px rgba(167,139,250,0.1)" }}>
+          style={{ background: SURF, border: `1px solid rgba(34,197,94,0.2)`, boxShadow: "0 0 80px rgba(34,197,94,0.08)" }}>
           <div aria-hidden className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at top, rgba(167,139,250,0.12) 0%, transparent 60%)" }} />
+            style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.10) 0%, transparent 65%)" }} />
           <div className="relative z-10 p-12 sm:p-20 text-center">
             <p className="eyebrow mb-6">Prêt à démarrer ?</p>
-            <h2 className="section-title mb-6" style={{ color: "var(--text)" }}>
+            <h2 className="section-title mb-6" style={{ color: T }}>
               Fidélisez vos clients{" "}
-              <span className="serif" style={{ color: "var(--violet)" }}>dès aujourd&apos;hui</span>
+              <span className="serif" style={{ color: G }}>dès aujourd&apos;hui</span>
             </h2>
-            <p className="lede max-w-xl mx-auto mb-10">
+            <p className="lede max-w-xl mx-auto mb-10" style={{ color: TD }}>
               Rejoignez les 500+ commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
             </p>
             <Link href="/register"
-              className="inline-flex items-center gap-3 font-bold text-white rounded-2xl transition-all"
-              style={{
-                background: "linear-gradient(135deg, var(--mint), #22c55e)",
-                padding: "20px 48px",
-                fontSize: 18,
-                boxShadow: "0 0 40px rgba(52,211,153,0.35), 0 1px 0 rgba(255,255,255,0.2) inset",
-              }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1.03)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = "scale(1)")}>
+              className="inline-flex items-center gap-3 font-bold text-[#080808] rounded-full transition-all"
+              style={{ background: G, padding: "20px 48px", fontSize: 18, boxShadow: "0 0 40px rgba(34,197,94,0.35), 0 1px 0 rgba(255,255,255,0.15) inset" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = G2; (e.currentTarget as HTMLElement).style.transform = "scale(1.03)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = G; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
               Créer mon compte gratuitement <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -909,57 +1047,25 @@ function CtaFinal() {
 /* ─── FOOTER ────────────────────────────────────────────────────────────── */
 function Footer() {
   const cols = [
-    {
-      title: "Produit",
-      links: [
-        { label: "Fonctionnalités", href: "#features" },
-        { label: "Comment ça marche", href: "#features" },
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "Scanner", href: "/dashboard/scanner" },
-      ],
-    },
-    {
-      title: "Tarifs",
-      links: [
-        { label: "Plan Standard", href: "#pricing" },
-        { label: "Plan Pro", href: "#pricing" },
-        { label: "Plan Business", href: "#pricing" },
-        { label: "FAQ", href: "#faq" },
-      ],
-    },
-    {
-      title: "Légal",
-      links: [
-        { label: "Mentions légales", href: "/mentions-legales" },
-        { label: "Confidentialité", href: "/politique-confidentialite" },
-        { label: "CGU", href: "/cgu" },
-      ],
-    },
-    {
-      title: "Contact",
-      links: [
-        { label: "Nous écrire", href: "#contact" },
-        { label: "contact@fideloo.fr", href: "mailto:contact@fideloo.fr" },
-        { label: "App Store", href: "https://apps.apple.com" },
-      ],
-    },
+    { title: "Produit", links: [{ label: "Fonctionnalités", href: "#features" }, { label: "Comment ça marche", href: "#features" }, { label: "Dashboard", href: "/dashboard" }, { label: "Scanner", href: "/dashboard/scanner" }] },
+    { title: "Tarifs", links: [{ label: "Plan Standard", href: "#pricing" }, { label: "Plan Pro", href: "#pricing" }, { label: "Plan Business", href: "#pricing" }, { label: "FAQ", href: "#faq" }] },
+    { title: "Légal", links: [{ label: "Mentions légales", href: "/mentions-legales" }, { label: "Confidentialité", href: "/politique-confidentialite" }, { label: "CGU", href: "/cgu" }] },
+    { title: "Contact", links: [{ label: "Nous écrire", href: "#contact" }, { label: "contact@fideloo.fr", href: "mailto:contact@fideloo.fr" }, { label: "App Store", href: "https://apps.apple.com" }] },
   ];
 
   return (
-    <footer style={{ background: "var(--bg)", borderTop: "1px solid var(--line)", paddingTop: 64, paddingBottom: 48 }}>
+    <footer style={{ background: BG, borderTop: `1px solid ${LINE}`, paddingTop: 64, paddingBottom: 48 }}>
       <div className="container">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {cols.map(col => (
             <div key={col.title}>
-              <p className="text-sm font-semibold mb-4" style={{ color: "var(--text)" }}>{col.title}</p>
+              <p className="text-sm font-semibold mb-4" style={{ color: T }}>{col.title}</p>
               <ul className="space-y-2.5">
                 {col.links.map(link => (
                   <li key={link.label}>
-                    <a href={link.href}
-                      className="text-sm transition-colors"
-                      style={{ color: "var(--text-dim)" }}
-                      onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+                    <a href={link.href} className="text-sm transition-colors" style={{ color: TD }}
+                      onMouseEnter={e => (e.currentTarget.style.color = G)}
+                      onMouseLeave={e => (e.currentTarget.style.color = TD)}>
                       {link.label}
                     </a>
                   </li>
@@ -968,20 +1074,19 @@ function Footer() {
             </div>
           ))}
         </div>
-
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
-          style={{ borderTop: "1px solid var(--line)", color: "var(--text-dim)" }}>
+          style={{ borderTop: `1px solid ${LINE}`, color: TD }}>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-md flex items-center justify-center font-bold text-sm"
-              style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
-            <span className="font-medium" style={{ color: "var(--text)" }}>Fideloo</span>
+              style={{ background: G, color: "#080808" }}>F</div>
+            <span className="font-medium" style={{ color: T }}>Fideloo</span>
             <span>· © {new Date().getFullYear()}</span>
           </div>
           <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all"
-            style={{ background: "#000", color: "#fff", border: "1px solid rgba(255,255,255,0.12)" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#1a1a1a")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#000")}>
+            style={{ background: "#111", color: "#fff", border: `1px solid ${LINE}` }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
             <AppleLogoSVG size={13} />
             App Store
           </a>
@@ -996,13 +1101,17 @@ function CookieBanner({ onAccept }: { onAccept: () => void }) {
   return (
     <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
       <div className="glass-strong max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-        <p className="text-sm flex-1" style={{ color: "var(--text-dim)" }}>
+        <p className="text-sm flex-1" style={{ color: TD }}>
           Nous utilisons uniquement des cookies fonctionnels essentiels.{" "}
-          <Link href="/politique-confidentialite" className="underline" style={{ color: "var(--violet)" }}>
+          <Link href="/politique-confidentialite" className="underline" style={{ color: G }}>
             En savoir plus
           </Link>
         </p>
-        <button onClick={onAccept} className="btn btn-primary btn-sm shrink-0">
+        <button onClick={onAccept}
+          className="px-5 py-2 rounded-full text-sm font-bold transition-all shrink-0"
+          style={{ background: G, color: "#080808" }}
+          onMouseEnter={e => (e.currentTarget.style.background = G2)}
+          onMouseLeave={e => (e.currentTarget.style.background = G)}>
           J&apos;accepte
         </button>
       </div>
