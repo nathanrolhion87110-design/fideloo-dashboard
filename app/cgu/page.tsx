@@ -63,7 +63,7 @@ export default function CGU() {
           <Section title="Article 6 — Données personnelles">
             <p className="text-text-muted">
               Le traitement des données est régi par notre{" "}
-              <Link href="/politique-confidentialite" className="text-[#C9A84C] hover:text-white">Politique de confidentialité</Link>{" "}
+              <Link href="/politique-confidentialite" style={{ color: "var(--violet)" }} className="hover:text-white">Politique de confidentialité</Link>{" "}
               conforme au RGPD.
             </p>
           </Section>

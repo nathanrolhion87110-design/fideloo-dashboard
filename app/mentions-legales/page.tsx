@@ -46,7 +46,7 @@ export default function MentionsLegales() {
           <Section title="Contact">
             <p>
               Pour toute question ou demande relative à Fideloo :{" "}
-              <a href="mailto:contact@fideloo.fr" className="text-[#C9A84C] hover:text-white transition-colors">
+              <a href="mailto:contact@fideloo.fr" style={{ color: "var(--violet)" }} className="hover:text-white transition-colors">
                 contact@fideloo.fr
               </a>
             </p>

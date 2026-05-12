@@ -6,10 +6,6 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
-import AnimatedBackground from "../../components/AnimatedBackground";
-import GlassCard from "../../components/GlassCard";
-import GlowButton from "../../components/GlowButton";
-import GradientText from "../../components/GradientText";
 
 declare global {
   interface Window {
@@ -26,12 +22,7 @@ declare global {
     };
     AppleID?: {
       auth: {
-        init: (config: {
-          clientId: string;
-          scope: string;
-          redirectURI: string;
-          usePopup: boolean;
-        }) => void;
+        init: (config: { clientId: string; scope: string; redirectURI: string; usePopup: boolean }) => void;
         signIn: () => Promise<{
           authorization: { id_token: string; code: string };
           user?: { name?: { firstName?: string; lastName?: string }; email?: string };
@@ -61,59 +52,37 @@ export default function LoginPage() {
   const { login } = useAuth();
   const googleScriptLoadedRef = useRef(false);
 
-  // ─── Google OAuth ────────────────────────────────────────────────────────
   const handleGoogleCredential = useCallback(async (credential: string) => {
-    console.log("[Google][login] Credential reçu, envoi backend (length=" + credential.length + ")");
-    setError("");
-    setLoading(true);
+    setError(""); setLoading(true);
     try {
       const res = await api.post("/merchants/auth/google", { token: credential, credential, mode: "login" });
-      console.log("[Google][login] Backend OK:", res.data.merchant?.email);
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const e = err as { response?: { status?: number; data?: { error?: string; message?: string } } };
-      console.error("[Google][login] Erreur backend:", e.response?.status, e.response?.data);
-      if (e.response?.status === 404) {
-        setError("Aucun compte trouvé avec ce compte Google. Créez un compte d'abord.");
-      } else {
-        setError(e.response?.data?.error || e.response?.data?.message || "Erreur Google OAuth");
-      }
-    } finally {
-      setLoading(false);
-    }
+      if (e.response?.status === 404) setError("Aucun compte trouvé avec ce compte Google. Créez un compte d'abord.");
+      else setError(e.response?.data?.error || e.response?.data?.message || "Erreur Google OAuth");
+    } finally { setLoading(false); }
   }, [login, router]);
 
   useEffect(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      console.warn("[Google][login] NEXT_PUBLIC_GOOGLE_CLIENT_ID non défini");
-      return;
-    }
-    if (googleScriptLoadedRef.current) return;
-
+    if (!clientId || googleScriptLoadedRef.current) return;
     const initGsi = () => {
       if (!window.google) return;
       try {
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: (response: { credential: string }) => handleGoogleCredential(response.credential),
-          ux_mode: "popup",
-          auto_select: false,
-          cancel_on_tap_outside: true,
+          ux_mode: "popup", auto_select: false, cancel_on_tap_outside: true,
         });
         setGoogleReady(true);
-        console.log("[Google][login] Initialisé, clientId=", clientId);
-      } catch (e) {
-        console.error("[Google][login] Erreur initialize:", e);
-      }
+      } catch (e) { console.error("[Google][login] Erreur initialize:", e); }
     };
-
     if (window.google?.accounts?.id) { googleScriptLoadedRef.current = true; initGsi(); return; }
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
+    script.async = true; script.defer = true;
     script.onload = () => { googleScriptLoadedRef.current = true; initGsi(); };
     script.onerror = (e) => console.error("[Google][login] Erreur SDK:", e);
     document.head.appendChild(script);
@@ -121,14 +90,9 @@ export default function LoginPage() {
   }, [handleGoogleCredential]);
 
   const handleGoogleClick = () => {
-    console.log("[Google][login] Clic bouton");
     if (!window.google?.accounts?.id) { setError("SDK Google non chargé. Rechargez la page."); return; }
     try {
       window.google.accounts.id.prompt((n) => {
-        console.log("[Google][login] Prompt:", {
-          notDisplayed: n.isNotDisplayed(), reason: n.isNotDisplayed() ? n.getNotDisplayedReason() : null,
-          skipped: n.isSkippedMoment(), skipReason: n.isSkippedMoment() ? n.getSkippedReason() : null,
-        });
         if (n.isNotDisplayed() || n.isSkippedMoment()) {
           const c = document.getElementById("google-fallback-btn");
           if (c && window.google) {
@@ -140,7 +104,6 @@ export default function LoginPage() {
     } catch (e) { console.error("[Google][login] prompt():", e); }
   };
 
-  // ─── Apple Sign In ───────────────────────────────────────────────────────
   useEffect(() => {
     const serviceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
     if (!serviceId) return;
@@ -151,14 +114,8 @@ export default function LoginPage() {
     script.onload = () => {
       if (!window.AppleID) return;
       try {
-        window.AppleID.auth.init({
-          clientId: serviceId,
-          scope: "name email",
-          redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
-          usePopup: true,
-        });
+        window.AppleID.auth.init({ clientId: serviceId, scope: "name email", redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin, usePopup: true });
         setAppleReady(true);
-        console.log("[Apple][login] init OK, serviceId=", serviceId);
       } catch (e) { console.error("[Apple][login] init:", e); }
     };
     return () => { if (document.head.contains(script)) document.head.removeChild(script); };
@@ -168,27 +125,19 @@ export default function LoginPage() {
     if (!window.AppleID) { setError("SDK Apple non chargé."); return; }
     setError(""); setLoading(true);
     try {
-      console.log("[Apple][login] signIn()…");
       const data = await window.AppleID.auth.signIn();
-      const res = await api.post("/merchants/auth/apple", {
-        token: data.authorization.id_token,
-        identityToken: data.authorization.id_token,
-        user: data.user,
-        mode: "login",
-      });
+      const res = await api.post("/merchants/auth/apple", { token: data.authorization.id_token, identityToken: data.authorization.id_token, user: data.user, mode: "login" });
       login(res.data.token, res.data.merchant);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const a = err as { error?: string };
       if (a.error === "popup_closed_by_user" || a.error === "user_trigger_new_signin_flow") { setLoading(false); return; }
-      console.error("[Apple][login] err:", err);
       const e = err as { response?: { status?: number; data?: { error?: string; message?: string } } };
       if (e.response?.status === 404) setError("Aucun compte trouvé avec ce compte Apple. Créez un compte d'abord.");
       else setError(e.response?.data?.error || e.response?.data?.message || "Erreur Apple Sign In");
     } finally { setLoading(false); }
   };
 
-  // ─── Email/password ──────────────────────────────────────────────────────
   const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setError(""); setLoading(true);
@@ -206,120 +155,118 @@ export default function LoginPage() {
   const appleServiceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative">
-      <AnimatedBackground />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ background: "#0a0a0b" }}>
+      <div aria-hidden className="pointer-events-none absolute"
+        style={{ top: -200, left: -100, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      <div aria-hidden className="pointer-events-none absolute"
+        style={{ bottom: -150, right: -80, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
 
-      <GlassCard variant="strong" className="w-full max-w-md p-10 fade-in-up">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl mb-6"
-               style={{ background: "var(--violet)", color: "#ffffff" }}>
-            F
-          </div>
-          <h1 className="heading-display text-3xl mb-2">
-            <GradientText as="span">Bon retour parmi nous</GradientText>
+      <div className="w-full max-w-[440px] relative z-10 fade-in-up"
+        style={{ background: "#14141a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 22, padding: 40 }}>
+
+        <div className="flex justify-center mb-8">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold"
+              style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
+            <span className="font-semibold" style={{ color: "var(--text)" }}>Fideloo</span>
+          </Link>
+        </div>
+
+        <div className="mb-8">
+          <h1 style={{ fontWeight: 500, fontSize: 26, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 8 }}>
+            Bon retour 👋
           </h1>
-          <p className="text-sm text-text-muted">Connectez-vous pour piloter votre programme de fidélité</p>
+          <p style={{ fontSize: 14, color: "var(--text-dim)" }}>Connectez-vous à votre dashboard</p>
         </div>
 
         <div className="space-y-3 mb-6">
           {googleClientId ? (
-            <GlowButton
-              type="button"
-              variant="ghost"
-              fullWidth
-              onClick={handleGoogleClick}
-              disabled={loading || !googleReady}
-            >
+            <button type="button" onClick={handleGoogleClick} disabled={loading || !googleReady}
+              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
+              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none", cursor: "pointer" }}>
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
-              <span>Continuer avec Google</span>
-            </GlowButton>
+              Continuer avec Google
+            </button>
           ) : (
-            <GlowButton variant="ghost" fullWidth disabled>
-              <GoogleIcon />
-              <span>Google (non configuré)</span>
-            </GlowButton>
+            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
+              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none" }}>
+              <GoogleIcon /> Google (non configuré)
+            </button>
           )}
           <div id="google-fallback-btn" style={{ display: "none" }} className="w-full justify-center" />
 
           {appleServiceId ? (
-            <GlowButton
-              type="button"
-              variant="apple"
-              fullWidth
-              onClick={handleAppleSignIn}
-              disabled={loading || !appleReady}
-            >
+            <button type="button" onClick={handleAppleSignIn} disabled={loading || !appleReady}
+              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
+              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer" }}>
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
-              <span>Continuer avec Apple</span>
-            </GlowButton>
+              Continuer avec Apple
+            </button>
           ) : (
-            <GlowButton variant="apple" fullWidth disabled>
-              <AppleIcon />
-              <span>Apple (non configuré)</span>
-            </GlowButton>
+            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
+              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)" }}>
+              <AppleIcon /> Apple (non configuré)
+            </button>
           )}
         </div>
 
-        <div className="relative my-6 flex items-center gap-3">
-          <span className="flex-1 h-px bg-white/10" />
-          <span className="text-xs uppercase tracking-wider text-text-muted">ou</span>
-          <span className="flex-1 h-px bg-white/10" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+          <span style={{ fontSize: 12, color: "var(--text-dim)", letterSpacing: "0.08em" }}>OU</span>
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
         </div>
 
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl text-sm border" style={{
-            color: "#FCA5A5", background: "rgba(239,68,68,0.08)", borderColor: "rgba(239,68,68,0.25)"
-          }}>{error}</div>
+          <div className="mb-4 px-4 py-3 rounded-xl text-sm"
+            style={{ background: "rgba(251,113,133,0.1)", color: "#fb7185", border: "1px solid rgba(251,113,133,0.25)" }}>
+            {error}
+          </div>
         )}
 
         <form className="space-y-4" onSubmit={handleLogin}>
-          <FormField icon={Mail}>
-            <input
-              type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="input-dark pl-10 w-full rounded-xl py-3 text-sm" placeholder="vous@commerce.fr"
-            />
-          </FormField>
-          <FormField icon={Lock}>
-            <input
-              type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-              className="input-dark pl-10 w-full rounded-xl py-3 text-sm" placeholder="••••••••"
-            />
-          </FormField>
-
-          <div className="text-right text-sm">
-            <Link href="/forgot-password" className="transition-colors"
-              style={{ color: "var(--violet)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-              onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
-              Mot de passe oublié ?
-            </Link>
+          <div>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
+              Email
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                className="input-field pl-10" placeholder="vous@commerce.fr" />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label style={{ fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)" }}>Mot de passe</label>
+              <Link href="/forgot-password" style={{ fontSize: 13, color: "var(--violet)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
+                Mot de passe oublié ?
+              </Link>
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                className="input-field pl-10" placeholder="••••••••" />
+            </div>
           </div>
 
-          <GlowButton type="submit" fullWidth size="lg" disabled={loading}>
+          <button type="submit" disabled={loading}
+            className="btn btn-accent btn-lg w-full justify-center disabled:opacity-50 mt-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Se connecter <ArrowRight className="w-4 h-4" /></>}
-          </GlowButton>
+          </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-text-muted">
+        <p className="mt-6 text-center" style={{ fontSize: 14, color: "var(--text-dim)" }}>
           Pas encore de compte ?{" "}
-          <Link href="/register" className="font-semibold transition-colors"
+          <Link href="/register" className="font-semibold"
             style={{ color: "var(--violet)" }}
             onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
             onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
             Créer un compte
           </Link>
         </p>
-      </GlassCard>
-    </div>
-  );
-}
-
-/* ─── Petits utilitaires UI ────────────────────────────────────────────── */
-function FormField({ icon: Icon, children }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none" />
-      {children}
+      </div>
     </div>
   );
 }
@@ -331,9 +278,10 @@ function GoogleIcon() {
     </svg>
   );
 }
+
 function AppleIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="white" aria-hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
       <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" />
     </svg>
   );

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Mail, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import api from "../../utils/api";
 
 export default function ForgotPasswordPage() {
@@ -28,89 +27,90 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background-main py-12 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white p-10 rounded-[2rem] shadow-xl border border-slate-100"
-      >
-        <div className="text-center mb-8">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-2xl mb-6">
-            F
-          </div>
-          <h2 className="text-2xl font-bold text-text-main">Mot de passe oublié ?</h2>
-          <p className="mt-2 text-sm text-text-muted">
-            Entrez votre email et nous vous enverrons un lien de réinitialisation.
-          </p>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ background: "#0a0a0b" }}>
+      <div aria-hidden className="pointer-events-none absolute"
+        style={{ top: -200, left: -100, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      <div aria-hidden className="pointer-events-none absolute"
+        style={{ bottom: -150, right: -80, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
+
+      <div className="w-full max-w-[440px] relative z-10 fade-in-up"
+        style={{ background: "#14141a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 22, padding: 40 }}>
+
+        <div className="flex justify-center mb-8">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold"
+              style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
+            <span className="font-semibold" style={{ color: "var(--text)" }}>Fideloo</span>
+          </Link>
         </div>
 
         {sent ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center space-y-4"
-          >
-            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8 text-success" />
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+              style={{ background: "rgba(52,211,153,0.15)", color: "#34d399" }}>
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-bold text-text-main">Email envoyé !</h3>
-            <p className="text-sm text-text-muted">
-              Si un compte existe pour <strong>{email}</strong>, vous recevrez un lien de réinitialisation valable 15 minutes.
+            <h3 className="text-lg font-bold" style={{ color: "var(--text)" }}>Email envoyé !</h3>
+            <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+              Si un compte existe pour <strong style={{ color: "var(--text)" }}>{email}</strong>, vous recevrez un lien de réinitialisation valable 15 minutes.
             </p>
-            <p className="text-xs text-text-muted">Vérifiez aussi vos spams.</p>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline mt-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Retour à la connexion
+            <p className="text-xs" style={{ color: "var(--text-dim)" }}>Vérifiez aussi vos spams.</p>
+            <Link href="/login"
+              className="inline-flex items-center gap-2 text-sm font-medium mt-4"
+              style={{ color: "var(--violet)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
+              <ArrowLeft className="w-4 h-4" /> Retour à la connexion
             </Link>
-          </motion.div>
+          </div>
         ) : (
           <>
+            <div className="mb-8">
+              <h1 style={{ fontWeight: 500, fontSize: 26, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 8 }}>
+                Mot de passe oublié ?
+              </h1>
+              <p style={{ fontSize: 14, color: "var(--text-dim)" }}>
+                Entrez votre email et nous vous enverrons un lien de réinitialisation.
+              </p>
+            </div>
+
             {error && (
-              <div className="mb-4 p-4 text-sm text-error bg-error/10 rounded-xl border border-error/20">
+              <div className="mb-4 px-4 py-3 rounded-xl text-sm"
+                style={{ background: "rgba(251,113,133,0.1)", color: "#fb7185", border: "1px solid rgba(251,113,133,0.25)" }}>
                 {error}
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-5">
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-text-main mb-1">Email</label>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
+                  Email
+                </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="pl-10 block w-full rounded-xl border-slate-200 bg-slate-50 py-3 text-text-main shadow-sm focus:border-primary focus:ring-primary focus:bg-white transition-colors"
-                    placeholder="vous@commerce.fr"
-                  />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+                  <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                    className="input-field pl-10" placeholder="vous@commerce.fr" />
                 </div>
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-all disabled:opacity-50"
-              >
-                {loading ? "Envoi en cours..." : "Envoyer le lien de réinitialisation"}
+              <button type="submit" disabled={loading}
+                className="btn btn-accent btn-lg w-full justify-center disabled:opacity-50">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Envoyer le lien de réinitialisation"}
               </button>
             </form>
 
             <div className="mt-6 text-center">
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text-main transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Retour à la connexion
+              <Link href="/login"
+                className="inline-flex items-center gap-2 text-sm transition-colors"
+                style={{ color: "var(--text-dim)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+                <ArrowLeft className="w-4 h-4" /> Retour à la connexion
               </Link>
             </div>
           </>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

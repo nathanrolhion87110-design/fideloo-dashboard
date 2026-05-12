@@ -111,9 +111,9 @@ export default function ScannerPage() {
                   <div className="p-8">
                     <div className="flex items-center gap-6 mb-8">
                       <div className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 pulse-glow"
-                           style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.3), rgba(154,122,46,0.3))",
-                                    border: "1px solid rgba(201,168,76,0.4)" }}>
-                        <User className="w-10 h-10" style={{ color: "#C9A84C" }} />
+                           style={{ background: "rgba(167,139,250,0.15)",
+                                    border: "1px solid rgba(167,139,250,0.4)" }}>
+                        <User className="w-10 h-10" style={{ color: "var(--violet)" }} />
                       </div>
                       <div>
                         <h2 className="text-2xl font-extrabold text-text-main">{activeClient.name}</h2>
@@ -132,8 +132,8 @@ export default function ScannerPage() {
                           animate={{ width: `${progress}%` }} transition={{ type: "spring", bounce: 0, duration: .8 }}
                           style={{ background: activeClient.points >= threshold
                               ? "linear-gradient(90deg, #10B981, #34D399)"
-                              : "linear-gradient(90deg, #C9A84C, #E8C87A)",
-                            boxShadow: "0 0 20px rgba(201,168,76,0.6)" }} />
+                              : "linear-gradient(90deg, #a78bfa, #8b6dfb)",
+                            boxShadow: "0 0 20px rgba(167,139,250,0.5)" }} />
                       </div>
                       {activeClient.points >= threshold && (
                         <p className="text-sm font-semibold mt-2 flex items-center gap-1" style={{ color: "#34D399" }}>
@@ -146,10 +146,10 @@ export default function ScannerPage() {
                       {[1, 2, 5, 10].map((pts) => (
                         <button key={pts} onClick={() => addPoints(pts)} disabled={adding}
                           className="card-lift py-4 rounded-2xl flex flex-col items-center gap-2 group disabled:opacity-50"
-                          style={{ background: "rgba(201,168,76,0.03)", border: "1px solid rgba(201,168,76,0.2)" }}>
+                          style={{ background: "rgba(167,139,250,0.04)", border: "1px solid rgba(167,139,250,0.2)" }}>
                           <div className="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-xl group-hover:scale-110 transition-transform"
-                               style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808",
-                                        boxShadow: "0 0 18px rgba(201,168,76,0.4)" }}>
+                               style={{ background: "linear-gradient(135deg, #a78bfa, #8b6dfb)", color: "#ffffff",
+                                        boxShadow: "0 0 18px rgba(167,139,250,0.4)" }}>
                             +{pts}
                           </div>
                           <span className="text-xs font-medium text-text-main">{pts} point{pts > 1 ? "s" : ""}</span>
@@ -171,7 +171,7 @@ export default function ScannerPage() {
               </motion.div>
             ) : (
               <GlassCard className="min-h-[420px] flex flex-col items-center justify-center text-center p-8 gap-4">
-                <QrCode className="w-16 h-16" style={{ color: "rgba(201,168,76,0.5)" }} />
+                <QrCode className="w-16 h-16" style={{ color: "rgba(167,139,250,0.5)" }} />
                 <p className="text-text-muted max-w-sm">
                   Recherchez un client par nom ou email pour afficher sa carte et ajouter des points.
                 </p>
@@ -200,7 +200,7 @@ export default function ScannerPage() {
                       <div className="text-xs text-text-muted">{s.time}</div>
                     </div>
                   </div>
-                  <div className="font-bold text-sm" style={{ color: "#C9A84C" }}>{s.points}</div>
+                  <div className="font-bold text-sm" style={{ color: "var(--violet)" }}>{s.points}</div>
                 </div>
               ))}
             </div>

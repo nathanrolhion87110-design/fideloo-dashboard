@@ -81,7 +81,7 @@ function SettingsPage() {
 
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("restaurant");
-  const [color, setColor] = useState("#C9A84C");
+  const [color, setColor] = useState("#a78bfa");
   const [threshold, setThreshold] = useState(10);
   const [rewardDesc, setRewardDesc] = useState("");
 
@@ -92,7 +92,7 @@ function SettingsPage() {
     if (!merchant) return;
     setBusinessName(merchant.business_name || "");
     setBusinessType((merchant.business_type as string) || "restaurant");
-    setColor(merchant.primary_color || "#C9A84C");
+    setColor(merchant.primary_color || "#a78bfa");
     setThreshold(merchant.reward_threshold || 10);
     setRewardDesc(merchant.reward_description || "");
   }, [merchant]);
@@ -208,11 +208,11 @@ function SettingsPage() {
                   <label className="block text-sm font-medium text-text-main mb-1.5">Logo du commerce</label>
                   <div className="flex items-center gap-6">
                     <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden shrink-0"
-                         style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.3)" }}>
+                         style={{ background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
                       {merchant?.logo_url ? (
                         <img src={merchant.logo_url} alt="Logo" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="font-extrabold text-2xl" style={{ color: "#C9A84C" }}>{businessName.charAt(0) || "?"}</span>
+                        <span className="font-extrabold text-2xl" style={{ color: "var(--violet)" }}>{businessName.charAt(0) || "?"}</span>
                       )}
                     </div>
                     <input ref={logoRef} type="file" accept="image/*" className="hidden"
@@ -251,7 +251,7 @@ function SettingsPage() {
                     onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], "strip"); }} />
                   <div onClick={() => stripRef.current?.click()}
                     className="p-4 rounded-xl text-center cursor-pointer transition-colors hover:bg-white/5"
-                    style={{ border: "2px dashed rgba(201,168,76,0.3)" }}>
+                    style={{ border: "2px dashed rgba(255,255,255,0.12)" }}>
                     <Upload className="w-6 h-6 mx-auto mb-2 text-text-muted" />
                     <span className="text-sm text-text-main font-medium">{uploading ? "Upload…" : "Uploader une image"}</span>
                     <p className="text-xs text-text-muted mt-1">320x100px recommandé · Max 2MB</p>
@@ -319,7 +319,7 @@ function SettingsPage() {
                   <input type="email" defaultValue={merchant?.email} disabled
                     className="input-dark w-full rounded-xl py-3 px-4 text-sm cursor-not-allowed opacity-60" />
                 </div>
-                <a href="/forgot-password" className="text-sm font-semibold inline-block" style={{ color: "#C9A84C" }}>
+                <a href="/forgot-password" className="text-sm font-semibold inline-block" style={{ color: "var(--violet)" }}>
                   → Changer le mot de passe
                 </a>
               </div>
@@ -342,12 +342,12 @@ function SettingsPage() {
                 <div className="text-text-muted text-sm">Chargement du statut d&apos;abonnement…</div>
               ) : planStatus.plan === "pro" ? (
                 <div className="p-6 rounded-2xl space-y-5"
-                     style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.15), rgba(154,122,46,0.08))",
-                              border: "1px solid rgba(201,168,76,0.4)" }}>
+                     style={{ background: "linear-gradient(135deg, rgba(167,139,250,0.15), rgba(139,109,251,0.08))",
+                              border: "1px solid rgba(167,139,250,0.4)" }}>
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
-                           style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>
+                           style={{ background: "var(--violet)", color: "#ffffff" }}>
                         <Sparkles className="w-3.5 h-3.5" /> Plan Pro
                       </div>
                       <h3 className="text-2xl font-extrabold text-text-main">Votre plan Pro est actif</h3>
@@ -402,7 +402,7 @@ function SettingsPage() {
                                    ? "linear-gradient(90deg, #EF4444, #F59E0B)"
                                    : customerCount >= 40
                                      ? "linear-gradient(90deg, #F59E0B, #FCD34D)"
-                                     : "linear-gradient(90deg, #C9A84C, #E8C87A)",
+                                     : "linear-gradient(90deg, #a78bfa, #8b6dfb)",
                                }} />
                         </div>
                         {customerCount >= 50 && (
@@ -417,13 +417,13 @@ function SettingsPage() {
                   {/* Plan Pro avec CTA */}
                   <div className="relative">
                     <div className="absolute -inset-px rounded-2xl pulse-glow"
-                         style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)" }} aria-hidden />
+                         style={{ background: "linear-gradient(135deg, #a78bfa, #8b6dfb)" }} aria-hidden />
                     <div className="relative p-6 rounded-2xl space-y-5"
-                         style={{ background: "rgba(8,8,8,0.95)", border: "1px solid rgba(201,168,76,0.4)" }}>
+                         style={{ background: "rgba(8,8,8,0.95)", border: "1px solid rgba(167,139,250,0.4)" }}>
                       <div className="flex justify-between items-start gap-3">
                         <div>
                           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
-                               style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>
+                               style={{ background: "var(--violet)", color: "#ffffff" }}>
                             <Sparkles className="w-3.5 h-3.5" /> Recommandé
                           </div>
                           <h3 className="text-2xl font-extrabold text-text-main">Plan Pro</h3>
