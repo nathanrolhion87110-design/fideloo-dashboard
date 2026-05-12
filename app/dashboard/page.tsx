@@ -48,7 +48,7 @@ export default function DashboardHome() {
   const qrData = joinUrl;
 
   const handleDownloadQR = () => {
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(qrData)}&color=c9a84c&bgcolor=080808`;
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(qrData)}&color=a78bfa&bgcolor=0a0a0b`;
     const a = document.createElement("a");
     a.href = url; a.download = "fideloo-qr.png"; a.click();
   };
@@ -57,7 +57,7 @@ export default function DashboardHome() {
     if (!w) return;
     w.document.write(
       `<html><body style="background:#080808;display:flex;justify-content:center;align-items:center;height:100vh;margin:0">` +
-      `<img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}&color=c9a84c&bgcolor=080808" /></body></html>`
+      `<img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}&color=a78bfa&bgcolor=0a0a0b" /></body></html>`
     );
     w.document.close(); w.print();
   };
@@ -99,15 +99,15 @@ export default function DashboardHome() {
           <p className="text-sm mb-6" style={{ color: "#8A8070" }}>Une vue détaillée est disponible dans Analytiques.</p>
           <div className="flex-1 min-h-[260px] rounded-xl flex flex-col items-center justify-center gap-3"
             style={{
-              background: "linear-gradient(135deg, rgba(201,168,76,0.06), rgba(232,112,90,0.03))",
-              border: "1px solid rgba(201,168,76,0.15)",
-              color: "#8A8070",
+              background: "var(--violet-soft)",
+              border: "1px solid rgba(167,139,250,0.2)",
+              color: "var(--text-dim)",
             }}>
-            <TrendingUp className="w-12 h-12 opacity-50" style={{ color: "#C9A84C" }} />
+            <TrendingUp className="w-12 h-12 opacity-50" style={{ color: "var(--violet)" }} />
             <Link href="/dashboard/analytiques" className="text-sm font-semibold transition-colors"
-              style={{ color: "#C9A84C" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#E8C87A")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#C9A84C")}>
+              style={{ color: "var(--violet)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
               Voir les analytiques complètes →
             </Link>
           </div>
@@ -116,10 +116,10 @@ export default function DashboardHome() {
         <GlassCard id="qr-section" className="p-6 flex flex-col items-center text-center" lift>
           <h3 className="text-lg font-bold mb-2" style={{ color: "#F5F0E8" }}>Votre QR Code</h3>
           <p className="text-sm mb-5" style={{ color: "#8A8070" }}>Affichez-le en caisse pour vos clients.</p>
-          <div className="w-48 h-48 rounded-2xl p-3 flex items-center justify-center mb-5 pulse-glow"
-            style={{ background: "white", border: "1px solid rgba(201,168,76,0.4)" }}>
+          <div className="w-48 h-48 rounded-2xl p-3 flex items-center justify-center mb-5"
+            style={{ background: "white", border: "1px solid rgba(167,139,250,0.4)", boxShadow: "0 0 0 1px rgba(167,139,250,0.1), 0 8px 32px rgba(167,139,250,0.15)" }}>
             {merchant && (
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}&color=080808`} alt="QR Code" />
+              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}&color=0a0a0b`} alt="QR Code" />
             )}
           </div>
           <div className="flex gap-2 w-full">
@@ -135,12 +135,12 @@ export default function DashboardHome() {
 
       <GlassCard className="overflow-hidden">
         <div className="px-6 py-5 flex justify-between items-center"
-          style={{ borderBottom: "1px solid rgba(201,168,76,0.08)" }}>
-          <h3 className="text-lg font-bold" style={{ color: "#F5F0E8" }}>Derniers clients</h3>
+          style={{ borderBottom: "1px solid var(--line)" }}>
+          <h3 className="text-lg font-bold" style={{ color: "var(--text)" }}>Derniers clients</h3>
           <Link href="/dashboard/clients" className="text-sm font-semibold transition-colors"
-            style={{ color: "#C9A84C" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#E8C87A")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#C9A84C")}>
+            style={{ color: "var(--violet)" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
             Voir tout
           </Link>
         </div>
@@ -154,21 +154,21 @@ export default function DashboardHome() {
           ) : (
             recentCustomers.map((c) => (
               <div key={c.id} className="px-6 py-4 flex items-center justify-between transition-colors"
-                style={{ borderBottom: "1px solid rgba(201,168,76,0.05)" }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(201,168,76,0.02)")}
+                style={{ borderBottom: "1px solid var(--line)" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-                    style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.5), rgba(154,122,46,0.5))", color: "#F5F0E8" }}>
+                    style={{ background: "var(--violet-soft)", color: "var(--violet)" }}>
                     {c.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                   </div>
                   <div>
-                    <div className="font-medium" style={{ color: "#F5F0E8" }}>{c.name}</div>
-                    <div className="text-xs" style={{ color: "#8A8070" }}>{formatRelativeTime(c.last_visit || c.created_at)}</div>
+                    <div className="font-medium" style={{ color: "var(--text)" }}>{c.name}</div>
+                    <div className="text-xs" style={{ color: "var(--text-dim)" }}>{formatRelativeTime(c.last_visit || c.created_at)}</div>
                   </div>
                 </div>
-                <div className="text-sm font-bold px-3 py-1 rounded-full"
-                  style={{ color: "#C9A84C", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)" }}>
+                <div className="text-sm font-semibold px-3 py-1 rounded-full"
+                  style={{ color: "var(--violet)", background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.25)" }}>
                   {c.points} pts
                 </div>
               </div>

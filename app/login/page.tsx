@@ -211,8 +211,8 @@ export default function LoginPage() {
 
       <GlassCard variant="strong" className="w-full max-w-md p-10 fade-in-up">
         <div className="text-center mb-8">
-          <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl mb-6 pulse-glow"
-               style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>
+          <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl mb-6"
+               style={{ background: "var(--violet)", color: "#ffffff" }}>
             F
           </div>
           <h1 className="heading-display text-3xl mb-2">
@@ -287,7 +287,10 @@ export default function LoginPage() {
           </FormField>
 
           <div className="text-right text-sm">
-            <Link href="/forgot-password" className="text-[#C9A84C] hover:text-white transition-colors">
+            <Link href="/forgot-password" className="transition-colors"
+              style={{ color: "var(--violet)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
               Mot de passe oublié ?
             </Link>
           </div>
@@ -299,7 +302,10 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-text-muted">
           Pas encore de compte ?{" "}
-          <Link href="/register" className="text-[#C9A84C] hover:text-white transition-colors font-semibold">
+          <Link href="/register" className="font-semibold transition-colors"
+            style={{ color: "var(--violet)" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
             Créer un compte
           </Link>
         </p>

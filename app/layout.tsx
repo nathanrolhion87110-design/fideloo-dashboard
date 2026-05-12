@@ -1,15 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
 import TawkTo from "../components/TawkTo";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://fideloo-dashboard-njfq.vercel.app";
 
@@ -18,7 +10,7 @@ export const metadata: Metadata = {
   title: "Fideloo — Carte de fidélité digitale pour votre commerce",
   description:
     "Créez une carte de fidélité numérique qui s'ajoute dans Apple Wallet et Google Wallet. Sans app, sans friction. Essai gratuit.",
-  keywords: ["carte fidélité", "Apple Wallet", "Google Wallet", "fidélisation client", "commerce", "loyalty card", "fidélité digitale"],
+  keywords: ["carte fidélité", "Apple Wallet", "Google Wallet", "fidélisation client", "commerce", "loyalty card"],
   authors: [{ name: "Fideloo" }],
   alternates: { canonical: SITE_URL },
   openGraph: {
@@ -43,7 +35,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A0A0F",
+  themeColor: "#0a0a0b",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -52,8 +44,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col text-text-main font-sans" suppressHydrationWarning>
+    <html lang="fr" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <AuthProvider>{children}</AuthProvider>
         <TawkTo />
       </body>

@@ -1,329 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Smartphone, QrCode, Zap, BarChart3, Palette, Bell,
-  Check, ChevronDown, Sparkles, Menu, X, Lock, MessageCircle, Star,
+  Check, ChevronDown, Menu, X, Lock, Star, Sparkles,
 } from "lucide-react";
-import AnimatedBackground from "../components/AnimatedBackground";
-import GlassCard from "../components/GlassCard";
-import GlowButton from "../components/GlowButton";
-import GradientText from "../components/GradientText";
 
-export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+/* ─── DATA ──────────────────────────────────────────────────────────────── */
+const USE_CASES = ["Boulangerie", "Restaurant", "Coiffeur", "Café", "Pizzeria", "Boutique", "Épicerie", "Salon de beauté", "Fleuriste", "Pharmacie"];
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      <AnimatedBackground />
-      <Navbar scrolled={scrolled} />
-      <main className="pt-24">
-        <Hero />
-        <Marquee />
-        <WhyFideloo />
-        <Features />
-        <Steps />
-        <Pricing />
-        <Faq openFaq={openFaq} setOpenFaq={setOpenFaq} />
-        <FinalCTA />
-        <Footer />
-      </main>
-      <CookieBanner />
-    </div>
-  );
-}
-
-/* ─── NAVBAR ───────────────────────────────────────────────────────────── */
-function Navbar({ scrolled }: { scrolled: boolean }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  return (
-    <header className={["fixed top-0 left-0 right-0 z-50 transition-all duration-300", scrolled ? "py-2" : "py-4"].join(" ")}>
-      <div className={["max-w-6xl mx-auto px-3 sm:px-6 transition-all rounded-2xl", scrolled ? "glass" : "bg-transparent"].join(" ")}>
-        <div className="h-14 flex items-center justify-between px-3 sm:px-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-extrabold pulse-glow"
-              style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>F</div>
-            <span className="font-extrabold text-lg tracking-tight" style={{ color: "#F5F0E8" }}>Fideloo</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-7 text-sm">
-            {["Fonctionnalités", "Tarifs", "FAQ"].map((label, i) => (
-              <a key={label} href={["#features", "#pricing", "#faq"][i]}
-                className="transition-colors" style={{ color: "#8A8070" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#F5F0E8")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#8A8070")}>
-                {label}
-              </a>
-            ))}
-            <Link href="/login" className="transition-colors" style={{ color: "#8A8070" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#F5F0E8")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#8A8070")}>
-              Se connecter
-            </Link>
-          </nav>
-
-          <Link href="/register" className="hidden sm:block">
-            <GlowButton size="sm">Commencer <ArrowRight className="w-4 h-4" /></GlowButton>
-          </Link>
-
-          <button type="button" aria-label={mobileOpen ? "Fermer" : "Menu"}
-            onClick={() => setMobileOpen(v => !v)}
-            className="md:hidden p-2 rounded-lg transition-colors" style={{ color: "#F5F0E8" }}>
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }} className="md:hidden mx-3 mt-2 glass rounded-2xl p-3">
-            <nav className="flex flex-col text-base">
-              {[["#features", "Fonctionnalités"], ["#pricing", "Tarifs"], ["#faq", "FAQ"]].map(([href, label]) => (
-                <a key={label} onClick={() => setMobileOpen(false)} href={href}
-                  className="px-4 py-3 rounded-xl transition-colors" style={{ color: "#F5F0E8" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(201,168,76,0.05)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                  {label}
-                </a>
-              ))}
-              <Link onClick={() => setMobileOpen(false)} href="/login"
-                className="px-4 py-3 rounded-xl" style={{ color: "#F5F0E8" }}>Se connecter</Link>
-              <Link onClick={() => setMobileOpen(false)} href="/register" className="mt-2 mx-1">
-                <GlowButton fullWidth>Commencer gratuitement <ArrowRight className="w-4 h-4" /></GlowButton>
-              </Link>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
-  );
-}
-
-/* ─── HERO ──────────────────────────────────────────────────────────────── */
-function Hero() {
-  return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto pt-16 pb-24">
-      <div className="flex flex-col lg:flex-row items-center gap-16">
-        <div className="flex-1 text-center lg:text-left">
-          {/* Badge animé */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8 badge-glow"
-            style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.35)", color: "#E8C87A" }}>
-            <Sparkles className="w-3.5 h-3.5" />
-            ✦ Nouveau — Cartes dans Apple &amp; Google Wallet
-          </motion.div>
-
-          {/* H1 */}
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .05 }}
-            className="heading-display mb-6"
-            style={{ fontSize: "clamp(2.25rem, 5.5vw, 4rem)", lineHeight: 1.08, color: "#F5F0E8" }}>
-            La carte de fidélité que vos clients{" "}
-            <GradientText>adorent utiliser</GradientText>
-          </motion.h1>
-
-          {/* Sous-titre */}
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .1 }}
-            className="text-lg leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0"
-            style={{ color: "#8A8070" }}>
-            Fideloo transforme votre programme de fidélité en une carte numérique dans le téléphone de vos clients.{" "}
-            <span style={{ color: "#F5F0E8" }}>Zéro app. Zéro friction. 100% efficace.</span>
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55, delay: .15 }}
-            className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
-            <Link href="/register">
-              <GlowButton size="lg">Créer ma carte gratuite <ArrowRight className="w-4 h-4" /></GlowButton>
-            </Link>
-            <a href="#features">
-              <GlowButton size="lg" variant="ghost">Voir comment ça marche</GlowButton>
-            </a>
-          </motion.div>
-
-          {/* Social proof */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .7, delay: .25 }}
-            className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 text-sm"
-            style={{ color: "#4A4540" }}>
-            <span className="flex items-center gap-2">
-              <Star className="w-4 h-4" style={{ color: "#C9A84C", fill: "#C9A84C" }} />
-              500+ commerces actifs
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-2">
-              <Lock className="w-3.5 h-3.5" style={{ color: "#10B981" }} />
-              Sans carte bancaire
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-2">
-              <Zap className="w-3.5 h-3.5" style={{ color: "#C9A84C" }} />
-              Prêt en 2 minutes
-            </span>
-          </motion.div>
-        </div>
-
-        {/* Mockup iPhone */}
-        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7, delay: .2 }}
-          className="flex-shrink-0 relative">
-          <div className="absolute inset-0 -m-16 rounded-full blur-3xl"
-            style={{ background: "radial-gradient(ellipse, rgba(201,168,76,0.25), transparent 70%)" }} />
-          <IPhoneMockup />
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── iPhone Mockup ──────────────────────────────────────────────────────── */
-function IPhoneMockup() {
-  return (
-    <div className="relative z-10" style={{ width: 280 }}>
-      <div className="relative rounded-[3rem] overflow-hidden shadow-2xl"
-        style={{
-          background: "#0F0F0F",
-          border: "1.5px solid rgba(201,168,76,0.15)",
-          padding: "12px 8px",
-          boxShadow: "0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(201,168,76,0.06) inset, inset 0 1px 0 rgba(255,255,255,0.06)",
-        }}>
-        {/* Notch */}
-        <div className="flex justify-center mb-3">
-          <div style={{ width: 100, height: 12, background: "#000", borderRadius: 8 }} />
-        </div>
-
-        {/* Carte or */}
-        <div className="rounded-[2rem] overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, #C9A84C 0%, #9A7A2E 60%, #C9A84C 100%)",
-            boxShadow: "0 10px 40px rgba(201,168,76,0.4)",
-            padding: "24px 20px 20px",
-            minHeight: 340,
-          }}>
-          {/* En-tête carte */}
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <div className="text-xs font-medium mb-1" style={{ color: "rgba(8,8,8,0.55)", letterSpacing: "0.1em" }}>
-                CARTE FIDÉLITÉ
-              </div>
-              <div className="font-extrabold text-base leading-tight" style={{ color: "#080808" }}>
-                Boulangerie Martin
-              </div>
-            </div>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm"
-              style={{ background: "rgba(8,8,8,0.15)", color: "#080808", backdropFilter: "blur(10px)" }}>
-              B
-            </div>
-          </div>
-
-          {/* Récompense */}
-          <div className="rounded-2xl p-4 mb-6" style={{ background: "rgba(8,8,8,0.15)" }}>
-            <div className="text-xs mb-1" style={{ color: "rgba(8,8,8,0.55)" }}>Récompense</div>
-            <div className="font-bold text-sm" style={{ color: "#080808" }}>🥐 1 viennoiserie offerte</div>
-          </div>
-
-          {/* Points */}
-          <div className="flex justify-between items-end">
-            <div>
-              <div className="text-xs mb-1" style={{ color: "rgba(8,8,8,0.55)" }}>Points</div>
-              <div className="font-extrabold" style={{ fontSize: 40, color: "#080808", lineHeight: 1 }}>
-                7<span style={{ fontSize: 22, color: "rgba(8,8,8,0.4)" }}>/10</span>
-              </div>
-              <div className="mt-2 rounded-full overflow-hidden" style={{ width: 120, height: 5, background: "rgba(8,8,8,0.2)" }}>
-                <div className="h-full rounded-full" style={{ width: "70%", background: "#F5F0E8" }} />
-              </div>
-            </div>
-            <div className="rounded-xl flex items-center justify-center"
-              style={{ width: 56, height: 56, background: "#F5F0E8", padding: 5 }}>
-              <div className="grid gap-0.5" style={{ gridTemplateColumns: "repeat(4,1fr)", width: "100%", height: "100%" }}>
-                {Array.from({ length: 16 }).map((_, i) => (
-                  <div key={i} className="rounded-sm"
-                    style={{ background: [0,1,4,5,10,11,14,15,2,7,8,13].includes(i) ? "#080808" : "transparent" }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Barre du bas */}
-        <div className="flex justify-center mt-3">
-          <div className="rounded-full" style={{ width: 80, height: 4, background: "rgba(201,168,76,0.2)" }} />
-        </div>
-      </div>
-
-      {/* Label flottant */}
-      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold glass"
-        style={{ color: "#E8C87A", border: "1px solid rgba(201,168,76,0.35)" }}>
-        📱 Apple Wallet · Google Wallet
-      </div>
-    </div>
-  );
-}
-
-/* ─── MARQUEE ─────────────────────────────────────────────────────────────── */
-function Marquee() {
-  const items = ["Boulangerie","Restaurant","Coiffeur","Café","Pizzeria","Boutique","Épicerie","Salon de beauté","Fleuriste","Pharmacie"];
-  const doubled = [...items, ...items];
-  return (
-    <section className="py-14 overflow-hidden"
-      style={{ background: "#0F0F0F", borderTop: "1px solid rgba(201,168,76,0.06)", borderBottom: "1px solid rgba(201,168,76,0.06)" }}>
-      <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] mb-8" style={{ color: "#4A4540" }}>
-        Ils utilisent Fideloo
-      </p>
-      <div className="overflow-hidden">
-        <div className="flex whitespace-nowrap marquee-track">
-          {doubled.map((label, i) => (
-            <span key={i} className="inline-flex items-center gap-4 px-8 text-2xl font-extrabold"
-              style={{ color: "rgba(201,168,76,0.1)" }}>
-              {label}
-              <span style={{ color: "rgba(201,168,76,0.2)" }}>·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── POURQUOI FIDELOO ────────────────────────────────────────────────────── */
-function WhyFideloo() {
-  const items = [
-    { Icon: Smartphone, title: "Sans application", desc: "La carte s'ajoute dans Apple Wallet ou Google Wallet — déjà installés sur tous les smartphones." },
-    { Icon: Lock, title: "Conforme RGPD", desc: "Données hébergées en Europe, aucun cookie de tracking, droits clients respectés." },
-    { Icon: MessageCircle, title: "Support réactif", desc: "Un humain vous répond depuis le chat ou par email sous 24h." },
-  ];
-  return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-20">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {items.map((it, i) => (
-          <motion.div key={it.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: .5, delay: i * .07 }}>
-            <GlassCard className="p-6 h-full" lift>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)", boxShadow: "0 0 16px rgba(201,168,76,0.15)" }}>
-                <it.Icon className="w-5 h-5" style={{ color: "#C9A84C" }} />
-              </div>
-              <h3 className="font-bold mb-2" style={{ color: "#F5F0E8" }}>{it.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "#8A8070" }}>{it.desc}</p>
-            </GlassCard>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ─── FEATURES ──────────────────────────────────────────────────────────── */
-const features = [
-  { Icon: Smartphone, title: "Apple Wallet & Google Wallet", desc: "La carte s'ajoute en 1 tap dans le téléphone natif du client, sans app à télécharger." },
+const FEATURES = [
+  { Icon: Smartphone, title: "Apple Wallet & Google Wallet", desc: "La carte s'ajoute en 1 tap dans le téléphone natif du client. Aucune app à télécharger." },
   { Icon: QrCode, title: "QR Code instantané", desc: "Affichez votre QR en caisse. Le client scanne et s'inscrit en 30 secondes." },
   { Icon: Zap, title: "Mise à jour temps réel", desc: "Ajoutez des points en 1 clic. La carte se met à jour instantanément sur le téléphone." },
   { Icon: BarChart3, title: "Analytics détaillés", desc: "Suivez vos meilleurs clients, la fréquence de visite et vos récompenses distribuées." },
@@ -331,77 +19,388 @@ const features = [
   { Icon: Bell, title: "Notifications push", desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
 ];
 
-function Features() {
+const TESTIMONIALS = [
+  { name: "Marie L.", role: "Boulangerie des Halles", text: "En 3 semaines, 80 clients ont ajouté la carte. Mes ventes du matin ont augmenté de 20%.", stars: 5 },
+  { name: "Karim B.", role: "Café du Marché", text: "L'installation m'a pris 10 minutes. Mes clients fidèles reviennent 2× plus souvent.", stars: 5 },
+  { name: "Sophie T.", role: "Salon Éclat", text: "Mes clientes adorent avoir leur carte dans leur iPhone. Fini les vieilles cartes papier.", stars: 5 },
+];
+
+const FAQS = [
+  { q: "Est-ce que mes clients ont besoin d'une app ?", a: "Non. La carte s'ajoute directement dans Apple Wallet ou Google Wallet, déjà installés sur tous les smartphones." },
+  { q: "Comment les clients s'inscrivent-ils ?", a: "Ils scannent votre QR code et remplissent un formulaire simple (prénom + email). Ils reçoivent leur carte en moins de 30 secondes." },
+  { q: "Puis-je personnaliser ma carte ?", a: "Oui : couleurs, logo, nom du commerce et récompense — tout est entièrement personnalisable depuis votre dashboard." },
+  { q: "Comment mettre à jour les points ?", a: "Depuis votre dashboard, vous cherchez le client et cliquez pour ajouter des points. La carte se met à jour instantanément sur leur téléphone." },
+  { q: "Y a-t-il un engagement ?", a: "Aucun. Le plan Pro est mensuel et annulable à tout moment depuis vos paramètres ou le portail Stripe." },
+];
+
+/* ─── PAGE ──────────────────────────────────────────────────────────────── */
+export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showCookies, setShowCookies] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>(".reveal");
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) (e.target as HTMLElement).classList.add("in"); }),
+      { threshold: 0.12 }
+    );
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!localStorage.getItem("fideloo_cookie_ok")) setShowCookies(true);
+  }, []);
+
   return (
-    <section id="features" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <div className="text-center mb-16">
-        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="heading-display text-3xl sm:text-5xl mb-4">
-          <GradientText>Tout ce qu&apos;il vous faut pour fidéliser</GradientText>
-        </motion.h2>
-        <p className="max-w-2xl mx-auto" style={{ color: "#8A8070" }}>
-          Une plateforme conçue pour les commerçants qui veulent fidéliser sans complexité technique.
-        </p>
+    <>
+      <Navbar scrolled={scrolled} />
+      <main>
+        <Hero />
+        <MarqueeSection />
+        <FeaturesSection />
+        <DemoSection />
+        <PricingSection />
+        <TestimonialsSection />
+        <FaqSection openFaq={openFaq} setOpenFaq={setOpenFaq} />
+        <CtaFinal />
+        <Footer />
+      </main>
+      {showCookies && <CookieBanner onAccept={() => { localStorage.setItem("fideloo_cookie_ok", "1"); setShowCookies(false); }} />}
+    </>
+  );
+}
+
+/* ─── NAVBAR ────────────────────────────────────────────────────────────── */
+function Navbar({ scrolled }: { scrolled: boolean }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <header
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{ background: scrolled ? "rgba(10,10,11,0.92)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none" }}
+    >
+      <div className="container h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
+            style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
+          <span className="font-semibold text-base tracking-tight" style={{ color: "var(--text)" }}>Fideloo</span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-8 text-sm" style={{ color: "var(--text-dim)" }}>
+          {(["#features", "#pricing", "#faq"] as const).map((href, i) => {
+            const labels = ["Fonctionnalités", "Tarifs", "FAQ"];
+            return (
+              <a key={href} href={href} className="transition-colors hover:text-[--text]"
+                style={{ color: "var(--text-dim)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+                {labels[i]}
+              </a>
+            );
+          })}
+          <Link href="/login" className="transition-colors"
+            style={{ color: "var(--text-dim)" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+            Se connecter
+          </Link>
+        </nav>
+
+        <Link href="/register" className="hidden md:inline-flex btn btn-accent btn-sm">
+          Commencer <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+
+        <button type="button" aria-label={mobileOpen ? "Fermer" : "Menu"}
+          onClick={() => setMobileOpen(v => !v)}
+          className="md:hidden p-2 rounded-lg" style={{ color: "var(--text)" }}>
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {features.map((f, i) => (
-          <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }} transition={{ duration: .5, delay: i * .05 }}>
-            <GlassCard className="p-7 h-full" lift>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)", boxShadow: "0 0 20px rgba(201,168,76,0.15)" }}>
-                <f.Icon className="w-6 h-6" style={{ color: "#C9A84C" }} />
-              </div>
-              <h3 className="text-lg font-bold mb-2" style={{ color: "#F5F0E8" }}>{f.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "#8A8070" }}>{f.desc}</p>
-            </GlassCard>
-          </motion.div>
-        ))}
+
+      {mobileOpen && (
+        <div className="md:hidden mx-4 mb-3 rounded-2xl p-3 glass">
+          <nav className="flex flex-col gap-1 text-sm">
+            {[["#features", "Fonctionnalités"], ["#pricing", "Tarifs"], ["#faq", "FAQ"]].map(([href, label]) => (
+              <a key={label} href={href} onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 rounded-xl transition-colors" style={{ color: "var(--text)" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                {label}
+              </a>
+            ))}
+            <Link href="/login" onClick={() => setMobileOpen(false)}
+              className="px-4 py-3 rounded-xl" style={{ color: "var(--text)" }}>
+              Se connecter
+            </Link>
+            <Link href="/register" onClick={() => setMobileOpen(false)}
+              className="btn btn-accent btn-md mt-1 mx-1 justify-center">
+              Commencer gratuitement <ArrowRight className="w-4 h-4" />
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
+
+/* ─── HERO ──────────────────────────────────────────────────────────────── */
+function Hero() {
+  return (
+    <section className="relative overflow-hidden section-dark pt-32 pb-20 grain">
+      {/* Orbs */}
+      <div aria-hidden className="absolute pointer-events-none" style={{ top: "-10%", left: "55%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(60px)" }} />
+      <div aria-hidden className="absolute pointer-events-none float-orb" style={{ top: "20%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.10) 0%, transparent 70%)", filter: "blur(50px)" }} />
+
+      <div className="container relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          {/* Left */}
+          <div className="flex-1 text-center lg:text-left fade-in-up">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium mb-8"
+              style={{ background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.3)", color: "var(--violet)" }}>
+              <Sparkles className="w-3.5 h-3.5" />
+              Nouveau — Cartes Apple &amp; Google Wallet
+            </div>
+
+            <h1 className="heading-display mb-6" style={{ color: "var(--text)" }}>
+              La fidélité que vos clients{" "}
+              <span className="serif" style={{ color: "var(--violet)" }}>adorent</span>
+              {" "}vraiment
+            </h1>
+
+            <p className="lede mb-10 max-w-xl mx-auto lg:mx-0">
+              Créez une carte de fidélité numérique dans Apple Wallet et Google Wallet.{" "}
+              <span style={{ color: "var(--text)" }}>Zéro app. Zéro friction. 100% efficace.</span>
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
+              <Link href="/register" className="btn btn-accent btn-lg">
+                Créer ma carte gratuite <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a href="#features" className="btn btn-ghost btn-lg">
+                Voir comment ça marche
+              </a>
+            </div>
+
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-sm" style={{ color: "var(--text-dim)" }}>
+              <span className="flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5" style={{ color: "var(--mint)", fill: "var(--mint)" }} />
+                500+ commerces actifs
+              </span>
+              <span style={{ color: "var(--line-2)" }}>·</span>
+              <span className="flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" style={{ color: "var(--mint)" }} />
+                Sans carte bancaire
+              </span>
+              <span style={{ color: "var(--line-2)" }}>·</span>
+              <span className="flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5" style={{ color: "var(--violet)" }} />
+                Prêt en 2 minutes
+              </span>
+            </div>
+          </div>
+
+          {/* Right — Dashboard mockup */}
+          <div className="flex-shrink-0 relative fade-in-up" style={{ animationDelay: "0.15s" }}>
+            <div aria-hidden className="absolute inset-0 -m-8 rounded-full blur-3xl opacity-40"
+              style={{ background: "radial-gradient(ellipse, rgba(167,139,250,0.3), transparent 70%)" }} />
+            <DashboardMockup />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ─── STEPS ─────────────────────────────────────────────────────────────── */
-const steps = [
-  { n: "01", title: "Créez votre compte", desc: "Inscrivez-vous gratuitement avec email, Google ou Apple en moins de 30 secondes." },
-  { n: "02", title: "Configurez votre carte", desc: "Choisissez votre couleur, ajoutez votre logo et définissez votre récompense." },
-  { n: "03", title: "Partagez votre QR code", desc: "Affichez-le en caisse. Vos clients s'inscrivent et reçoivent leur carte instantanément." },
-];
-
-function Steps() {
+/* ─── Dashboard Mockup ──────────────────────────────────────────────────── */
+function DashboardMockup() {
   return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <div className="text-center mb-16">
-        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="heading-display text-3xl sm:text-5xl mb-4">
-          <GradientText>Lancez-vous en 3 minutes</GradientText>
-        </motion.h2>
-        <p style={{ color: "#8A8070" }}>Aucune compétence technique requise.</p>
-      </div>
-      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div aria-hidden className="hidden md:block absolute top-12 left-[16%] right-[16%] h-px"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent)" }} />
-        {steps.map((s, i) => (
-          <motion.div key={s.n} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }} transition={{ duration: .5, delay: i * .1 }}>
-            <GlassCard className="p-7 text-center" lift>
-              <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center font-extrabold text-xl mb-5 pulse-glow"
-                style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>
-                <GradientText as="span">{s.n}</GradientText>
+    <div className="relative z-10" style={{ width: 340 }}>
+      <div className="rounded-2xl overflow-hidden shadow-2xl"
+        style={{ background: "var(--surface)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,139,250,0.08)" }}>
+        {/* Browser chrome */}
+        <div className="flex items-center gap-2 px-4 py-3" style={{ background: "var(--bg)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
+          <div className="flex-1 mx-3 rounded-md px-3 py-1 text-xs" style={{ background: "rgba(255,255,255,0.04)", color: "var(--text-dim)" }}>
+            app.fideloo.fr/dashboard
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          {/* Stat cards row */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {[
+              { label: "Clients", value: "248", delta: "+12", color: "var(--violet)" },
+              { label: "Points", value: "1 840", delta: "+94", color: "var(--mint)" },
+            ].map(stat => (
+              <div key={stat.label} className="rounded-xl p-3" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="text-xs mb-1" style={{ color: "var(--text-dim)" }}>{stat.label}</div>
+                <div className="font-semibold text-base" style={{ color: "var(--text)" }}>{stat.value}</div>
+                <div className="text-xs mt-0.5" style={{ color: stat.color }}>{stat.delta} ce mois</div>
               </div>
-              <h3 className="text-lg font-bold mb-2" style={{ color: "#F5F0E8" }}>{s.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "#8A8070" }}>{s.desc}</p>
-            </GlassCard>
-          </motion.div>
-        ))}
+            ))}
+          </div>
+
+          {/* Mini chart */}
+          <div className="rounded-xl p-3 mb-3" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="text-xs mb-2" style={{ color: "var(--text-dim)" }}>Activité — 7 derniers jours</div>
+            <svg width="100%" height="40" viewBox="0 0 280 40" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8" fill="none" stroke="#a78bfa" strokeWidth="2" />
+              <path d="M0,32 L40,26 L80,30 L120,18 L160,22 L200,12 L240,16 L280,8 L280,40 L0,40 Z" fill="url(#chartGrad)" />
+            </svg>
+          </div>
+
+          {/* Client list */}
+          <div className="rounded-xl overflow-hidden" style={{ background: "var(--bg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            {[
+              { name: "Marie L.", points: 8, max: 10 },
+              { name: "Karim B.", points: 5, max: 10 },
+              { name: "Sophie T.", points: 10, max: 10 },
+            ].map((c, i) => (
+              <div key={i} className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                  style={{ background: "var(--violet-soft)", color: "var(--violet)" }}>
+                  {c.name.charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-medium truncate" style={{ color: "var(--text)" }}>{c.name}</div>
+                  <div className="mt-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${(c.points / c.max) * 100}%`, background: c.points === c.max ? "var(--mint)" : "var(--violet)" }} />
+                  </div>
+                </div>
+                <div className="text-xs font-semibold flex-shrink-0" style={{ color: c.points === c.max ? "var(--mint)" : "var(--text-dim)" }}>
+                  {c.points}/{c.max}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Floating wallet badge */}
+      <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium"
+        style={{ background: "var(--surface)", border: "1px solid rgba(167,139,250,0.3)", color: "var(--violet)", boxShadow: "0 8px 32px rgba(167,139,250,0.2)" }}>
+        📱 Apple Wallet · Google Wallet
+      </div>
+    </div>
+  );
+}
+
+/* ─── MARQUEE ─────────────────────────────────────────────────────────────── */
+function MarqueeSection() {
+  const doubled = [...USE_CASES, ...USE_CASES];
+  return (
+    <div className="py-12 overflow-hidden" style={{ background: "var(--bg-2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+      <p className="eyebrow text-center mb-6">Ils utilisent Fideloo</p>
+      <div className="overflow-hidden">
+        <div className="flex whitespace-nowrap marquee-track">
+          {doubled.map((label, i) => (
+            <span key={i} className="inline-flex items-center gap-5 px-6 text-xl font-semibold tracking-tight"
+              style={{ color: "rgba(245,245,243,0.08)" }}>
+              {label}
+              <span style={{ color: "rgba(255,255,255,0.06)" }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── FEATURES ──────────────────────────────────────────────────────────── */
+function FeaturesSection() {
+  return (
+    <section id="features" className="section-light">
+      <div className="container">
+        <div className="text-center mb-16 reveal">
+          <p className="eyebrow mb-4" style={{ color: "var(--ink-dim)" }}>Fonctionnalités</p>
+          <h2 className="section-title mb-4" style={{ color: "var(--ink)" }}>
+            Tout pour{" "}
+            <span className="serif" style={{ color: "var(--violet)" }}>fidéliser</span>
+            {" "}sans complexité
+          </h2>
+          <p className="lede max-w-2xl mx-auto" style={{ color: "var(--ink-dim)" }}>
+            Une plateforme conçue pour les commerçants qui veulent fidéliser sans compétence technique.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {FEATURES.map((f, i) => (
+            <div key={f.title} className="card-light p-7 reveal" style={{ animationDelay: `${i * 0.05}s` }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
+                style={{ background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.2)" }}>
+                <f.Icon className="w-5 h-5" style={{ color: "var(--violet)" }} />
+              </div>
+              <h3 className="font-semibold mb-2 text-base" style={{ color: "var(--ink)" }}>{f.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--ink-dim)" }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── DEMO ──────────────────────────────────────────────────────────────── */
+function DemoSection() {
+  const steps = [
+    { n: "01", title: "Créez votre compte", desc: "Inscrivez-vous gratuitement avec email, Google ou Apple en 30 secondes." },
+    { n: "02", title: "Configurez votre carte", desc: "Choisissez vos couleurs, ajoutez votre logo et définissez votre récompense." },
+    { n: "03", title: "Partagez votre QR code", desc: "Affichez-le en caisse. Vos clients s'inscrivent et reçoivent leur carte instantanément." },
+  ];
+
+  return (
+    <section className="section-dark">
+      <div className="container">
+        <div className="text-center mb-16 reveal">
+          <p className="eyebrow mb-4">Comment ça marche</p>
+          <h2 className="section-title mb-4" style={{ color: "var(--text)" }}>
+            Lancez-vous en{" "}
+            <span className="serif" style={{ color: "var(--mint)" }}>3 minutes</span>
+          </h2>
+          <p className="lede max-w-xl mx-auto">Aucune compétence technique requise.</p>
+        </div>
+
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div aria-hidden className="hidden md:block absolute top-10 left-[18%] right-[18%] h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.3), transparent)" }} />
+
+          {steps.map((s, i) => (
+            <div key={s.n} className="card-dark p-8 text-center reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-lg mb-5"
+                style={{ background: "var(--violet-soft)", border: "1px solid rgba(167,139,250,0.3)", color: "var(--violet)" }}>
+                {s.n}
+              </div>
+              <h3 className="font-semibold mb-2" style={{ color: "var(--text)" }}>{s.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
 /* ─── PRICING ───────────────────────────────────────────────────────────── */
-function Pricing() {
+function PricingSection() {
   const handleCheckoutPro = async () => {
     const merchantStr = typeof window !== "undefined" ? localStorage.getItem("fideloo_merchant") : null;
     if (!merchantStr) { window.location.href = "/register"; return; }
@@ -416,155 +415,187 @@ function Pricing() {
       const data = await res.json();
       if (data.url) window.location.href = data.url;
       else alert(data.error || "Erreur Stripe");
-    } catch { window.location.href = "/register"; }
+    } catch {
+      window.location.href = "/register";
+    }
   };
 
   return (
-    <section id="pricing" className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <div className="text-center mb-16">
-        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="heading-display text-3xl sm:text-5xl mb-4">
-          <GradientText>Des tarifs simples et transparents</GradientText>
-        </motion.h2>
-        <p style={{ color: "#8A8070" }}>Sans engagement. Annulable à tout moment.</p>
-      </div>
+    <section id="pricing" className="section-dark">
+      <div className="container">
+        <div className="text-center mb-16 reveal">
+          <p className="eyebrow mb-4">Tarifs</p>
+          <h2 className="section-title mb-4" style={{ color: "var(--text)" }}>
+            Simple et{" "}
+            <span className="serif" style={{ color: "var(--violet)" }}>transparent</span>
+          </h2>
+          <p className="lede max-w-xl mx-auto">Sans engagement. Annulable à tout moment.</p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        {/* Gratuit */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <GlassCard className="p-8 h-full flex flex-col" lift>
-            <h3 className="text-lg font-bold mb-1" style={{ color: "#F5F0E8" }}>Gratuit</h3>
-            <p className="text-sm mb-6" style={{ color: "#8A8070" }}>Pour démarrer votre fidélité</p>
-            <div className="mb-6 flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold tracking-tight" style={{ color: "#F5F0E8" }}>0€</span>
-              <span style={{ color: "#8A8070" }}>/mois</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          {/* Gratuit */}
+          <div className="card-dark p-8 flex flex-col reveal">
+            <div className="mb-6">
+              <h3 className="font-semibold text-lg mb-1" style={{ color: "var(--text)" }}>Gratuit</h3>
+              <p className="text-sm" style={{ color: "var(--text-dim)" }}>Pour démarrer votre fidélité</p>
             </div>
-            <ul className="space-y-3 text-sm mb-8 flex-1" style={{ color: "#F5F0E8" }}>
-              <Bullet>Jusqu&apos;à 50 clients</Bullet>
-              <Bullet>1 commerce</Bullet>
-              <Bullet>Apple Wallet &amp; Google Wallet</Bullet>
-              <Bullet>QR code personnalisé</Bullet>
-              <Bullet>Support email</Bullet>
+            <div className="mb-8 flex items-baseline gap-1">
+              <span className="text-5xl font-bold tracking-tight" style={{ color: "var(--text)" }}>0€</span>
+              <span style={{ color: "var(--text-dim)" }}>/mois</span>
+            </div>
+            <ul className="space-y-3 text-sm mb-8 flex-1">
+              {["Jusqu'à 50 clients", "1 commerce", "Apple & Google Wallet", "QR code personnalisé", "Support email"].map(f => (
+                <li key={f} className="flex items-start gap-3">
+                  <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--mint)" }} />
+                  <span style={{ color: "var(--text-dim)" }}>{f}</span>
+                </li>
+              ))}
             </ul>
-            <Link href="/register" className="block">
-              <GlowButton variant="ghost" fullWidth size="lg">Commencer gratuitement</GlowButton>
+            <Link href="/register" className="btn btn-ghost btn-lg justify-center">
+              Commencer gratuitement
             </Link>
-          </GlassCard>
-        </motion.div>
-
-        {/* Pro */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ delay: .1 }} className="relative">
-          <div className="absolute -inset-px rounded-2xl pulse-glow"
-            style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)" }} aria-hidden />
-          <div className="relative rounded-2xl glass-strong p-8 h-full flex flex-col"
-            style={{ borderColor: "rgba(201,168,76,0.5)" }}>
-            <div className="absolute -top-3 right-6 px-3 py-1 rounded-full text-xs font-bold"
-              style={{ background: "#C9A84C", color: "#080808" }}>
-              ✦ Recommandé
-            </div>
-            <h3 className="text-lg font-bold mb-1" style={{ color: "#F5F0E8" }}>Pro</h3>
-            <p className="text-sm mb-6" style={{ color: "#8A8070" }}>Pour scaler votre fidélité</p>
-            <div className="mb-6 flex items-baseline gap-1">
-              <span className="text-5xl font-extrabold tracking-tight">
-                <GradientText>70€</GradientText>
-              </span>
-              <span style={{ color: "#8A8070" }}>/mois</span>
-            </div>
-            <ul className="space-y-3 text-sm mb-8 flex-1" style={{ color: "#F5F0E8" }}>
-              <Bullet>Clients <strong>illimités</strong></Bullet>
-              <Bullet>Commerces <strong>illimités</strong></Bullet>
-              <Bullet>Analytics avancés</Bullet>
-              <Bullet>Notifications push</Bullet>
-              <Bullet>Mise à jour temps réel</Bullet>
-              <Bullet>Support prioritaire</Bullet>
-            </ul>
-            <GlowButton fullWidth size="lg" onClick={handleCheckoutPro}>
-              Passer au Pro <ArrowRight className="w-4 h-4" />
-            </GlowButton>
           </div>
-        </motion.div>
+
+          {/* Pro */}
+          <div className="relative flex flex-col reveal" style={{ animationDelay: "0.1s" }}>
+            <div aria-hidden className="absolute -inset-px rounded-[22px]"
+              style={{ background: "linear-gradient(135deg, rgba(167,139,250,0.5), rgba(52,211,153,0.3))", zIndex: 0 }} />
+            <div className="relative z-10 p-8 flex flex-col h-full rounded-[22px]"
+              style={{ background: "var(--surface)", boxShadow: "0 0 60px rgba(167,139,250,0.15)" }}>
+              <div className="absolute -top-3.5 right-6 px-3 py-1 rounded-full text-xs font-semibold"
+                style={{ background: "var(--violet)", color: "#ffffff" }}>
+                Recommandé
+              </div>
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg mb-1" style={{ color: "var(--text)" }}>Pro</h3>
+                <p className="text-sm" style={{ color: "var(--text-dim)" }}>Pour scaler votre fidélité</p>
+              </div>
+              <div className="mb-8 flex items-baseline gap-1">
+                <span className="text-5xl font-bold tracking-tight gradient-text">70€</span>
+                <span style={{ color: "var(--text-dim)" }}>/mois</span>
+              </div>
+              <ul className="space-y-3 text-sm mb-8 flex-1">
+                {["Clients illimités", "Commerces illimités", "Analytics avancés", "Notifications push", "Mise à jour temps réel", "Support prioritaire"].map(f => (
+                  <li key={f} className="flex items-start gap-3">
+                    <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--mint)" }} />
+                    <span style={{ color: "var(--text)" }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <button onClick={handleCheckoutPro} className="btn btn-accent btn-lg justify-center">
+                Passer au Pro <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function Bullet({ children }: { children: React.ReactNode }) {
+/* ─── TESTIMONIALS ──────────────────────────────────────────────────────── */
+function TestimonialsSection() {
   return (
-    <li className="flex items-start gap-3">
-      <Check className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#10B981" }} />
-      <span className="leading-relaxed">{children}</span>
-    </li>
+    <section className="section-light">
+      <div className="container">
+        <div className="text-center mb-16 reveal">
+          <p className="eyebrow mb-4" style={{ color: "var(--ink-dim)" }}>Témoignages</p>
+          <h2 className="section-title mb-4" style={{ color: "var(--ink)" }}>
+            Ils ont{" "}
+            <span className="serif" style={{ color: "var(--violet)" }}>adopté</span>
+            {" "}Fideloo
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map((t, i) => (
+            <div key={t.name} className="card-light p-7 flex flex-col reveal" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div className="flex gap-0.5 mb-4">
+                {Array.from({ length: t.stars }).map((_, j) => (
+                  <Star key={j} className="w-4 h-4" style={{ color: "var(--violet)", fill: "var(--violet)" }} />
+                ))}
+              </div>
+              <p className="text-sm leading-relaxed flex-1 mb-5" style={{ color: "var(--ink-dim)" }}>"{t.text}"</p>
+              <div>
+                <div className="font-semibold text-sm" style={{ color: "var(--ink)" }}>{t.name}</div>
+                <div className="text-xs mt-0.5" style={{ color: "var(--ink-dim)" }}>{t.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
 /* ─── FAQ ───────────────────────────────────────────────────────────────── */
-const faqs = [
-  { q: "Est-ce que mes clients ont besoin d'une app ?", a: "Non. La carte s'ajoute directement dans Apple Wallet ou Google Wallet, déjà installés sur tous les smartphones." },
-  { q: "Comment les clients s'inscrivent-ils ?", a: "Ils scannent votre QR code et remplissent un formulaire simple (nom + email). Ils reçoivent leur carte en moins de 30 secondes." },
-  { q: "Puis-je personnaliser ma carte ?", a: "Oui : couleurs, logo, nom du commerce, image de bannière et récompense — tout est entièrement personnalisable depuis votre dashboard." },
-  { q: "Comment mettre à jour les points ?", a: "Depuis votre dashboard, vous cherchez le client par nom ou email, puis vous cliquez pour ajouter des points. La carte se met à jour instantanément." },
-  { q: "Y a-t-il un engagement ?", a: "Non. Le plan Pro est mensuel et annulable à tout moment depuis vos paramètres." },
-];
-
-function Faq({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: number | null) => void }) {
+function FaqSection({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFaq: (i: number | null) => void }) {
   return (
-    <section id="faq" className="px-4 sm:px-6 max-w-3xl mx-auto py-24">
-      <div className="text-center mb-12">
-        <motion.h2 initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="heading-display text-3xl sm:text-5xl mb-4">
-          <GradientText>Questions fréquentes</GradientText>
-        </motion.h2>
-      </div>
-      <div className="space-y-3">
-        {faqs.map((f, i) => (
-          <GlassCard key={i} className="overflow-hidden">
-            <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors"
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(201,168,76,0.02)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-              <span className="font-semibold" style={{ color: "#F5F0E8" }}>{f.q}</span>
-              <ChevronDown className={["w-5 h-5 transition-transform", openFaq === i ? "rotate-180" : ""].join(" ")}
-                style={{ color: openFaq === i ? "#C9A84C" : "#8A8070" }} />
-            </button>
-            <AnimatePresence initial={false}>
+    <section id="faq" className="section-dark">
+      <div className="container max-w-3xl">
+        <div className="text-center mb-16 reveal">
+          <p className="eyebrow mb-4">FAQ</p>
+          <h2 className="section-title mb-4" style={{ color: "var(--text)" }}>
+            Questions{" "}
+            <span className="serif" style={{ color: "var(--mint)" }}>fréquentes</span>
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {FAQS.map((f, i) => (
+            <div key={i} className="card-dark overflow-hidden reveal" style={{ animationDelay: `${i * 0.05}s` }}>
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left"
+                style={{ color: "var(--text)" }}>
+                <span className="font-medium pr-4">{f.q}</span>
+                <ChevronDown
+                  className="w-5 h-5 shrink-0 transition-transform duration-200"
+                  style={{ transform: openFaq === i ? "rotate(180deg)" : "none", color: openFaq === i ? "var(--violet)" : "var(--text-dim)" }}
+                />
+              </button>
               {openFaq === i && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }} transition={{ duration: .25 }}>
-                  <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: "#8A8070" }}>{f.a}</div>
-                </motion.div>
+                <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: "var(--text-dim)" }}>
+                  {f.a}
+                </div>
               )}
-            </AnimatePresence>
-          </GlassCard>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
 /* ─── CTA FINAL ─────────────────────────────────────────────────────────── */
-function FinalCTA() {
+function CtaFinal() {
   return (
-    <section className="px-4 sm:px-6 max-w-6xl mx-auto py-24">
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="relative rounded-[2rem] overflow-hidden p-10 sm:p-16 text-center"
-        style={{
-          background: "linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(232,112,90,0.1) 100%), #141414",
-          border: "1px solid rgba(201,168,76,0.3)",
-          boxShadow: "0 50px 100px rgba(201,168,76,0.1)",
-        }}>
-        <div aria-hidden className="absolute inset-0 -z-10"
-          style={{ background: "radial-gradient(ellipse at top, rgba(201,168,76,0.2), transparent 60%)" }} />
-        <h2 className="heading-display text-3xl sm:text-5xl mb-4" style={{ color: "#F5F0E8" }}>
-          Prêt à fidéliser vos clients ?
-        </h2>
-        <p className="max-w-xl mx-auto mb-8" style={{ color: "#8A8070" }}>
-          Rejoignez les 500+ commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
-        </p>
-        <Link href="/register">
-          <GlowButton size="lg">Créer mon compte gratuitement <ArrowRight className="w-4 h-4" /></GlowButton>
-        </Link>
-      </motion.div>
+    <section className="section-dark">
+      <div className="container">
+        <div className="relative rounded-[32px] overflow-hidden p-12 sm:p-20 text-center reveal"
+          style={{ background: "var(--surface)", border: "1px solid rgba(167,139,250,0.2)", boxShadow: "0 0 80px rgba(167,139,250,0.1)" }}>
+          <div aria-hidden className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at top, rgba(167,139,250,0.12) 0%, transparent 60%)" }} />
+          <div className="relative z-10">
+            <p className="eyebrow mb-6">Prêt à démarrer ?</p>
+            <h2 className="section-title mb-6" style={{ color: "var(--text)" }}>
+              Fidélisez vos clients{" "}
+              <span className="serif" style={{ color: "var(--violet)" }}>dès aujourd'hui</span>
+            </h2>
+            <p className="lede max-w-xl mx-auto mb-10">
+              Rejoignez les 500+ commerces qui modernisent leur fidélité avec Fideloo. Gratuit pour démarrer.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/register" className="btn btn-accent btn-lg">
+                Créer mon compte gratuitement <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link href="/login" className="btn btn-ghost btn-lg">
+                Se connecter
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -572,48 +603,52 @@ function FinalCTA() {
 /* ─── FOOTER ────────────────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer className="px-4 sm:px-6 max-w-6xl mx-auto pb-12 pt-6">
-      <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
-        style={{ borderTop: "1px solid rgba(201,168,76,0.08)", color: "#4A4540" }}>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md flex items-center justify-center font-extrabold text-sm"
-            style={{ background: "linear-gradient(135deg, #C9A84C, #9A7A2E)", color: "#080808" }}>F</div>
-          <span className="font-semibold" style={{ color: "#F5F0E8" }}>Fideloo</span>
-          <span>· © {new Date().getFullYear()}</span>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {[["/mentions-legales","Mentions légales"],["/politique-confidentialite","Politique de confidentialité"],["/cgu","CGU"]].map(([href, label]) => (
-            <Link key={href} href={href} className="transition-colors"
-              onMouseEnter={e => (e.currentTarget.style.color = "#C9A84C")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#4A4540")}>
-              {label}
-            </Link>
-          ))}
-          <a href="mailto:contact@fideloo.fr" className="transition-colors"
-            onMouseEnter={e => (e.currentTarget.style.color = "#C9A84C")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4A4540")}>
-            Contact
-          </a>
+    <footer className="section-dark" style={{ paddingTop: 0, paddingBottom: 48 }}>
+      <div className="container">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
+          style={{ borderTop: "1px solid var(--line)", color: "var(--text-dim)" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md flex items-center justify-center font-bold text-sm"
+              style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
+            <span className="font-medium" style={{ color: "var(--text)" }}>Fideloo</span>
+            <span>· © {new Date().getFullYear()}</span>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {[["/mentions-legales", "Mentions légales"], ["/politique-confidentialite", "Confidentialité"], ["/cgu", "CGU"]].map(([href, label]) => (
+              <Link key={href} href={href} className="transition-colors hover:text-[--text]"
+                style={{ color: "var(--text-dim)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+                {label}
+              </Link>
+            ))}
+            <a href="mailto:contact@fideloo.fr" className="transition-colors"
+              style={{ color: "var(--text-dim)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>
+              Contact
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
 
-/* ─── Cookie Banner ──────────────────────────────────────────────────────── */
-function CookieBanner() {
-  const [show, setShow] = useState(false);
-  useEffect(() => { if (!localStorage.getItem("fideloo_cookie_ok")) setShow(true); }, []);
-  const accept = () => { localStorage.setItem("fideloo_cookie_ok", "1"); setShow(false); };
-  if (!show) return null;
+/* ─── COOKIE BANNER ──────────────────────────────────────────────────────── */
+function CookieBanner({ onAccept }: { onAccept: () => void }) {
   return (
     <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
       <div className="glass-strong max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-        <p className="text-sm flex-1" style={{ color: "#8A8070" }}>
-          Nous utilisons uniquement des cookies fonctionnels essentiels au service.{" "}
-          <Link href="/politique-confidentialite" className="underline" style={{ color: "#C9A84C" }}>En savoir plus</Link>
+        <p className="text-sm flex-1" style={{ color: "var(--text-dim)" }}>
+          Nous utilisons uniquement des cookies fonctionnels essentiels.{" "}
+          <Link href="/politique-confidentialite" className="underline" style={{ color: "var(--violet)" }}>
+            En savoir plus
+          </Link>
         </p>
-        <GlowButton size="sm" onClick={accept}>J&apos;accepte</GlowButton>
+        <button onClick={onAccept} className="btn btn-primary btn-sm shrink-0">
+          J&apos;accepte
+        </button>
       </div>
     </div>
   );
