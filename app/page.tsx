@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, Menu, X, Star, Sparkles, Send, QrCode, Gift, Shield } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Menu, X, Star, Send, QrCode, Gift, Shield } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -18,16 +18,7 @@ const FEATURES = [
   { emoji: "🔔", title: "Notifications push", desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
 ];
 
-const WHEEL_PRIZES = [
-  { label: "Café offert", color: "#22C55E", textColor: "#080808" },
-  { label: "10% réduction", color: "#16A34A", textColor: "#080808" },
-  { label: "Dessert offert", color: "#22C55E", textColor: "#080808" },
-  { label: "5% réduction", color: "#161616", textColor: "#4ADE80" },
-  { label: "Boisson offerte", color: "#22C55E", textColor: "#080808" },
-  { label: "15% réduction", color: "#16A34A", textColor: "#080808" },
-  { label: "Cadeau surprise", color: "#22C55E", textColor: "#080808" },
-  { label: "Jouez encore", color: "#161616", textColor: "#4ADE80" },
-];
+const SLOT_EMOJIS = ["☕", "🎁", "⭐", "🍕", "💎"];
 
 const PLANS = [
   {
@@ -45,7 +36,7 @@ const PLANS = [
   {
     id: "business", name: "Business", badge: "Pour les enseignes",
     monthly: 150, annual: 120,
-    features: ["Tout Pro inclus", "Roue de la chance", "Multi-sites illimités", "API dédiée", "Onboarding personnalisé", "Manager dédié"],
+    features: ["Tout Pro inclus", "Machine à sous fidélité", "Multi-sites illimités", "API dédiée", "Onboarding personnalisé", "Manager dédié"],
     cta: "Nous contacter", ctaHref: "#contact" as string | null, highlight: false, whiteBtn: true,
   },
 ];
@@ -117,7 +108,7 @@ export default function LandingPage() {
         <Hero />
         <MarqueeSection />
         <FeaturesSection />
-        <LoyaltyWheelDemo />
+        <LoyaltySlotDemo />
         <PricingSection />
         <FaqSection openFaq={openFaq} setOpenFaq={setOpenFaq} />
         <AppStoreSection />
@@ -243,25 +234,19 @@ function Hero() {
       <div className="container relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium mb-8 pulse-glow"
-              style={{ background: GS, border: `1px solid ${GB}`, color: G, fontFamily: "Geist Mono, monospace", letterSpacing: "0.06em" }}>
-              <Sparkles className="w-3.5 h-3.5" />
-              Nouveau — Cartes Apple &amp; Google Wallet
-            </div>
-
-            <h1 className="heading-display mb-6" style={{ color: T }}>
+            <h1 className="heading-display mb-6" style={{ color: T, lineHeight: 1.1 }}>
               Transformez vos clients{" "}
               <span className="serif" style={{ color: G }}>occasionnels</span>
               {" "}en clients{" "}
               <span className="serif" style={{ color: "#4ADE80" }}>fidèles</span>
             </h1>
 
-            <p className="lede mb-10 max-w-xl mx-auto lg:mx-0">
+            <p className="lede mx-auto lg:mx-0" style={{ maxWidth: 480, color: "rgba(245,245,245,0.6)", fontSize: 18, lineHeight: 1.5, marginTop: 24, marginBottom: 0 }}>
               Carte de fidélité digitale dans Apple Wallet et Google Wallet.{" "}
-              <span style={{ color: T }}>Zéro app. Zéro friction. 100% efficace.</span>
+              Zéro app. Zéro friction. 100% efficace.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" style={{ marginTop: 36 }}>
               <Link href="/register"
                 className="flex items-center justify-center gap-2 px-7 py-4 rounded-full font-bold text-base transition-all"
                 style={{ background: G, color: "#080808", boxShadow: "0 0 32px rgba(34,197,94,0.35)" }}
@@ -278,13 +263,12 @@ function Hero() {
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-sm" style={{ color: TD }}>
-              {[
-                { icon: <Star className="w-3.5 h-3.5" style={{ color: G, fill: G }} />, text: "500+ commerces actifs" },
-                { icon: <Check className="w-3.5 h-3.5" style={{ color: G }} />, text: "Sans carte bancaire" },
-                { icon: <Sparkles className="w-3.5 h-3.5" style={{ color: G }} />, text: "Prêt en 2 minutes" },
-              ].map(({ icon, text }, i) => (
-                <span key={i} className="flex items-center gap-1.5">{icon}{text}</span>
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 gap-y-1.5" style={{ marginTop: 20 }}>
+              {["Sans carte bancaire", "Configuration en 2 minutes", "Hébergement RGPD · France 🇫🇷"].map((text, i) => (
+                <span key={i} className="flex items-center gap-1.5" style={{ color: "rgba(245,245,245,0.5)", fontSize: 13 }}>
+                  <Check className="w-3.5 h-3.5 shrink-0" style={{ color: G }} />
+                  {text}
+                </span>
               ))}
             </div>
           </div>
@@ -426,84 +410,94 @@ function FeaturesSection() {
   );
 }
 
-/* ─── WHEEL SVG ──────────────────────────────────────────────────────────── */
-function WheelSVG({ rotation, spinning, onEnd }: { rotation: number; spinning: boolean; onEnd?: () => void }) {
-  const cx = 150, cy = 150, r = 128, tr = 84;
-  const n = WHEEL_PRIZES.length;
-  const step = (2 * Math.PI) / n;
+/* ─── SLOT REEL ──────────────────────────────────────────────────────────── */
+function SlotReel({ emoji, spinning }: { emoji: string; spinning: boolean }) {
+  const [displayed, setDisplayed] = useState(emoji);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    if (spinning) {
+      interval = setInterval(() => {
+        setDisplayed(SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
+      }, 80);
+    } else {
+      setDisplayed(emoji);
+    }
+    return () => { if (interval) clearInterval(interval); };
+  }, [spinning, emoji]);
 
   return (
-    <svg width="300" height="300" viewBox="0 0 300 300"
-      style={{
-        transform: `rotate(${rotation}deg)`,
-        transition: spinning ? "transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)" : "none",
-        transformOrigin: "150px 150px",
-        display: "block",
-      }}
-      onTransitionEnd={onEnd}>
-      {WHEEL_PRIZES.map((prize, i) => {
-        const a1 = i * step - Math.PI / 2;
-        const a2 = (i + 1) * step - Math.PI / 2;
-        const x1 = cx + r * Math.cos(a1);
-        const y1 = cy + r * Math.sin(a1);
-        const x2 = cx + r * Math.cos(a2);
-        const y2 = cy + r * Math.sin(a2);
-        const mid = a1 + step / 2;
-        const tx = cx + tr * Math.cos(mid);
-        const ty = cy + tr * Math.sin(mid);
-        const rot = (mid * 180 / Math.PI) + 90;
-        return (
-          <g key={i}>
-            <path d={`M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 0,1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`}
-              fill={prize.color} stroke="#080808" strokeWidth="2.5" />
-            <text x={tx.toFixed(2)} y={ty.toFixed(2)} textAnchor="middle" dominantBaseline="middle"
-              fontSize="9" fontWeight="700" fill={prize.textColor} fontFamily="Geist,sans-serif"
-              transform={`rotate(${rot.toFixed(1)},${tx.toFixed(2)},${ty.toFixed(2)})`}>
-              {prize.label}
-            </text>
-          </g>
-        );
-      })}
-      <circle cx={cx} cy={cy} r="18" fill="#080808" stroke="rgba(34,197,94,0.5)" strokeWidth="2.5" />
-      <circle cx={cx} cy={cy} r="6" fill={G} />
-    </svg>
+    <div style={{
+      width: 80, height: 80, borderRadius: 14, fontSize: 36,
+      background: spinning ? "rgba(34,197,94,0.08)" : SURF2,
+      border: spinning ? "1px solid rgba(34,197,94,0.35)" : "1px solid rgba(34,197,94,0.2)",
+      display: "grid", placeItems: "center", transition: "background 0.15s, border-color 0.15s",
+      userSelect: "none",
+    }}>
+      {displayed}
+    </div>
   );
 }
 
-/* ─── WHEEL MODAL ────────────────────────────────────────────────────────── */
-function WheelModal({ onClose }: { onClose: () => void }) {
-  const [rotation, setRotation] = useState(0);
-  const [spinning, setSpinning] = useState(false);
-  const [winner, setWinner] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
+/* ─── SLOT MODAL ─────────────────────────────────────────────────────────── */
+function SlotModal({ onClose }: { onClose: () => void }) {
+  const [reels, setReels] = useState<[string, string, string]>(["☕", "☕", "☕"]);
+  const [spinning, setSpinning] = useState<[boolean, boolean, boolean]>([false, false, false]);
+  const [phase, setPhase] = useState<"idle" | "spinning" | "result">("idle");
+  const [outcome, setOutcome] = useState<"jackpot" | "near" | "consolation" | null>(null);
   const [confetti, setConfetti] = useState(false);
-  const segAngle = 360 / WHEEL_PRIZES.length;
 
-  const spin = () => {
-    if (spinning || showResult) return;
-    const winIdx = Math.floor(Math.random() * WHEEL_PRIZES.length);
-    const winCenter = winIdx * segAngle + segAngle / 2;
-    const targetEff = (360 - winCenter + 360) % 360;
-    const smallRandom = (Math.random() - 0.5) * 20;
-    setWinner(winIdx);
-    setSpinning(true);
-    setRotation(prev => prev + 1800 + targetEff + smallRandom);
+  const doSpin = () => {
+    if (phase !== "idle") return;
+    const rand = Math.random();
+    let target: [string, string, string];
+    let outcomeType: "jackpot" | "near" | "consolation";
+
+    if (rand < 0.25) {
+      const e = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
+      target = [e, e, e];
+      outcomeType = "jackpot";
+    } else if (rand < 0.65) {
+      const e = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
+      const others = SLOT_EMOJIS.filter(x => x !== e);
+      const d = others[Math.floor(Math.random() * others.length)];
+      target = [e, e, d];
+      outcomeType = "near";
+    } else {
+      const pick = () => SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)];
+      let a = pick(), b = pick(), c = pick();
+      while (b === a) b = pick();
+      while (c === a || c === b) c = pick();
+      target = [a, b, c];
+      outcomeType = "consolation";
+    }
+
+    setPhase("spinning");
+    setSpinning([true, true, true]);
+    setTimeout(() => { setSpinning([false, true, true]); setReels(([, r1, r2]) => [target[0], r1, r2]); }, 600);
+    setTimeout(() => { setSpinning([false, false, true]); setReels(([r0,, r2]) => [r0, target[1], r2]); }, 1000);
+    setTimeout(() => {
+      setSpinning([false, false, false]);
+      setReels(target);
+      setOutcome(outcomeType);
+      setPhase("result");
+      if (outcomeType === "jackpot") { setConfetti(true); setTimeout(() => setConfetti(false), 2800); }
+    }, 1400);
   };
 
-  const onEnd = () => {
-    setSpinning(false);
-    setShowResult(true);
-    setConfetti(true);
-    setTimeout(() => setConfetti(false), 2800);
-  };
-
-  const reset = () => { setShowResult(false); setWinner(null); };
+  const reset = () => { setPhase("idle"); setOutcome(null); };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  const OUTCOME_MSG = {
+    jackpot:     { title: "🎉 JACKPOT !", msg: "Vous gagnez un café offert !", color: G },
+    near:        { title: "✨ Presque !", msg: "Vous gagnez 10% de réduction !", color: "#fbbf24" },
+    consolation: { title: "Pas de chance...", msg: "Vous gagnez quand même 5% !", color: TD },
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
@@ -516,11 +510,11 @@ function WheelModal({ onClose }: { onClose: () => void }) {
         `}</style>
       )}
 
-      <div className="relative w-full max-w-md rounded-3xl p-8 animate-[fadeInUp_0.3s_ease_both]"
+      <div className="relative w-full max-w-[480px] rounded-3xl p-10"
         style={{ background: "#0D0D0D", border: `1px solid ${GB}`, boxShadow: "0 40px 80px rgba(0,0,0,0.8)" }}>
         {confetti && Array.from({ length: 18 }).map((_, i) => (
           <div key={i} className="cp"
-            style={{ left: `${8 + i * 5}%`, top: 0, background: [G, "#4ADE80", "#16A34A", "#fff"][i % 4], animationDelay: `${i * 0.1}s` }} />
+            style={{ left: `${5 + i * 5.5}%`, top: 0, background: [G, "#4ADE80", "#16A34A", "#fbbf24"][i % 4], animationDelay: `${i * 0.1}s` }} />
         ))}
 
         <button onClick={onClose}
@@ -531,38 +525,37 @@ function WheelModal({ onClose }: { onClose: () => void }) {
           <X className="w-4 h-4" />
         </button>
 
-        <h3 className="text-xl font-bold mb-1" style={{ color: T }}>Démo — Roue de la chance</h3>
-        <p className="text-sm mb-6" style={{ color: TD }}>Simulez l&apos;expérience de vos clients</p>
+        <h3 className="text-xl font-bold mb-1" style={{ color: T }}>Démo — Machine à sous</h3>
+        <p className="text-sm mb-8" style={{ color: TD }}>Simulez l&apos;expérience fidélité de vos clients</p>
 
-        {/* Wheel */}
-        <div className="relative flex justify-center mb-6">
-          {/* Pointer */}
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10" style={{ width: 0, height: 0, borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: `22px solid ${G}`, filter: "drop-shadow(0 2px 4px rgba(34,197,94,0.5))" }} />
-          <div className="relative rounded-full overflow-hidden"
-            style={{ width: 300, height: 300, boxShadow: `0 0 40px rgba(34,197,94,0.15), inset 0 0 0 3px rgba(34,197,94,0.2)` }}>
-            <WheelSVG rotation={rotation} spinning={spinning} onEnd={onEnd} />
-          </div>
+        {/* Reels */}
+        <div className="flex justify-center gap-4 mb-8">
+          {reels.map((e, i) => (
+            <SlotReel key={i} emoji={e} spinning={spinning[i]} />
+          ))}
         </div>
 
-        {showResult && winner !== null ? (
+        {phase === "result" && outcome ? (
           <div>
             <div className="rounded-2xl p-5 mb-4 text-center"
               style={{ background: SURF2, border: `1px solid ${GB}` }}>
-              <p className="font-bold text-lg mb-1" style={{ color: G }}>🎉 Félicitations !</p>
-              <p className="text-base font-semibold mb-0.5" style={{ color: T }}>
-                Vous gagnez : {WHEEL_PRIZES[winner].label}
+              <p className="font-bold text-xl mb-1" style={{ color: OUTCOME_MSG[outcome].color }}>
+                {OUTCOME_MSG[outcome].title}
               </p>
+              <p className="text-base" style={{ color: T }}>{OUTCOME_MSG[outcome].msg}</p>
             </div>
             <button onClick={() => alert("Dans l'application réelle, ceci redirige vers votre page Google Reviews")}
-              className="w-full py-3 rounded-full font-bold text-sm mb-2 transition-all"
-              style={{ background: G, color: "#080808", boxShadow: "0 4px 16px rgba(34,197,94,0.3)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(34,197,94,0.45)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(34,197,94,0.3)"; }}>
+              className="w-full rounded-full font-bold text-sm mb-3 transition-all"
+              style={{ background: "#fbbf24", color: "#080808", height: 52, boxShadow: "0 4px 16px rgba(251,191,36,0.3)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(251,191,36,0.45)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(251,191,36,0.3)"; }}>
               ⭐ Laisser un avis pour récupérer ma récompense
             </button>
-            <button onClick={reset} className="w-full py-2 text-sm transition-colors" style={{ color: TD }}
-              onMouseEnter={e => (e.currentTarget.style.color = T)}
-              onMouseLeave={e => (e.currentTarget.style.color = TD)}>
+            <button onClick={reset}
+              className="w-full py-2.5 rounded-full text-sm font-medium transition-all"
+              style={{ background: "transparent", color: TD, border: `1px solid ${LINE}` }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = T; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = TD; }}>
               Rejouer
             </button>
             <p className="text-center text-xs mt-3" style={{ color: TD, fontFamily: "Geist Mono, monospace" }}>
@@ -570,10 +563,10 @@ function WheelModal({ onClose }: { onClose: () => void }) {
             </p>
           </div>
         ) : (
-          <button onClick={spin} disabled={spinning}
-            className="w-full py-4 rounded-full font-bold text-base transition-all disabled:opacity-60"
-            style={{ background: G, color: "#080808", boxShadow: spinning ? "none" : "0 4px 20px rgba(34,197,94,0.35)" }}>
-            {spinning ? "La roue tourne…" : "Tourner la roue !"}
+          <button onClick={doSpin} disabled={phase === "spinning"}
+            className="w-full rounded-full font-bold text-base transition-all disabled:opacity-60"
+            style={{ background: G, color: "#080808", height: 52, boxShadow: phase !== "spinning" ? "0 4px 20px rgba(34,197,94,0.35)" : "none" }}>
+            {phase === "spinning" ? "🎰 En cours…" : "🎰 Lancer !"}
           </button>
         )}
       </div>
@@ -581,11 +574,11 @@ function WheelModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-/* ─── LOYALTY WHEEL DEMO ─────────────────────────────────────────────────── */
-function LoyaltyWheelDemo() {
+/* ─── LOYALTY SLOT DEMO ──────────────────────────────────────────────────── */
+function LoyaltySlotDemo() {
   const [showModal, setShowModal] = useState(false);
   const steps = [
-    { Icon: QrCode, title: "Le client scanne & joue", desc: "Une affiche dédiée avec QR code. Le client s'inscrit, joue à la roue." },
+    { Icon: QrCode, title: "Le client scanne & joue", desc: "Une affiche dédiée avec QR code. Le client s'inscrit et tente sa chance à la machine." },
     { Icon: Gift, title: "Il gagne un cadeau", desc: "Un lot est tiré parmi vos récompenses personnalisées." },
     { Icon: Shield, title: "Vous validez en caisse", desc: "Le client présente son QR cadeau. Votre caissier valide en 1 clic." },
   ];
@@ -593,14 +586,13 @@ function LoyaltyWheelDemo() {
   return (
     <section style={{ background: BG, padding: "96px 0" }}>
       <div className="container">
-        {/* Header */}
         <div className="text-center mb-16 reveal">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-6"
             style={{ background: GS, border: `1px solid ${GB}`, color: G, fontFamily: "Geist Mono, monospace", letterSpacing: "0.08em" }}>
             🎮 EXCLUSIF PLAN BUSINESS
           </div>
           <h2 className="section-title mb-4" style={{ color: T }}>
-            La Roue de la Chance. Vos clients{" "}
+            La Machine à Sous. Vos clients{" "}
             <span className="serif" style={{ color: G }}>jouent.</span>
             {" "}Vos avis{" "}
             <span className="serif" style={{ color: "#4ADE80" }}>explosent.</span>
@@ -610,7 +602,6 @@ function LoyaltyWheelDemo() {
           </p>
         </div>
 
-        {/* Stats grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 reveal">
           {[
             { value: "+3×", label: "avis Google générés" },
@@ -618,14 +609,13 @@ function LoyaltyWheelDemo() {
             { value: "0€", label: "commission sur les lots" },
           ].map(({ value, label }) => (
             <div key={label} className="text-center p-6 rounded-2xl"
-              style={{ background: SURF, border: `1px solid rgba(34,197,94,0.15)` }}>
+              style={{ background: SURF, border: "1px solid rgba(34,197,94,0.15)" }}>
               <div className="text-4xl font-bold mb-1" style={{ color: G }}>{value}</div>
               <div className="text-xs uppercase tracking-wider" style={{ color: TD, fontFamily: "Geist Mono, monospace" }}>{label}</div>
             </div>
           ))}
         </div>
 
-        {/* 3 steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
           {steps.map(({ Icon, title, desc }, i) => (
             <div key={title} className="reveal p-8 rounded-[20px] transition-all duration-200"
@@ -643,19 +633,17 @@ function LoyaltyWheelDemo() {
           ))}
         </div>
 
-        {/* CTA banner */}
         <div className="reveal rounded-[20px] p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
           style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)" }}>
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 flex items-center justify-center rounded-xl shrink-0"
-              style={{ background: GS }}>
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl shrink-0" style={{ background: GS }}>
               <Star className="w-5 h-5" style={{ color: G, fill: G }} />
             </div>
             <div>
               <p className="font-semibold mb-1" style={{ color: T }}>
                 En moyenne, 90% des clients laissent un avis Google après avoir joué.
               </p>
-              <p className="text-sm" style={{ color: TD }}>La roue crée un échange émotionnel positif.</p>
+              <p className="text-sm" style={{ color: TD }}>La machine crée un échange émotionnel positif.</p>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
@@ -677,7 +665,7 @@ function LoyaltyWheelDemo() {
         </div>
       </div>
 
-      {showModal && <WheelModal onClose={() => setShowModal(false)} />}
+      {showModal && <SlotModal onClose={() => setShowModal(false)} />}
     </section>
   );
 }
