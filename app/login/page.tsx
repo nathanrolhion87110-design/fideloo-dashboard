@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import { FideloLogoStamp } from "../../components/FideloLogoStamp";
 
 declare global {
   interface Window {
@@ -166,10 +167,8 @@ export default function LoginPage() {
         style={{ background: "#14141a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 22, padding: 40 }}>
 
         <div className="flex justify-center mb-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold"
-              style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
-            <span className="font-semibold" style={{ color: "var(--text)" }}>Fideloo</span>
+          <Link href="/">
+            <FideloLogoStamp variant="onDark" size={36} />
           </Link>
         </div>
 

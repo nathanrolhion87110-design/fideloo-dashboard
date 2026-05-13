@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, Menu, X, Send } from "lucide-react";
+import { FideloLogoStamp } from "../components/FideloLogoStamp";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -380,10 +381,9 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{ background: scrolled ? "rgba(8,8,8,0.95)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? `1px solid ${LINE}` : "none" }}>
       <div className="container h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ background: I, color: "#fff" }}>F</div>
-          <span className="font-semibold text-base tracking-tight" style={{ color: T }}>Fideloo</span>
+        <Link href="/" className="flex items-center shrink-0">
+          <FideloLogoStamp variant="onDark" size={40} className="hidden md:block" />
+          <FideloLogoStamp variant="onDark" size={32} className="md:hidden" />
         </Link>
 
         <nav className="hidden md:flex items-center p-1.5 rounded-full"
@@ -709,7 +709,7 @@ function DashboardPreview() {
             {/* Sidebar */}
             <div style={{ borderRight: `1px solid ${LINE}`, paddingRight: 16 }}>
               <div className="flex items-center gap-2 mb-6">
-                <div style={{ width: 24, height: 24, borderRadius: 6, background: I, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>F</div>
+                <FideloLogoStamp variant="onDark" markOnly size={24} />
                 <span style={{ fontSize: 13, fontWeight: 600, color: T }}>Fideloo</span>
               </div>
               {[
@@ -1257,9 +1257,7 @@ function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm"
           style={{ borderTop: `1px solid ${LINE}`, color: TD }}>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md flex items-center justify-center font-bold text-sm"
-              style={{ background: I, color: "#fff" }}>F</div>
-            <span className="font-medium" style={{ color: T }}>Fideloo</span>
+            <FideloLogoStamp variant="onDark" size={28} />
             <span>· © {new Date().getFullYear()}</span>
           </div>
           <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"

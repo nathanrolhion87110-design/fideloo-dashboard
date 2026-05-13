@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, X, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { FideloLogoStamp } from "../../components/FideloLogoStamp";
 
 /* ─── Palette ──────────────────────────────────────────────────────────────── */
 const BG   = "#0a0a0a";
@@ -144,9 +145,8 @@ export default function PricingPage() {
       {/* ── Header ── */}
       <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, background: "rgba(10,10,10,0.85)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${BD}` }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: G, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, color: "#080808" }}>F</span>
-            <span style={{ fontWeight: 700, fontSize: 18, color: T }}>Fideloo</span>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <FideloLogoStamp variant="onDark" size={40} />
           </Link>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <Link href="/login" style={{ fontSize: 14, color: TD, textDecoration: "none", fontWeight: 500 }}>Se connecter</Link>
@@ -312,8 +312,8 @@ export default function PricingPage() {
       <footer style={{ borderTop: `1px solid ${BD}`, padding: "28px 24px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ width: 26, height: 26, borderRadius: 6, background: G, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#080808" }}>F</span>
-            <span style={{ fontSize: 13, color: TD }}>Fideloo &copy; {new Date().getFullYear()}</span>
+            <FideloLogoStamp variant="onDark" size={28} />
+            <span style={{ fontSize: 13, color: TD }}>&copy; {new Date().getFullYear()}</span>
           </div>
           <div style={{ display: "flex", gap: 24 }}>
             {[

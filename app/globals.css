@@ -1,15 +1,25 @@
 @import "tailwindcss";
 
+/* ─── Fideloo brand tokens ───────────────────────────────────────────────────── */
+:root {
+  --fideloo-emerald: #1F8A5B;
+  --fideloo-forest:  #14633F;
+  --fideloo-mint:    #34B27A;
+  --fideloo-ink:     #0F1411;
+  --fideloo-sand:    #E8E3D8;
+  --fideloo-cream:   #F4F1EA;
+}
+
 /* ─── Tailwind v4 theme tokens ──────────────────────────────────────────────── */
 @theme inline {
-  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Sora", "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "Geist Mono", monospace;
 
   --color-bg: #080808;
   --color-surface: #111111;
   --color-text: #F5F5F5;
-  --color-violet: #22C55E;
-  --color-mint: #22C55E;
+  --color-violet: #1F8A5B;
+  --color-mint: #1F8A5B;
   --color-amber: #fbbf24;
   --color-rose: #fb7185;
   --color-light: #faf8f4;
@@ -17,9 +27,9 @@
 
   --color-text-main: #F5F5F5;
   --color-text-muted: rgba(245,245,245,0.55);
-  --color-success: #22C55E;
+  --color-success: #1F8A5B;
   --color-error: #fb7185;
-  --color-primary: #22C55E;
+  --color-primary: #1F8A5B;
 }
 
 /* ─── CSS custom properties ─────────────────────────────────────────────────── */
@@ -34,20 +44,20 @@
   --text-dim: rgba(245,245,245,0.55);
   --text-dim-2: rgba(245,245,245,0.35);
 
-  /* Green palette — brand */
-  --green: #22C55E;
-  --green-2: #16A34A;
-  --green-light: #4ADE80;
-  --green-soft: rgba(34,197,94,0.10);
-  --green-glow: rgba(34,197,94,0.30);
+  /* Green palette — brand (mapped to Fideloo tokens) */
+  --green: var(--fideloo-emerald);
+  --green-2: var(--fideloo-forest);
+  --green-light: var(--fideloo-mint);
+  --green-soft: rgba(31,138,91,0.10);
+  --green-glow: rgba(31,138,91,0.30);
 
-  /* Backward-compat aliases pointing to green */
-  --violet: #22C55E;
-  --violet-2: #16A34A;
-  --violet-soft: rgba(34,197,94,0.10);
-  --mint: #22C55E;
-  --mint-2: #16A34A;
-  --mint-soft: rgba(34,197,94,0.10);
+  /* Backward-compat aliases pointing to brand green */
+  --violet: var(--fideloo-emerald);
+  --violet-2: var(--fideloo-forest);
+  --violet-soft: rgba(31,138,91,0.10);
+  --mint: var(--fideloo-emerald);
+  --mint-2: var(--fideloo-forest);
+  --mint-soft: rgba(31,138,91,0.10);
 
   --amber: #fbbf24;
   --rose: #fb7185;
@@ -68,18 +78,17 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Sora", "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'ss01', 'ss02', 'cv11';
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(34,197,94,0.3);
+  background: rgba(31,138,91,0.35);
   color: #fff;
 }
 
