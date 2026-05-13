@@ -83,21 +83,62 @@ const SLOT_EMOJIS = ["☕", "🎁", "⭐", "🍕", "💎"];
 
 const PLANS = [
   {
-    id: "standard", name: "Standard", badge: "Pour démarrer",
+    id: "standard", name: "Standard",
+    subtitle: "Pour un commerce indépendant qui démarre",
     monthly: 50, annual: 40,
-    features: ["Jusqu'à 50 clients", "1 commerce", "Apple & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email"],
+    included: [
+      "1 commerce",
+      "Jusqu'à 200 clients",
+      "Apple Wallet & Google Wallet",
+      "QR code personnalisé",
+      "Analytics de base",
+      "Liste clients",
+      "Support email (72h)",
+    ],
+    excluded: [
+      "Notifications push",
+      "Export CSV",
+      "Campagnes automatiques",
+      "Mini-jeu avis clients",
+      "Multi-commerces",
+    ],
     cta: "Commencer gratuitement", ctaHref: "/register" as string | null, highlight: false, whiteBtn: false,
   },
   {
-    id: "pro", name: "Pro", badge: "Le plus populaire", extraBadge: "🎁 14 jours offerts",
+    id: "pro", name: "Pro",
+    subtitle: "Pour les commerces en croissance",
     monthly: 80, annual: 64,
-    features: ["Clients illimités", "Commerces illimités", "Analytics avancés", "Notifications push", "Mise à jour temps réel", "Support prioritaire"],
-    cta: "Essai 14 jours gratuits →", ctaHref: null, highlight: true, whiteBtn: false,
+    included: [
+      "Jusqu'à 3 commerces",
+      "Clients illimités",
+      "Analytics avancés",
+      "Classement top clients",
+      "Export CSV clients",
+      "5 campagnes push / mois",
+      "3 templates d'affiche personnalisables",
+      "Gestion staff (rôles)",
+      "Application mobile",
+      "Support prioritaire (48h)",
+    ],
+    excluded: [],
+    cta: "Essai gratuit 14 jours →", ctaHref: null, highlight: true, whiteBtn: false,
   },
   {
-    id: "business", name: "Business", badge: "Pour les enseignes",
+    id: "business", name: "Business",
+    subtitle: "Pour les chaînes & franchises",
     monthly: 150, annual: 120,
-    features: ["Tout Pro inclus", "Machine à sous fidélité", "Multi-sites illimités", "API dédiée", "Onboarding personnalisé", "Manager dédié"],
+    included: [
+      "Tout du plan Pro inclus",
+      "Commerces illimités",
+      "Analytics multi-sites consolidés",
+      "Campagnes push illimitées",
+      "Application mobile (Caisse & Staff)",
+      "Mini-jeu pour booster les avis Google 🎮",
+      "API & webhooks",
+      "Account manager dédié",
+      "Support prioritaire (24h)",
+    ],
+    excluded: [],
     cta: "Nous contacter", ctaHref: "#contact" as string | null, highlight: false, whiteBtn: true,
   },
 ];
@@ -752,13 +793,29 @@ function LoyaltySlotDemo() {
 }
 
 /* ─── PRICING ───────────────────────────────────────────────────────────── */
+/* ── Icônes check / cross inline ────────────────────── */
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }} aria-hidden>
+      <path d="M2.5 8.5l3.5 3.5 7-8" stroke="#22C55E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function CrossIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }} aria-hidden>
+      <path d="M5 5l6 6M11 5l-6 6" stroke="rgba(245,245,245,0.25)" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function PricingSection() {
   const [annual, setAnnual] = useState(false);
   const [priceVisible, setPriceVisible] = useState(true);
 
   const toggleAnnual = (val: boolean) => {
     setPriceVisible(false);
-    setTimeout(() => { setAnnual(val); setPriceVisible(true); }, 160);
+    setTimeout(() => { setAnnual(val); setPriceVisible(true); }, 150);
   };
 
   const handleCheckoutPro = async () => {
@@ -781,16 +838,19 @@ function PricingSection() {
   return (
     <section id="pricing" style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
-        <div className="text-center mb-12 reveal">
+        <div className="text-center mb-14 reveal">
           <p className="eyebrow mb-4">Tarifs</p>
           <h2 className="section-title mb-4" style={{ color: T }}>
             Simple et{" "}
             <span className="serif" style={{ color: G }}>transparent</span>
           </h2>
-          <p className="lede max-w-xl mx-auto mb-8" style={{ color: TD }}>Sans engagement. Annulable à tout moment.</p>
+          <p className="lede max-w-xl mx-auto mb-8" style={{ color: TD }}>
+            Sans engagement. Annulable à tout moment.
+          </p>
 
           {/* Pill toggle */}
-          <div className="inline-flex items-center p-1 rounded-full" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${LINE}` }}>
+          <div className="inline-flex items-center p-1 rounded-full"
+            style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${LINE}` }}>
             {([false, true] as const).map((val) => (
               <button key={String(val)} onClick={() => toggleAnnual(val)}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
@@ -803,7 +863,11 @@ function PricingSection() {
                 {val ? "Annuel" : "Mensuel"}
                 {val && (
                   <span className="text-xs px-2 py-0.5 rounded-full font-bold"
-                    style={{ background: annual ? "rgba(8,8,8,0.2)" : "rgba(34,197,94,0.15)", color: annual ? "#080808" : G, fontFamily: "Geist Mono, monospace" }}>
+                    style={{
+                      background: annual ? "rgba(8,8,8,0.2)" : "rgba(34,197,94,0.15)",
+                      color: annual ? "#080808" : G,
+                      fontFamily: "Geist Mono, monospace",
+                    }}>
                     −20%
                   </span>
                 )}
@@ -812,12 +876,23 @@ function PricingSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 max-w-5xl mx-auto" style={{ gap: 16 }}>
           {PLANS.map((plan, i) => (
-            <PricingCard key={plan.id} plan={plan} annual={annual} priceVisible={priceVisible}
-              onCheckoutPro={handleCheckoutPro} delay={i * 0.08} />
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              annual={annual}
+              priceVisible={priceVisible}
+              onCheckoutPro={handleCheckoutPro}
+              delay={i * 0.08}
+            />
           ))}
         </div>
+
+        <p className="text-center mt-6"
+          style={{ fontSize: 13, color: "rgba(245,245,245,0.4)" }}>
+          Pas de carte bancaire requise · Annulable à tout moment · Données hébergées en France 🇫🇷
+        </p>
       </div>
     </section>
   );
@@ -826,8 +901,13 @@ function PricingSection() {
 function PricingCard({
   plan, annual, priceVisible, onCheckoutPro, delay,
 }: {
-  plan: typeof PLANS[0]; annual: boolean; priceVisible: boolean; onCheckoutPro: () => void; delay: number;
+  plan: typeof PLANS[0];
+  annual: boolean;
+  priceVisible: boolean;
+  onCheckoutPro: () => void;
+  delay: number;
 }) {
+  const [hov, setHov] = useState(false);
   const price = annual ? plan.annual : plan.monthly;
 
   const handleCta = () => {
@@ -835,66 +915,127 @@ function PricingCard({
     if (plan.ctaHref) window.location.href = plan.ctaHref;
   };
 
-  const borderColor = plan.highlight ? "rgba(34,197,94,0.5)" : LINE;
-  const boxShadow = plan.highlight ? "0 30px 70px rgba(34,197,94,0.12)" : "none";
-
   return (
-    <div className="reveal relative flex flex-col rounded-[22px] p-8 transition-all duration-200"
-      style={{ background: SURF, border: `1px solid ${borderColor}`, boxShadow, animationDelay: `${delay}s` }}
-      onMouseEnter={e => { if (!plan.highlight) { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; } }}
-      onMouseLeave={e => { if (!plan.highlight) { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; } }}>
+    <div
+      className="reveal relative flex flex-col"
+      style={{
+        background: plan.highlight ? "#131313" : SURF,
+        border: `1px solid ${plan.highlight ? "rgba(34,197,94,0.4)" : hov ? GB : "rgba(255,255,255,0.08)"}`,
+        borderRadius: 20,
+        padding: 32,
+        boxShadow: plan.highlight
+          ? "0 0 0 1px rgba(34,197,94,0.1) inset, 0 30px 60px rgba(34,197,94,0.1)"
+          : hov ? "0 16px 40px rgba(0,0,0,0.3)" : "none",
+        transform: !plan.highlight && hov ? "translateY(-4px)" : "translateY(0)",
+        transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s",
+        animationDelay: `${delay}s`,
+      }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}>
 
+      {/* "Le plus populaire" floating badge */}
       {plan.highlight && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold whitespace-nowrap"
-          style={{ background: G, color: "#080808" }}>
-          {plan.badge}
+        <div style={{
+          position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+          background: G, color: "#080808",
+          padding: "4px 16px", borderRadius: 999,
+          fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",
+          letterSpacing: "0.01em",
+        }}>
+          Le plus populaire
         </div>
       )}
 
-      {plan.extraBadge && (
-        <div className="inline-flex self-start mb-3 px-2.5 py-1 rounded-lg text-xs font-semibold"
-          style={{ background: "rgba(34,197,94,0.12)", color: G, border: `1px solid rgba(34,197,94,0.3)` }}>
-          {plan.extraBadge}
+      {/* "14 jours offerts" badge */}
+      {plan.highlight && (
+        <div style={{
+          alignSelf: "flex-start", marginBottom: 16,
+          padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+          background: "rgba(34,197,94,0.15)", color: G,
+          border: "1px solid rgba(34,197,94,0.3)",
+        }}>
+          🎁 14 jours offerts
         </div>
       )}
 
-      <div className="mb-2">
-        <h3 className="font-semibold text-lg" style={{ color: T }}>{plan.name}</h3>
-        {!plan.highlight && <p className="text-sm mt-0.5" style={{ color: TD }}>{plan.badge}</p>}
+      {/* Name + subtitle */}
+      <h3 style={{ fontSize: 15, fontWeight: 600, color: T, letterSpacing: "-0.01em" }}>
+        {plan.name}
+      </h3>
+      <p style={{ fontSize: 13, color: "rgba(245,245,245,0.45)", marginTop: 6, marginBottom: 20 }}>
+        {plan.subtitle}
+      </p>
+
+      {/* Price */}
+      <div style={{
+        display: "flex", alignItems: "baseline", gap: 0,
+        opacity: priceVisible ? 1 : 0,
+        transform: priceVisible ? "translateY(0)" : "translateY(4px)",
+        transition: "opacity 0.15s, transform 0.15s",
+      }}>
+        <span style={{ fontSize: 52, fontWeight: 600, letterSpacing: "-0.04em", color: T, lineHeight: 1 }}>
+          {price}€
+        </span>
+        <span style={{ fontSize: 16, color: "rgba(245,245,245,0.5)", marginLeft: 4 }}>/mois</span>
       </div>
 
-      <div className="mb-8 flex items-baseline gap-1"
-        style={{ opacity: priceVisible ? 1 : 0, transform: priceVisible ? "translateY(0)" : "translateY(4px)", transition: "opacity 0.3s, transform 0.3s" }}>
-        <span className="text-5xl font-bold tracking-tight" style={{ color: plan.highlight ? G : T }}>{price}€</span>
-        <span style={{ color: TD }}>/mois</span>
-      </div>
+      {/* Separator */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "24px 0" }} />
 
-      <ul className="space-y-3 text-sm mb-8 flex-1">
-        {plan.features.map(f => (
-          <li key={f} className="flex items-start gap-3">
-            <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: G }} />
-            <span style={{ color: plan.highlight ? T : TD }}>{f}</span>
+      {/* Included features */}
+      <ul style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+        {plan.included.map(f => (
+          <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "rgba(245,245,245,0.8)", lineHeight: 1.5 }}>
+            <CheckIcon />
+            {f}
           </li>
         ))}
       </ul>
 
-      <button onClick={handleCta}
-        className="w-full py-3.5 rounded-full font-bold text-sm transition-all"
+      {/* Excluded features (Standard only) */}
+      {plan.excluded.length > 0 && (
+        <>
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0 12px" }} />
+          <ul style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {plan.excluded.map(f => (
+              <li key={f} style={{
+                display: "flex", alignItems: "center", gap: 10,
+                fontSize: 14, color: "rgba(245,245,245,0.25)",
+                textDecoration: "line-through",
+              }}>
+                <CrossIcon />
+                {f}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* CTA */}
+      <button
+        onClick={handleCta}
         style={{
+          marginTop: 28,
+          width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8,
+          padding: "14px 24px", borderRadius: 999,
+          fontSize: 15, fontWeight: 600, cursor: "pointer",
           background: plan.highlight ? G : plan.whiteBtn ? "#F5F5F5" : "transparent",
           color: plan.highlight ? "#080808" : plan.whiteBtn ? "#080808" : T,
           border: plan.highlight || plan.whiteBtn ? "none" : `1px solid ${GB}`,
-          boxShadow: plan.highlight ? "0 4px 16px rgba(34,197,94,0.3)" : "none",
+          boxShadow: plan.highlight ? "0 4px 20px rgba(34,197,94,0.35)" : "none",
+          transition: "all 0.2s",
         }}
         onMouseEnter={e => {
-          if (plan.highlight) { (e.currentTarget as HTMLElement).style.background = G2; (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; }
-          else if (plan.whiteBtn) { (e.currentTarget as HTMLElement).style.background = "#e5e5e5"; }
-          else { (e.currentTarget as HTMLElement).style.background = GS; (e.currentTarget as HTMLElement).style.color = G; }
+          const el = e.currentTarget as HTMLElement;
+          if (plan.highlight) { el.style.background = G2; el.style.transform = "scale(1.02)"; }
+          else if (plan.whiteBtn) { el.style.background = "#e5e5e5"; }
+          else { el.style.background = GS; el.style.color = G; }
         }}
         onMouseLeave={e => {
-          if (plan.highlight) { (e.currentTarget as HTMLElement).style.background = G; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }
-          else if (plan.whiteBtn) { (e.currentTarget as HTMLElement).style.background = "#F5F5F5"; }
-          else { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = T; }
+          const el = e.currentTarget as HTMLElement;
+          if (plan.highlight) { el.style.background = G; el.style.transform = "scale(1)"; }
+          else if (plan.whiteBtn) { el.style.background = "#F5F5F5"; }
+          else { el.style.background = "transparent"; el.style.color = T; }
         }}>
         {plan.cta}
       </button>
