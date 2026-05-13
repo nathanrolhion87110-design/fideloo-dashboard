@@ -850,6 +850,187 @@ function BeforeAfter() {
   );
 }
 
+/* ─── PLAN PREVIEWS ─────────────────────────────────────────────────────── */
+function StandardDashboardPreview() {
+  const clients = [
+    { name: "Marie L.", pts: 8, max: 10 },
+    { name: "Karim B.", pts: 5, max: 10 },
+    { name: "Sophie T.", pts: 10, max: 10, reward: true },
+  ];
+  const qr = [1,1,1,1,1,1,0,0,0,1,1,0,1,0,1,1,0,0,0,1,1,1,1,1,1];
+  return (
+    <div style={{ width: "100%", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)", padding: 14, marginBottom: 20, overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["#EF4444","#F59E0B","#22C55E"].map((c,i) => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+        </div>
+        <div style={{ fontSize: 9, color: "rgba(245,245,245,0.3)", fontFamily: "monospace" }}>Standard</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+        {[{ label: "Clients", value: "187", trend: "↑ +12 ce mois" }, { label: "Points", value: "1 240", trend: "↑ +94" }].map((s, i) => (
+          <div key={i} style={{ padding: "8px 10px", background: "#161616", borderRadius: 8, border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ fontSize: 9, color: "rgba(245,245,245,0.4)", marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#F5F5F5" }}>{s.value}</div>
+            <div style={{ fontSize: 8, color: "#22C55E" }}>{s.trend}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        {clients.map((c, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 20, height: 20, borderRadius: "50%", background: "linear-gradient(135deg, #16A34A, #22C55E)", display: "grid", placeItems: "center", fontSize: 7, color: "white", fontWeight: 700, flexShrink: 0 }}>{c.name[0]}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                <span style={{ fontSize: 9, color: "#F5F5F5" }}>{c.name}</span>
+                <span style={{ fontSize: 8, color: c.reward ? "#22C55E" : "rgba(245,245,245,0.4)" }}>{c.reward ? "🎁 Récompense !" : `${c.pts}/${c.max}`}</span>
+              </div>
+              <div style={{ height: 3, background: "#1A1A1A", borderRadius: 999, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${(c.pts / c.max) * 100}%`, background: c.reward ? "#22C55E" : "rgba(34,197,94,0.5)", borderRadius: 999 }} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 10, padding: "6px 10px", background: "#161616", borderRadius: 8, display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5,5px)", gap: 1 }}>
+          {qr.map((v, i) => <div key={i} style={{ width: 5, height: 5, background: v ? "#22C55E" : "transparent", borderRadius: 0.5 }} />)}
+        </div>
+        <div style={{ fontSize: 9, color: "rgba(245,245,245,0.5)" }}>QR code · 1 commerce</div>
+      </div>
+    </div>
+  );
+}
+
+function ProDashboardPreview() {
+  return (
+    <div style={{ width: "100%", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.2)", padding: 14, marginBottom: 20, overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["#EF4444","#F59E0B","#22C55E"].map((c,i) => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+        </div>
+        <div style={{ fontSize: 9, color: "#22C55E", fontFamily: "monospace" }}>Pro ✦</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginBottom: 10 }}>
+        {[{ label: "Clients", value: "2.4k", trend: "+18%" }, { label: "Points", value: "18k", trend: "+12%" }, { label: "Visites", value: "340", trend: "+8%" }, { label: "Récomp.", value: "47", trend: "+24%" }].map((s, i) => (
+          <div key={i} style={{ padding: "6px 8px", background: "#161616", borderRadius: 8, border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ fontSize: 7, color: "rgba(245,245,245,0.4)" }}>{s.label}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#F5F5F5", marginTop: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 7, color: "#22C55E" }}>{s.trend}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: "8px 10px", background: "#161616", borderRadius: 8, marginBottom: 8 }}>
+        <div style={{ fontSize: 8, color: "rgba(245,245,245,0.4)", marginBottom: 6, fontFamily: "monospace" }}>ACTIVITÉ · 7J</div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 28 }}>
+          {[35,55,40,75,50,90,65].map((h, i) => (
+            <div key={i} style={{ flex: 1, height: `${h}%`, background: i === 5 ? "linear-gradient(180deg, #4ADE80, #22C55E)" : `rgba(34,197,94,${0.15 + h / 200})`, borderRadius: "2px 2px 0 0", border: i === 5 ? "1px solid rgba(74,222,128,0.4)" : "none" }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "8px 10px", background: "rgba(34,197,94,0.06)", borderRadius: 8, border: "1px solid rgba(34,197,94,0.2)", marginBottom: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+          <div style={{ fontSize: 8, color: "#22C55E", fontWeight: 700 }}>🔔 Campagne active</div>
+          <div style={{ fontSize: 7, color: "rgba(245,245,245,0.4)" }}>74% ouvert</div>
+        </div>
+        <div style={{ height: 4, background: "rgba(34,197,94,0.1)", borderRadius: 999, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: "74%", background: "linear-gradient(90deg, #16A34A, #22C55E)", borderRadius: 999 }} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+          {[{ l: "Envoyés", v: "1 240" }, { l: "Ouverts", v: "912" }, { l: "Convertis", v: "218" }].map((k, i) => (
+            <div key={i}>
+              <div style={{ fontSize: 7, color: "rgba(245,245,245,0.3)" }}>{k.l}</div>
+              <div style={{ fontSize: 9, fontWeight: 600, color: "#F5F5F5" }}>{k.v}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "8px 10px", background: "#161616", borderRadius: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+          <div style={{ fontSize: 8, color: "rgba(245,245,245,0.5)", fontFamily: "monospace" }}>TOP CLIENTS</div>
+          <div style={{ fontSize: 7, color: "#22C55E", background: "rgba(34,197,94,0.1)", padding: "2px 6px", borderRadius: 999 }}>Export CSV ↓</div>
+        </div>
+        {[{ name: "Sophie T.", visits: 24, badge: "🥇" }, { name: "Marc D.", visits: 18, badge: "🥈" }, { name: "Julie R.", visits: 15, badge: "🥉" }].map((c, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+            <span style={{ fontSize: 10 }}>{c.badge}</span>
+            <div style={{ width: 16, height: 16, borderRadius: "50%", background: "linear-gradient(135deg, #16A34A, #22C55E)", display: "grid", placeItems: "center", fontSize: 6, color: "white", fontWeight: 700 }}>{c.name[0]}</div>
+            <div style={{ flex: 1, fontSize: 9, color: "#F5F5F5" }}>{c.name}</div>
+            <div style={{ fontSize: 8, color: "rgba(34,197,94,0.8)" }}>{c.visits} visites</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BusinessDashboardPreview() {
+  const sites = [
+    { site: "Paris 1", pct: 85, clients: "3.4k" },
+    { site: "Lyon", pct: 62, clients: "2.8k" },
+    { site: "Marseille", pct: 48, clients: "2.0k" },
+  ];
+  return (
+    <div style={{ width: "100%", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", padding: 14, marginBottom: 20, overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["#EF4444","#F59E0B","#22C55E"].map((c,i) => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />)}
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["Paris 1","Lyon","Marseille"].map((s, i) => (
+            <div key={i} style={{ fontSize: 7, padding: "2px 6px", borderRadius: 999, background: i === 0 ? "#22C55E" : "rgba(255,255,255,0.05)", color: i === 0 ? "#080808" : "rgba(245,245,245,0.4)", fontWeight: i === 0 ? 700 : 400 }}>{s}</div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "8px 10px", background: "rgba(34,197,94,0.04)", borderRadius: 8, border: "1px solid rgba(34,197,94,0.12)", marginBottom: 8 }}>
+        <div style={{ fontSize: 7, color: "#22C55E", fontFamily: "monospace", marginBottom: 6 }}>CONSOLIDÉ · 3 ÉTABLISSEMENTS</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6 }}>
+          {[{ label: "Total clients", value: "8.2k" }, { label: "Points/jour", value: "1.4k" }, { label: "CA estimé", value: "€42k" }].map((s, i) => (
+            <div key={i}>
+              <div style={{ fontSize: 7, color: "rgba(245,245,245,0.4)" }}>{s.label}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#F5F5F5" }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "8px 10px", background: "#161616", borderRadius: 8, marginBottom: 8, border: "1px solid rgba(255,255,255,0.04)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+          <div style={{ fontSize: 8, color: "rgba(245,245,245,0.6)", fontWeight: 600 }}>🎰 Mini-jeu · Avis Google</div>
+          <div style={{ fontSize: 7, padding: "1px 6px", background: "rgba(34,197,94,0.15)", color: "#22C55E", borderRadius: 999 }}>+3× avis</div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 4 }}>
+          {[{ l: "Parties", v: "342" }, { l: "Avis déposés", v: "289" }, { l: "Taux conv.", v: "84%" }].map((k, i) => (
+            <div key={i} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: i === 2 ? "#22C55E" : "#F5F5F5" }}>{k.v}</div>
+              <div style={{ fontSize: 7, color: "rgba(245,245,245,0.35)" }}>{k.l}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "conic-gradient(#22C55E 0deg 45deg, #16A34A 45deg 90deg, #22C55E 90deg 135deg, #052E16 135deg 180deg, #22C55E 180deg 225deg, #16A34A 225deg 270deg, #22C55E 270deg 315deg, #052E16 315deg 360deg)", border: "2px solid rgba(34,197,94,0.3)", boxShadow: "0 0 15px rgba(34,197,94,0.2)" }} />
+        </div>
+      </div>
+      <div style={{ padding: "8px 10px", background: "#161616", borderRadius: 8, marginBottom: 8 }}>
+        <div style={{ fontSize: 7, color: "rgba(245,245,245,0.4)", fontFamily: "monospace", marginBottom: 6 }}>COMPARATIF ÉTABLISSEMENTS</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          {sites.map((s, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ fontSize: 8, color: "rgba(245,245,245,0.5)", width: 50, flexShrink: 0 }}>{s.site}</div>
+              <div style={{ flex: 1, height: 5, background: "#0D0D0D", borderRadius: 999, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${s.pct}%`, background: "linear-gradient(90deg, #16A34A, #22C55E)", borderRadius: 999 }} />
+              </div>
+              <div style={{ fontSize: 8, color: "#22C55E", width: 28, textAlign: "right", flexShrink: 0 }}>{s.clients}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "6px 10px", background: "rgba(34,197,94,0.04)", borderRadius: 8, border: "1px solid rgba(34,197,94,0.1)", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22C55E", animation: "pulseGreen 2s infinite", flexShrink: 0 }} />
+        <div style={{ fontSize: 8, color: "rgba(245,245,245,0.5)" }}>API · Webhook actif</div>
+        <div style={{ marginLeft: "auto", fontSize: 7, color: "#22C55E", fontFamily: "monospace" }}>99.9% uptime</div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── PRICING ───────────────────────────────────────────────────────────── */
 function CheckIcon() {
   return (
@@ -978,7 +1159,11 @@ function PricingCard({ plan, annual, priceVisible, onCheckoutPro, delay }: {
       )}
 
       <h3 style={{ fontSize: 15, fontWeight: 600, color: T, letterSpacing: "-0.01em" }}>{plan.name}</h3>
-      <p style={{ fontSize: 13, color: "rgba(245,245,247,0.45)", marginTop: 6, marginBottom: 20 }}>{plan.subtitle}</p>
+      <p style={{ fontSize: 13, color: "rgba(245,245,247,0.45)", marginTop: 6, marginBottom: 16 }}>{plan.subtitle}</p>
+
+      {plan.id === "standard" && <StandardDashboardPreview />}
+      {plan.id === "pro" && <ProDashboardPreview />}
+      {plan.id === "business" && <BusinessDashboardPreview />}
 
       <div style={{ display: "flex", alignItems: "baseline", opacity: priceVisible ? 1 : 0, transform: priceVisible ? "translateY(0)" : "translateY(4px)", transition: "opacity 0.15s, transform 0.15s" }}>
         <span style={{ fontSize: 52, fontWeight: 700, letterSpacing: "-0.04em", color: T, lineHeight: 1 }}>{price}€</span>
