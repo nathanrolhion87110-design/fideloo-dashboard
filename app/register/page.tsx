@@ -216,7 +216,8 @@ export default function RegisterPage() {
             <div className="relative">
               <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
               <input type="text" required value={businessName} onChange={(e) => setBusinessName(e.target.value)}
-                className="input-field pl-10" placeholder="Ma Boulangerie" />
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
+                placeholder="Ma Boulangerie" />
             </div>
           </div>
 
@@ -227,7 +228,8 @@ export default function RegisterPage() {
             <div className="relative">
               <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
               <select value={businessType} onChange={(e) => setBusinessType(e.target.value)}
-                className="input-field pl-10 appearance-none">
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors appearance-none pl-10"
+                style={{ backgroundColor: "#111111" }}>
                 <option value="restaurant">Restaurant</option>
                 <option value="boulangerie">Boulangerie</option>
                 <option value="coiffeur">Coiffeur</option>
@@ -245,7 +247,8 @@ export default function RegisterPage() {
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className="input-field pl-10" placeholder="vous@commerce.fr" />
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
+                placeholder="vous@commerce.fr" />
             </div>
           </div>
 
@@ -256,7 +259,8 @@ export default function RegisterPage() {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
               <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                className="input-field pl-10" placeholder="••••••••" />
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
+                placeholder="••••••••" />
             </div>
           </div>
 

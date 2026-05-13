@@ -313,6 +313,23 @@ body {
 }
 select.input-dark option { background: var(--surface); }
 
+/* ─── Autofill — neutralise le fond blanc imposé par le navigateur ─────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #0d0d0d inset !important;
+  -webkit-text-fill-color: #F5F5F5 !important;
+  caret-color: #F5F5F5;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Select dark — fond sombre pour la liste d'options */
+select option {
+  background: #111111;
+  color: #F5F5F5;
+}
+
 /* ─── Sections ──────────────────────────────────────────────────────────────── */
 .section-dark { background: var(--bg); color: var(--text); padding: 96px 0; }
 .section-light { background: var(--light); color: var(--ink); padding: 96px 0; }
