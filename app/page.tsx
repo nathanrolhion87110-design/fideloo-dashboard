@@ -31,20 +31,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "Dans le téléphone natif",
     desc: "La carte s'ajoute en un tap dans Apple Wallet ou Google Wallet — l'app déjà installée sur tous les téléphones. Aucun téléchargement pour vos clients.",
-    visual: (
-      <div style={{ marginTop: 20, padding: "12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #22C55E, #16A34A)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "white", fontSize: 14 }}>🃏</span>
-          </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#F5F5F5" }}>Carte Fidélité</div>
-            <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)" }}>Ajoutée à Apple Wallet</div>
-          </div>
-          <div style={{ marginLeft: "auto", background: "#22C55E", borderRadius: 999, padding: "3px 8px", fontSize: 10, color: "#080808", fontWeight: 700 }}>✓ Ajoutée</div>
-        </div>
-      </div>
-    ),
+    visual: <WalletAnimation />,
   },
   {
     icon: (
@@ -58,17 +45,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "Inscription en 30 secondes",
     desc: "Affichez votre QR code en caisse. Le client scanne avec son appareil photo, remplit son prénom et son email — c'est tout. Sa carte apparaît instantanément.",
-    visual: (
-      <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
-        <div style={{ padding: 12, background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,8px)", gap: 2 }}>
-            {[1,1,1,1,1,1,1, 1,0,0,0,0,0,1, 1,0,1,1,1,0,1, 1,0,1,0,1,0,1, 1,0,1,1,1,0,1, 1,0,0,0,0,0,1, 1,1,1,1,1,1,1].map((v, i) => (
-              <div key={i} style={{ width: 8, height: 8, background: v ? "#22C55E" : "transparent", borderRadius: 1 }} />
-            ))}
-          </div>
-        </div>
-      </div>
-    ),
+    visual: <ScanAnimation />,
   },
   {
     icon: (
@@ -81,19 +58,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "Mise à jour instantanée",
     desc: "Vous ajoutez des points en un clic depuis votre dashboard. La carte dans le Wallet du client se met à jour en temps réel — sans action de sa part.",
-    visual: (
-      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 4 }}>Points</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#F5F5F5" }}>7 <span style={{ fontSize: 11, color: "#22C55E" }}>→ 8</span></div>
-        </div>
-        <div style={{ width: 1, height: 32, background: "rgba(255,255,255,0.06)" }} />
-        <div style={{ flex: 1, paddingLeft: 8 }}>
-          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 4 }}>Wallet mis à jour</div>
-          <div style={{ fontSize: 10, color: "#22C55E", fontWeight: 600 }}>● Instantané</div>
-        </div>
-      </div>
-    ),
+    visual: <PointsAnimation />,
   },
   {
     icon: (
@@ -107,16 +72,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "Analytics qui parlent business",
     desc: "Fréquence de visite, clients les plus fidèles, points distribués, récompenses utilisées. Des chiffres actionnables, pas des tableaux incompréhensibles.",
-    visual: (
-      <div style={{ marginTop: 20, padding: "12px 12px 8px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 8 }}>Visites — 7 derniers jours</div>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 32 }}>
-          {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-            <div key={i} style={{ flex: 1, height: `${h}%`, background: i === 5 ? "#22C55E" : "rgba(34,197,94,0.3)", borderRadius: "3px 3px 0 0" }} />
-          ))}
-        </div>
-      </div>
-    ),
+    visual: <ChartAnimation />,
   },
   {
     icon: (
@@ -130,14 +86,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "100% à votre image",
     desc: "Couleur principale, logo, nom de la récompense, seuil de points — chaque détail est personnalisable. Votre carte reflète votre identité de marque.",
-    visual: (
-      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-        {["#22C55E", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6"].map((c, i) => (
-          <div key={i} style={{ width: i === 0 ? 28 : 20, height: i === 0 ? 28 : 20, borderRadius: "50%", background: c, border: i === 0 ? "2px solid white" : "none", flexShrink: 0 }} />
-        ))}
-        <div style={{ marginLeft: "auto", fontSize: 10, color: "rgba(245,245,245,0.4)" }}>Votre couleur</div>
-      </div>
-    ),
+    visual: <ColorAnimation />,
   },
   {
     icon: (
@@ -150,18 +99,7 @@ const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: Re
     ),
     title: "Notifications push natives",
     desc: "Envoyez une offre directement sur l'écran de verrouillage de vos clients. Taux d'ouverture 4× supérieur aux SMS. Zéro spam, zéro désabonnement.",
-    visual: (
-      <div style={{ marginTop: 20, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 28, height: 28, background: "#22C55E", borderRadius: 8, display: "grid", placeItems: "center", fontSize: 14, flexShrink: 0 }}>🎁</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#F5F5F5" }}>Boulangerie Martin</div>
-            <div style={{ fontSize: 10, color: "rgba(245,245,245,0.5)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Offre spéciale — Café offert aujourd&apos;hui !</div>
-          </div>
-          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.3)", flexShrink: 0 }}>maintenant</div>
-        </div>
-      </div>
-    ),
+    visual: <NotifAnimation />,
   },
 ];
 
@@ -202,6 +140,303 @@ const FAQS = [
   { q: "Puis-je importer mes clients existants ?", a: "Oui, contactez-nous à contact@fideloo.fr et nous vous aidons à migrer vos clients depuis votre système actuel." },
   { q: "Que se passe-t-il si je dépasse la limite du plan gratuit ?", a: "Vos clients existants restent actifs. Vous ne pouvez plus en ajouter au-delà de 50. Passez au Pro en 1 clic pour les clients illimités." },
 ];
+
+/* ─── ANIMATION STYLES ───────────────────────────────────────────────────── */
+function AnimationStyles() {
+  return (
+    <style>{`
+      @keyframes walletSlide {
+        0%   { opacity: 0; transform: translateY(22px); }
+        20%  { opacity: 1; transform: translateY(0px);  }
+        70%  { opacity: 1; transform: translateY(0px);  }
+        88%  { opacity: 0; transform: translateY(-10px);}
+        100% { opacity: 0; transform: translateY(22px); }
+      }
+      @keyframes laserScan {
+        0%   { transform: translateY(0px);  opacity: 0; }
+        8%   { opacity: 1; }
+        92%  { opacity: 1; }
+        100% { transform: translateY(76px); opacity: 0; }
+      }
+      @keyframes checkAppear {
+        0%,  58% { opacity: 0; transform: scale(0);   }
+        72%       { opacity: 1; transform: scale(1.1); }
+        82%       { opacity: 1; transform: scale(1);   }
+        100%      { opacity: 0; transform: scale(0);   }
+      }
+      @keyframes barGrow {
+        from { transform: scaleY(0); transform-origin: bottom; }
+        to   { transform: scaleY(1); transform-origin: bottom; }
+      }
+      @keyframes celebrateStar {
+        0%   { opacity: 0; transform: scale(0)   rotate(0deg);   }
+        30%  { opacity: 1; transform: scale(1.3) rotate(20deg);  }
+        65%  { opacity: 1; transform: scale(1)   rotate(0deg);   }
+        100% { opacity: 0; transform: scale(0)   rotate(-20deg); }
+      }
+      @keyframes notifDrop {
+        0%   { transform: translateY(-70px); opacity: 0; }
+        14%  { transform: translateY(0px);   opacity: 1; }
+        70%  { transform: translateY(0px);   opacity: 1; }
+        84%  { transform: translateY(-8px);  opacity: 0; }
+        100% { transform: translateY(-70px); opacity: 0; }
+      }
+      @keyframes badgePulse {
+        0%, 100% { transform: scale(1);   }
+        50%       { transform: scale(1.5); }
+      }
+    `}</style>
+  );
+}
+
+/* ─── FEATURE ANIMATIONS ────────────────────────────────────────────────── */
+function WalletAnimation() {
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: 20, height: 200, alignItems: "center" }}>
+      <div style={{
+        width: 110, height: 186, borderRadius: 20,
+        border: "2px solid rgba(34,197,94,0.3)",
+        background: "#0D0D0D", position: "relative",
+        overflow: "hidden", display: "flex",
+        flexDirection: "column", alignItems: "center",
+        paddingTop: 26,
+      }}>
+        {/* Notch */}
+        <div style={{
+          position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+          width: 44, height: 12, background: "#0D0D0D",
+          borderRadius: "0 0 8px 8px",
+          border: "1px solid rgba(34,197,94,0.12)", borderTop: "none",
+        }} />
+        {/* Sliding wallet card */}
+        <div style={{
+          width: 82, height: 50, borderRadius: 10,
+          background: "linear-gradient(135deg, #16A34A, #22C55E, #4ADE80)",
+          padding: "7px 9px",
+          animation: "walletSlide 4s ease-in-out infinite",
+          boxShadow: "0 6px 20px rgba(34,197,94,0.45)",
+        }}>
+          <div style={{ fontSize: 7, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginBottom: 5, letterSpacing: "0.04em" }}>FIDÉLITÉ</div>
+          <div style={{ fontSize: 5, color: "rgba(255,255,255,0.6)", letterSpacing: 3, marginBottom: 4 }}>● ● ● ● ● ● ●</div>
+          <div style={{ fontSize: 6, color: "rgba(255,255,255,0.5)" }}>8 / 10 pts</div>
+        </div>
+        {/* Home indicator */}
+        <div style={{
+          position: "absolute", bottom: 7, left: "50%", transform: "translateX(-50%)",
+          width: 32, height: 3, borderRadius: 99, background: "rgba(34,197,94,0.35)",
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function ScanAnimation() {
+  const QR = [1,1,1,1,1,1,1, 1,0,0,0,0,0,1, 1,0,1,1,1,0,1, 1,0,1,0,1,0,1, 1,0,1,1,1,0,1, 1,0,0,0,0,0,1, 1,1,1,1,1,1,1];
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+      <div style={{
+        position: "relative", width: 100, height: 100,
+        padding: 10, background: "#0D0D0D",
+        borderRadius: 12, border: "1px solid rgba(34,197,94,0.3)",
+        overflow: "hidden",
+      }}>
+        {/* QR grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, height: "100%" }}>
+          {QR.map((v, i) => (
+            <div key={i} style={{ background: v ? "#22C55E" : "transparent", borderRadius: 1 }} />
+          ))}
+        </div>
+        {/* Laser line */}
+        <div style={{
+          position: "absolute", left: 8, right: 8, top: 10, height: 2,
+          background: "linear-gradient(90deg, transparent, #22C55E, #4ADE80, #22C55E, transparent)",
+          boxShadow: "0 0 8px #22C55E, 0 0 16px rgba(34,197,94,0.5)",
+          animation: "laserScan 2.5s ease-in-out infinite",
+        }} />
+        {/* Check overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgba(13,13,13,0.88)",
+          animation: "checkAppear 2.5s ease-in-out infinite",
+          borderRadius: 12,
+        }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: "50%",
+            background: "rgba(34,197,94,0.18)",
+            border: "2px solid #22C55E",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, color: "#22C55E", fontWeight: 700,
+          }}>✓</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PointsAnimation() {
+  const [count, setCount] = useState(7);
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCount(c => {
+        if (c >= 10) {
+          setCelebrate(true);
+          setTimeout(() => setCelebrate(false), 1300);
+          return 7;
+        }
+        return c + 1;
+      });
+    }, 950);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{ marginTop: 16, padding: "14px 16px", background: "#0D0D0D", borderRadius: 14, border: "1px solid rgba(34,197,94,0.15)" }}>
+      <div style={{ fontSize: 10, color: "rgba(245,245,245,0.35)", fontFamily: "Geist Mono, monospace", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        Points fidélité
+      </div>
+      <div style={{ position: "relative", display: "inline-flex", alignItems: "baseline", gap: 6 }}>
+        <span style={{ fontSize: 38, fontWeight: 700, color: "#22C55E", lineHeight: 1, fontVariantNumeric: "tabular-nums", transition: "color 0.2s" }}>
+          {count}
+        </span>
+        <span style={{ fontSize: 13, color: "rgba(245,245,245,0.35)" }}>/ 10</span>
+        {celebrate && (
+          <>
+            <span style={{ position: "absolute", top: -10, right: -18, fontSize: 11, color: "#4ADE80", animation: "celebrateStar 1.3s ease forwards" }}>✦</span>
+            <span style={{ position: "absolute", top: -5,  right: -30, fontSize: 9,  color: "#22C55E", animation: "celebrateStar 1.3s ease 0.1s forwards" }}>✦</span>
+            <span style={{ position: "absolute", top: -12, right: -4,  fontSize: 8,  color: "#4ADE80", animation: "celebrateStar 1.3s ease 0.2s forwards" }}>✦</span>
+          </>
+        )}
+      </div>
+      {celebrate && (
+        <div style={{ fontSize: 10, color: "#22C55E", fontWeight: 600, marginTop: 2, animation: "celebrateStar 1.3s ease forwards" }}>
+          🎉 Récompense disponible !
+        </div>
+      )}
+      <div style={{ marginTop: 10, height: 5, borderRadius: 999, background: "#161616", overflow: "hidden" }}>
+        <div style={{
+          height: "100%", borderRadius: 999,
+          width: `${(count / 10) * 100}%`,
+          background: "linear-gradient(90deg, #16A34A, #22C55E, #4ADE80)",
+          transition: "width 0.45s ease",
+          boxShadow: "0 0 8px rgba(34,197,94,0.5)",
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function ChartAnimation() {
+  const [key, setKey] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setKey(k => k + 1), 4200);
+    return () => clearInterval(t);
+  }, []);
+
+  const heights = [45, 70, 55, 85, 60, 95, 75];
+  const days = ["L", "M", "M", "J", "V", "S", "D"];
+
+  return (
+    <div style={{ marginTop: 20 }}>
+      <div key={key} style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 64 }}>
+        {heights.map((h, i) => (
+          <div key={i} style={{
+            flex: 1, height: `${h}%`,
+            borderRadius: "3px 3px 0 0",
+            background: h === 95
+              ? "linear-gradient(180deg, #4ADE80, #22C55E)"
+              : "rgba(34,197,94,0.22)",
+            boxShadow: h === 95 ? "0 0 14px rgba(34,197,94,0.55)" : "none",
+            transformOrigin: "bottom",
+            animation: `barGrow 0.55s ease-out ${i * 0.07}s both`,
+          }} />
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+        {days.map((d, i) => (
+          <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 9, color: "rgba(245,245,245,0.28)", fontFamily: "Geist Mono, monospace" }}>
+            {d}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ColorAnimation() {
+  const palette = ["#16A34A", "#22C55E", "#052e16", "#166534"];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % palette.length), 1800);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{ marginTop: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+      <div style={{
+        width: 176, height: 90, borderRadius: 14,
+        background: palette[idx],
+        transition: "background 0.9s ease",
+        padding: "11px 14px",
+        boxShadow: `0 8px 24px ${palette[idx]}66`,
+        position: "relative", overflow: "hidden",
+      }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.9)", marginBottom: 7, letterSpacing: "0.03em" }}>Boulangerie Martin</div>
+        <div style={{ fontSize: 5, letterSpacing: 4, color: "rgba(255,255,255,0.5)", marginBottom: 7 }}>● ● ● ● ● ● ● ●</div>
+        <div style={{ fontSize: 8, color: "rgba(255,255,255,0.65)" }}>8 / 10 points</div>
+        <div style={{ position: "absolute", top: -16, right: -16, width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
+      </div>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        {palette.map((c, i) => (
+          <div key={i} style={{
+            width: i === idx ? 26 : 18,
+            height: i === idx ? 26 : 18,
+            borderRadius: "50%", background: c,
+            border: i === idx ? "2px solid rgba(255,255,255,0.7)" : "none",
+            transition: "all 0.4s ease",
+            boxShadow: i === idx ? `0 0 10px ${c}99` : "none",
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NotifAnimation() {
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+      <div style={{
+        width: 162, height: 96, borderRadius: 18,
+        background: "#0D0D0D", border: "1px solid rgba(34,197,94,0.2)",
+        position: "relative", overflow: "hidden",
+        padding: "10px 12px",
+      }}>
+        <div style={{ textAlign: "center", fontSize: 15, fontWeight: 500, color: "rgba(245,245,245,0.75)", marginBottom: 8 }}>
+          14:32
+        </div>
+        <div style={{
+          background: "#1A1A1A",
+          border: "1px solid rgba(34,197,94,0.25)",
+          borderRadius: 10, padding: "6px 8px",
+          animation: "notifDrop 4s ease-in-out infinite",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{ width: 22, height: 22, borderRadius: 7, background: "#22C55E", display: "grid", placeItems: "center", fontSize: 11, flexShrink: 0, position: "relative" }}>
+              🎁
+              <div style={{ position: "absolute", top: -3, right: -3, width: 7, height: 7, borderRadius: "50%", background: "#4ADE80", animation: "badgePulse 1s ease-in-out infinite" }} />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 9, fontWeight: 600, color: "#F5F5F5" }}>Boulangerie Martin</div>
+              <div style={{ fontSize: 8, color: "rgba(245,245,245,0.45)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Café offert aujourd&apos;hui !</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ─── PAGE ──────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
@@ -575,6 +810,7 @@ function CounterStat({ value, suffix, label }: { value: number; suffix: string; 
 function FeaturesSection() {
   return (
     <section id="features" style={{ background: BG, padding: "96px 0" }}>
+      <AnimationStyles />
       <div className="container">
         <div className="text-center mb-16 reveal">
           <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 16 }}>
@@ -603,9 +839,11 @@ function FeatureCard({ icon, title, desc, visual, delay }: { icon: React.ReactNo
   const [hovered, setHovered] = useState(false);
   return (
     <div className="reveal" style={{
-      background: SURF, border: `1px solid ${hovered ? IB : LINE}`, borderRadius: 20, padding: 32,
+      background: SURF,
+      border: `1px solid ${hovered ? "rgba(34,197,94,0.3)" : LINE}`,
+      borderRadius: 20, padding: 32,
       transform: hovered ? "translateY(-6px)" : "translateY(0)",
-      boxShadow: hovered ? `0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px ${IB}` : "none",
+      boxShadow: hovered ? "0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(34,197,94,0.05)" : "none",
       transition: "border-color 0.3s, transform 0.3s, box-shadow 0.3s",
       animationDelay: `${delay}s`,
     }}
@@ -613,7 +851,8 @@ function FeatureCard({ icon, title, desc, visual, delay }: { icon: React.ReactNo
       onMouseLeave={() => setHovered(false)}>
       <div style={{
         width: 48, height: 48, borderRadius: 12, display: "grid", placeItems: "center",
-        background: hovered ? "rgba(99,102,241,0.18)" : IS, color: I,
+        background: hovered ? "rgba(34,197,94,0.14)" : "rgba(34,197,94,0.07)",
+        color: "#22C55E",
         transition: "background 0.3s",
       }}>
         <span style={{ display: "flex", transform: hovered ? "scale(1.1)" : "scale(1)", transition: "transform 0.3s" }}>
