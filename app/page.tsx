@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, Menu, X, Star, Send, QrCode, Gift, Shield } from "lucide-react";
 
@@ -9,13 +9,74 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 /* ─── DATA ──────────────────────────────────────────────────────────────── */
 const USE_CASES = ["Boulangerie", "Restaurant", "Coiffeur", "Café", "Pizzeria", "Boutique", "Épicerie", "Salon de beauté", "Fleuriste", "Pharmacie"];
 
-const FEATURES = [
-  { emoji: "📱", title: "Apple & Google Wallet", desc: "La carte s'ajoute en 1 tap dans le téléphone natif du client. Aucune app à télécharger." },
-  { emoji: "🔲", title: "QR Code instantané", desc: "Affichez votre QR en caisse. Le client scanne et s'inscrit en 30 secondes." },
-  { emoji: "⚡", title: "Mise à jour temps réel", desc: "Ajoutez des points en 1 clic. La carte se met à jour instantanément sur le téléphone." },
-  { emoji: "📊", title: "Analytics détaillés", desc: "Suivez vos meilleurs clients, la fréquence de visite et vos récompenses distribuées." },
-  { emoji: "🎨", title: "100% personnalisable", desc: "Couleurs, logo, récompenses : votre carte à votre image en quelques clics." },
-  { emoji: "🔔", title: "Notifications push", desc: "Envoyez des offres directement sur l'écran de verrouillage de vos clients." },
+const FEATURES: { icon: React.ReactNode; title: string; desc: string }[] = [
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/>
+        <path d="M16 12h5v4h-5a2 2 0 0 1 0-4z"/>
+      </svg>
+    ),
+    title: "Dans le téléphone natif",
+    desc: "La carte s'ajoute en un tap dans Apple Wallet ou Google Wallet — l'app déjà installée sur tous les téléphones. Aucun téléchargement pour vos clients.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3v3M14 21v-3"/>
+        <path d="M5 5h3v3H5zM16 5h3v3h-3zM5 16h3v3H5z"/>
+      </svg>
+    ),
+    title: "Inscription en 30 secondes",
+    desc: "Affichez votre QR code en caisse. Le client scanne avec son appareil photo, remplit son prénom et son email — c'est tout. Sa carte apparaît instantanément.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+    ),
+    title: "Mise à jour instantanée",
+    desc: "Vous ajoutez des points en un clic depuis votre dashboard. La carte dans le Wallet du client se met à jour en temps réel — sans action de sa part.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="M18 9l-5 5-4-4-3 3"/>
+      </svg>
+    ),
+    title: "Analytics qui parlent business",
+    desc: "Fréquence de visite, clients les plus fidèles, points distribués, récompenses utilisées. Des chiffres actionnables, pas des tableaux incompréhensibles.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="13.5" cy="6.5" r="2.5"/>
+        <circle cx="17.5" cy="10.5" r="2.5"/>
+        <circle cx="8.5" cy="7.5" r="2.5"/>
+        <circle cx="6.5" cy="12.5" r="2.5"/>
+        <path d="M12 20v-4"/>
+        <path d="M8 20h8"/>
+        <path d="M7 16c1.5-2 5-2 5 0"/>
+      </svg>
+    ),
+    title: "100% à votre image",
+    desc: "Couleur principale, logo, nom de la récompense, seuil de points — chaque détail est personnalisable. Votre carte reflète votre identité de marque.",
+  },
+  {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    ),
+    title: "Notifications push natives",
+    desc: "Envoyez une offre directement sur l'écran de verrouillage de vos clients. Taux d'ouverture 4× supérieur aux SMS. Zéro spam, zéro désabonnement.",
+  },
 ];
 
 const SLOT_EMOJIS = ["☕", "🎁", "⭐", "🍕", "💎"];
@@ -164,11 +225,11 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
         {/* Right actions — desktop */}
         <div className="hidden md:flex items-center gap-2 shrink-0">
           <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all"
-            style={{ background: "#111", color: "#fff", border: `1px solid ${LINE}` }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
-            <AppleLogoSVG size={13} />
+            className="flex items-center gap-2 transition-all"
+            style={{ background: "#111111", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 14px", fontSize: 13, fontWeight: 500 }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(34,197,94,0.3)"; el.style.color = G; }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(255,255,255,0.1)"; el.style.color = "#fff"; }}>
+            <AppleLogoSVG size={14} />
             App Store
           </a>
           <Link href="/login" className="px-3 py-2 text-sm font-medium transition-colors rounded-xl"
@@ -379,34 +440,54 @@ function FeaturesSection() {
     <section id="features" style={{ background: "#0D0D0D", padding: "96px 0" }}>
       <div className="container">
         <div className="text-center mb-16 reveal">
-          <p className="eyebrow mb-4">Fonctionnalités</p>
-          <h2 className="section-title mb-4" style={{ color: T }}>
-            Tout pour{" "}
-            <span className="serif" style={{ color: G }}>fidéliser</span>
-            {" "}sans complexité
+          <p className="mb-4" style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: G, textTransform: "uppercase" }}>
+            Fonctionnalités
+          </p>
+          <h2 className="mb-4" style={{ color: T, fontSize: "clamp(34px, 4.4vw, 56px)", fontWeight: 500, letterSpacing: "-0.028em", lineHeight: 1.1 }}>
+            Tout ce qu&apos;il faut pour{" "}
+            <span className="serif" style={{ color: G }}>fidéliser.</span>
           </h2>
-          <p className="lede max-w-2xl mx-auto" style={{ color: TD }}>
-            Une plateforme conçue pour les commerçants qui veulent fidéliser sans compétence technique.
+          <p style={{ color: "rgba(245,245,245,0.55)", fontSize: 18, marginTop: 16 }}>
+            Une plateforme complète. Une seule interface. Zéro complexité.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <div key={f.title} className="reveal p-7 rounded-[22px] transition-all duration-200 group"
-              style={{ background: SURF, border: `1px solid ${LINE}`, animationDelay: `${i * 0.05}s` }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 text-2xl"
-                style={{ background: GS, border: `1px solid ${GB}` }}>
-                {f.emoji}
-              </div>
-              <h3 className="font-semibold mb-2 text-base" style={{ color: T }}>{f.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: TD }}>{f.desc}</p>
-            </div>
+            <FeatureCard key={i} icon={f.icon} title={f.title} desc={f.desc} delay={i * 0.05} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode; title: string; desc: string; delay: number }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: SURF, border: `1px solid ${hovered ? GB : LINE}`, borderRadius: 20, padding: 32,
+        transform: hovered ? "translateY(-6px)" : "translateY(0)",
+        boxShadow: hovered ? "0 20px 40px rgba(0,0,0,0.3)" : "none",
+        transition: "border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease",
+        animationDelay: `${delay}s`,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}>
+      <div style={{
+        width: 48, height: 48, borderRadius: 12, display: "grid", placeItems: "center",
+        background: hovered ? "rgba(34,197,94,0.18)" : "rgba(34,197,94,0.1)",
+        color: G, transition: "background 0.3s ease",
+      }}>
+        <span style={{ display: "flex", transform: hovered ? "scale(1.1)" : "scale(1)", transition: "transform 0.3s ease" }}>
+          {icon}
+        </span>
+      </div>
+      <h3 style={{ fontSize: 17, fontWeight: 600, color: T, marginTop: 20, letterSpacing: "-0.02em" }}>{title}</h3>
+      <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(245,245,245,0.55)", marginTop: 10 }}>{desc}</p>
+    </div>
   );
 }
 
@@ -880,13 +961,13 @@ function AppStoreSection() {
                 Scannez les QR codes, ajoutez des points et suivez vos clients directement depuis l&apos;app Fideloo. Disponible sur iPhone.
               </p>
               <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-5 py-3.5 rounded-xl font-medium transition-all"
-                style={{ background: "#000", color: "#fff", border: `1px solid ${LINE}` }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
+                className="inline-flex items-center gap-3 font-medium transition-all"
+                style={{ background: "#000000", color: "#fff", border: `1px solid ${LINE}`, borderRadius: 14, padding: "14px 28px" }}
+                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = GB; el.style.color = G; el.style.transform = "scale(1.03)"; el.style.boxShadow = "0 20px 40px rgba(0,0,0,0.5)"; }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = LINE; el.style.color = "#fff"; el.style.transform = "scale(1)"; el.style.boxShadow = "none"; }}>
                 <AppleLogoSVG size={20} />
                 <div className="text-left">
-                  <div className="text-xs opacity-70">Disponible sur l&apos;</div>
+                  <div className="text-xs opacity-70">Disponible sur</div>
                   <div className="text-sm font-semibold">App Store</div>
                 </div>
               </a>
@@ -1071,11 +1152,11 @@ function Footer() {
             <span>· © {new Date().getFullYear()}</span>
           </div>
           <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all"
-            style={{ background: "#111", color: "#fff", border: `1px solid ${LINE}` }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = GB; (e.currentTarget as HTMLElement).style.color = G; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = LINE; (e.currentTarget as HTMLElement).style.color = "#fff"; }}>
-            <AppleLogoSVG size={13} />
+            className="flex items-center gap-2 transition-all"
+            style={{ background: "#111111", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 14px", fontSize: 13, fontWeight: 500 }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(34,197,94,0.3)"; el.style.color = G; }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(255,255,255,0.1)"; el.style.color = "#fff"; }}>
+            <AppleLogoSVG size={14} />
             App Store
           </a>
         </div>
@@ -1110,8 +1191,8 @@ function CookieBanner({ onAccept }: { onAccept: () => void }) {
 /* ─── UTILS ─────────────────────────────────────────────────────────────── */
 function AppleLogoSVG({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" />
+    <svg width={size} height={size} viewBox="0 0 814 1000" fill="currentColor" aria-hidden>
+      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.3-164-39.3c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 411.1 32 212.3 73.3 165.4c14.7-17.5 35.2-28.5 57.3-28.5 7.1 0 14.2 1.3 21 4.5 5.8 2.6 12.9 7.1 20 12.9 13.5 10.3 28.5 26.6 41.4 49.4 5.8 10.3 12.3 21 18.7 30.5 7.7 11.6 15.4 21.6 23.1 30.5 22.4 26 49.4 42.8 73.2 49.4-6.4 20.7-7.1 42.8-7.1 61 0 26 3.9 54.5 15.4 79.2 25.4-3.9 48.4-13.5 67.7-29.2 25.4-20.6 44.1-52.8 44.1-91.4 0-37.7-18-68.7-41.4-91.4-21.6-20.6-47.4-35.9-73.2-46.9-2.6-1.3-5.8-2.6-8.4-3.2-26-8.4-54.5-12.9-84.4-12.9-74.5 0-144 30.5-194.1 80.6-43.4 44.1-78.5 105.7-89.5 173.2C54.7 351 72.1 417 116.2 474.7c44.1 57.8 109.6 93.6 179.6 93.6 61.6 0 114.3-30.5 155.5-70.4l20-19.4 19.4 20c41.4 42.1 95.4 70.4 152.8 70.4 65.5 0 128.4-34 172.5-92.3 38.3-51.5 55.8-110.8 56.4-170.2z"/>
     </svg>
   );
 }
