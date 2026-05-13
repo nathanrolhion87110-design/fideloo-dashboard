@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Send, Bell, Plus, Clock, CheckCircle2 } from "lucide-react";
+import { Send, Bell, Plus, Clock, CheckCircle2, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
@@ -11,8 +11,37 @@ import GradientText from "../../../components/GradientText";
 
 interface Notification { id: string; title: string; message: string; created_at: string; }
 
+const DG = "#22C55E";
+const PRO_MONTHLY_LIMIT = 5;
+
+function FeatureLockedPage() {
+  return (
+    <div className="space-y-6 fade-in-up">
+      <div>
+        <h1 className="heading-display text-3xl"><GradientText>Notifications</GradientText></h1>
+        <p className="text-text-muted mt-1">Envoyez des offres push sur le Wallet de vos clients</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400, gap: 24, padding: 48, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 24 }}>
+        <div style={{ width: 64, height: 64, borderRadius: 16, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Lock size={28} color={DG} />
+        </div>
+        <div style={{ textAlign: "center", maxWidth: 420 }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#F5F5F5", marginBottom: 8 }}>Notifications Push disponibles à partir du plan Pro</div>
+          <div style={{ fontSize: 14, color: "rgba(245,245,245,0.5)", lineHeight: 1.6 }}>
+            Envoyez des campagnes push directement sur les Wallets Apple et Google de vos clients fidèles.
+          </div>
+        </div>
+        <a href="/dashboard/parametres" style={{ padding: "12px 28px", background: DG, color: "#080808", borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", marginTop: 8 }}>
+          Passer au plan Pro →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function NotificationsPage() {
   const { merchant } = useAuth();
+  const plan = (merchant as { plan?: string } | null)?.plan || "standard";
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -28,9 +57,18 @@ export default function NotificationsPage() {
       .finally(() => setLoadingHistory(false));
   }, [merchant]);
 
+  if (plan === "standard") return <FeatureLockedPage />;
+
+  const now = new Date();
+  const thisMonthNotifs = history.filter((n) => {
+    const d = new Date(n.created_at);
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  });
+  const isProLimitReached = plan === "pro" && thisMonthNotifs.length >= PRO_MONTHLY_LIMIT;
+
   const handleSend = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (!merchant || !title.trim() || !message.trim()) return;
+    if (!merchant || !title.trim() || !message.trim() || isProLimitReached) return;
     setSending(true);
     try {
       const res = await api.post<Notification>(`/merchants/${merchant.id}/notify`, { title, message });
@@ -46,22 +84,47 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6 fade-in-up">
-      <div>
-        <h1 className="heading-display text-3xl"><GradientText>Notifications</GradientText></h1>
-        <p className="text-text-muted mt-1" id="nav-notifs">Envoyez des offres push sur le Wallet de vos clients</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="heading-display text-3xl"><GradientText>Notifications</GradientText></h1>
+          <p className="text-text-muted mt-1" id="nav-notifs">Envoyez des offres push sur le Wallet de vos clients</p>
+        </div>
+        {plan === "pro" && (
+          <div style={{ padding: "8px 16px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, fontSize: 13, color: "rgba(245,245,245,0.6)" }}>
+            Campagnes ce mois-ci :{" "}
+            <span style={{ fontWeight: 700, color: thisMonthNotifs.length >= PRO_MONTHLY_LIMIT ? "#EF4444" : DG }}>
+              {thisMonthNotifs.length}/{PRO_MONTHLY_LIMIT}
+            </span>
+          </div>
+        )}
+        {plan === "business" && (
+          <div style={{ padding: "8px 16px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 12, fontSize: 13, color: DG, fontWeight: 600 }}>
+            ∞ Envois illimités
+          </div>
+        )}
       </div>
+
+      {isProLimitReached && (
+        <div style={{ padding: "14px 20px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 14, fontSize: 14, color: "#FCA5A5", display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <div>
+            <strong>Limite mensuelle atteinte</strong> — Le plan Pro permet 5 notifications/mois.{" "}
+            <a href="/dashboard/parametres" style={{ color: DG, fontWeight: 700, textDecoration: "none" }}>Passer au plan Business →</a>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <GlassCard className="p-6">
           <h2 className="text-lg font-bold text-text-main mb-6 flex items-center gap-2">
-            <Plus className="w-5 h-5" style={{ color: "var(--violet)" }} /> Nouvelle Notification
+            <Plus className="w-5 h-5" style={{ color: DG }} /> Nouvelle Notification
           </h2>
 
           <AnimatePresence>
             {sent && (
               <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 className="mb-4 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
-                style={{ background: "rgba(16,185,129,0.12)", color: "#34D399", border: "1px solid rgba(16,185,129,0.3)" }}>
+                style={{ background: "rgba(34,197,94,0.12)", color: DG, border: "1px solid rgba(34,197,94,0.3)" }}>
                 <CheckCircle2 className="w-4 h-4" /> Notification enregistrée et envoyée !
               </motion.div>
             )}
@@ -71,16 +134,18 @@ export default function NotificationsPage() {
             <div>
               <label className="block text-sm font-medium text-text-main mb-1.5">Titre de la notification</label>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={40} required
-                className="input-dark w-full rounded-xl py-3 px-4 text-sm" placeholder="Ex: -20% sur tout le magasin !" />
+                className="input-dark w-full rounded-xl py-3 px-4 text-sm" placeholder="Ex: -20% sur tout le magasin !"
+                disabled={isProLimitReached} />
               <p className="text-xs text-right text-text-muted mt-1">{title.length}/40</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-text-main mb-1.5">Message détaillé</label>
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} required
                 className="input-dark w-full rounded-xl py-3 px-4 text-sm resize-none"
-                placeholder="Venez profiter de notre offre exceptionnelle valable jusqu'à ce soir." />
+                placeholder="Venez profiter de notre offre exceptionnelle valable jusqu'à ce soir."
+                disabled={isProLimitReached} />
             </div>
-            <GlowButton type="submit" fullWidth size="lg" disabled={sending || !title.trim() || !message.trim()}>
+            <GlowButton type="submit" fullWidth size="lg" disabled={sending || !title.trim() || !message.trim() || isProLimitReached}>
               <Send className="w-4 h-4" /> {sending ? "Envoi en cours…" : "Enregistrer la notification"}
             </GlowButton>
             <p className="text-xs text-center text-text-muted">
@@ -94,12 +159,12 @@ export default function NotificationsPage() {
             <Bell className="w-4 h-4" /> Aperçu iPhone
           </div>
           <div className="w-full max-w-[320px] backdrop-blur-xl rounded-[2rem] p-4 mt-8"
-               style={{ background: "rgba(8,8,8,0.9)", border: "1px solid rgba(167,139,250,0.15)",
-                        boxShadow: "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(167,139,250,0.1)" }}>
+               style={{ background: "rgba(8,8,8,0.9)", border: "1px solid rgba(34,197,94,0.15)",
+                        boxShadow: "0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(34,197,94,0.08)" }}>
             <div className="flex justify-between items-center mb-2 px-1">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-extrabold"
-                     style={{ background: "var(--violet)", color: "#ffffff" }}>F</div>
+                     style={{ background: DG, color: "#080808" }}>F</div>
                 <span className="text-xs text-text-muted uppercase tracking-wider">Fideloo</span>
               </div>
               <span className="text-xs text-text-muted">Maintenant</span>

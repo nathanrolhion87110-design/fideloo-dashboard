@@ -19,6 +19,7 @@ export interface Merchant {
   avatar_url: string | null;
   google_id: string | null;
   created_at: string;
+  plan?: string;
 }
 
 interface AuthContextType {

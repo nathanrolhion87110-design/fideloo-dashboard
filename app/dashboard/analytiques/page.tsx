@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, TrendingUp } from "lucide-react";
+import { Users, TrendingUp, Lock } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
@@ -11,11 +11,40 @@ import GradientText from "../../../components/GradientText";
 interface Customer { id: string; name: string; email?: string | null; points: number; created_at: string; }
 interface Transaction { id: string; customer_id: string; points: number; created_at: string; }
 
-const CHART_PURPLE = "#a78bfa";
+const CHART_PURPLE = "#22C55E";
 const CHART_BLUE = "#34d399";
+const DG = "#22C55E";
+
+function FeatureLockedPage() {
+  return (
+    <div className="space-y-6 fade-in-up">
+      <div>
+        <h1 className="heading-display text-3xl"><GradientText>Analytiques</GradientText></h1>
+        <p className="text-text-muted mt-1">Suivez les performances de votre programme</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400, gap: 24, padding: 48, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 24 }}>
+        <div style={{ width: 64, height: 64, borderRadius: 16, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Lock size={28} color={DG} />
+        </div>
+        <div style={{ textAlign: "center", maxWidth: 420 }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#F5F5F5", marginBottom: 8 }}>Analytiques disponibles à partir du plan Pro</div>
+          <div style={{ fontSize: 14, color: "rgba(245,245,245,0.5)", lineHeight: 1.6 }}>
+            Accédez aux courbes d'acquisition, de distribution de points, au taux de rétention et au classement de vos meilleurs clients.
+          </div>
+        </div>
+        <a href="/dashboard/parametres" style={{ padding: "12px 28px", background: DG, color: "#080808", borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", marginTop: 8 }}>
+          Passer au plan Pro →
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function AnalyticsPage() {
   const { merchant } = useAuth();
+  const plan = (merchant as { plan?: string } | null)?.plan || "standard";
+
+  if (plan === "standard") return <FeatureLockedPage />;
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
