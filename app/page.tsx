@@ -7,16 +7,16 @@ import { ArrowRight, Check, ChevronDown, Menu, X, Send } from "lucide-react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
-const BG   = "#0A0A0B";
-const SURF = "#111827";
-const SURF2 = "#1a2235";
-const I    = "#6366F1";
-const I2   = "#4F46E5";
-const IS   = "rgba(99,102,241,0.10)";
-const IB   = "rgba(99,102,241,0.25)";
-const EM   = "#10B981";
-const T    = "#F5F5F7";
-const TD   = "#A1A1AA";
+const BG   = "#080808";
+const SURF = "#111111";
+const SURF2 = "#0D0D0D";
+const I    = "#22C55E";
+const I2   = "#16A34A";
+const IS   = "rgba(34,197,94,0.08)";
+const IB   = "rgba(34,197,94,0.25)";
+const EM   = "#22C55E";
+const T    = "#F5F5F5";
+const TD   = "rgba(245,245,245,0.6)";
 const LINE = "rgba(255,255,255,0.07)";
 
 /* ─── DATA ──────────────────────────────────────────────────────────────── */
@@ -350,7 +350,6 @@ export default function LandingPage() {
       <Navbar scrolled={scrolled} activeSection={activeSection} />
       <main>
         <Hero />
-        <SocialProof />
         <FeaturesSection />
         <DashboardPreview />
         <BeforeAfter />
@@ -379,7 +378,7 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-      style={{ background: scrolled ? "rgba(10,10,11,0.92)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? `1px solid ${LINE}` : "none" }}>
+      style={{ background: scrolled ? "rgba(8,8,8,0.95)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", borderBottom: scrolled ? `1px solid ${LINE}` : "none" }}>
       <div className="container h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
@@ -417,7 +416,7 @@ function Navbar({ scrolled, activeSection }: { scrolled: boolean; activeSection:
           </Link>
           <Link href="/register"
             className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold transition-all"
-            style={{ background: I, color: "#fff", boxShadow: `0 4px 16px rgba(99,102,241,0.35)` }}
+            style={{ background: I, color: "#fff", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = I2; (e.currentTarget as HTMLElement).style.transform = "scale(1.03)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = I; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
             Essai gratuit <ArrowRight className="w-3.5 h-3.5" />
@@ -464,9 +463,9 @@ function Hero() {
     <section className="relative overflow-hidden pt-28 pb-20" style={{ background: BG }}>
       {/* Orbs */}
       <div aria-hidden className="absolute pointer-events-none"
-        style={{ top: "-10%", left: "50%", transform: "translateX(-50%)", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 65%)", filter: "blur(80px)" }} />
+        style={{ top: "-10%", left: "50%", transform: "translateX(-50%)", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.10) 0%, transparent 65%)", filter: "blur(80px)" }} />
       <div aria-hidden className="absolute pointer-events-none"
-        style={{ top: "30%", right: "5%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)", filter: "blur(60px)" }} />
+        style={{ top: "30%", right: "5%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%)", filter: "blur(60px)" }} />
 
       <div className="container relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -481,7 +480,7 @@ function Hero() {
 
             <h1 style={{ color: T, fontSize: "clamp(38px, 5.5vw, 68px)", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1.08, marginBottom: 24 }}>
               Transformez chaque visite{" "}
-              <span style={{ background: `linear-gradient(135deg, ${I} 0%, #818CF8 50%, #A5B4FC 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <span style={{ background: `linear-gradient(135deg, ${I} 0%, #4ADE80 50%, #86EFAC 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 en client fidèle.
               </span>
             </h1>
@@ -494,7 +493,7 @@ function Hero() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" style={{ marginTop: 36 }}>
               <Link href="/register"
                 className="flex items-center justify-center gap-2 px-7 py-4 rounded-full font-bold text-base transition-all"
-                style={{ background: I, color: "#fff", boxShadow: "0 0 40px rgba(99,102,241,0.4)" }}
+                style={{ background: I, color: "#fff", boxShadow: "0 0 40px rgba(34,197,94,0.35)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = I2; (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = I; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
                 Créer ma carte gratuite <ArrowRight className="w-4 h-4" />
@@ -521,12 +520,12 @@ function Hero() {
           {/* Right — iPhone mockup */}
           <div className="flex-shrink-0 relative fade-in-up" style={{ animationDelay: "0.12s" }}>
             <div aria-hidden className="absolute inset-0 -m-12 rounded-full blur-3xl opacity-40 pointer-events-none"
-              style={{ background: `radial-gradient(ellipse, rgba(99,102,241,0.25), transparent 70%)` }} />
+              style={{ background: `radial-gradient(ellipse, rgba(34,197,94,0.15), transparent 70%)` }} />
             <IPhoneMockup />
             {/* Floating stats */}
             <FloatingStat value="+28%" label="Clients récurrents" color={I} top="-12px" right="-56px" delay="0s" />
             <FloatingStat value="+43%" label="Engagement moyen" color={EM} bottom="20px" left="-64px" delay="0.4s" />
-            <FloatingStat value="+19%" label="Chiffre d'affaires" color="#818CF8" top="40%" right="-60px" delay="0.8s" />
+            <FloatingStat value="+19%" label="Chiffre d'affaires" color="#4ADE80" top="40%" right="-60px" delay="0.8s" />
           </div>
         </div>
       </div>
@@ -540,7 +539,7 @@ function FloatingStat({ value, label, color, top, bottom, left, right, delay }: 
 }) {
   return (
     <div className="absolute hidden lg:flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl fade-in-up"
-      style={{ top, bottom, left, right, animationDelay: delay, background: "rgba(17,24,39,0.92)", border: `1px solid rgba(255,255,255,0.08)`, backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,0.4)", whiteSpace: "nowrap", zIndex: 20 }}>
+      style={{ top, bottom, left, right, animationDelay: delay, background: "rgba(8,8,8,0.92)", border: `1px solid rgba(255,255,255,0.08)`, backdropFilter: "blur(12px)", boxShadow: "0 8px 32px rgba(0,0,0,0.4)", whiteSpace: "nowrap", zIndex: 20 }}>
       <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0, boxShadow: `0 0 8px ${color}` }} />
       <div>
         <div style={{ fontSize: 15, fontWeight: 700, color: T, lineHeight: 1.2 }}>{value}</div>
@@ -556,21 +555,21 @@ function IPhoneMockup() {
     <div className="relative z-10" style={{ width: 260 }}>
       {/* Phone shell */}
       <div style={{
-        width: 260, height: 520, borderRadius: 44, background: "#0D0D14",
+        width: 260, height: 520, borderRadius: 44, background: "#0D0D0D",
         border: "2px solid rgba(255,255,255,0.12)",
         boxShadow: "0 60px 120px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08)",
         overflow: "hidden", position: "relative",
       }}>
         {/* Notch */}
-        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 100, height: 28, background: "#0D0D14", borderRadius: "0 0 18px 18px", zIndex: 10 }} />
+        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 100, height: 28, background: "#0D0D0D", borderRadius: "0 0 18px 18px", zIndex: 10 }} />
         {/* Screen */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0f172a 0%, #0a0a0b 100%)", padding: "52px 16px 16px" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #111111 0%, #080808 100%)", padding: "52px 16px 16px" }}>
           {/* Wallet card */}
           <div style={{
             borderRadius: 20, overflow: "hidden",
-            background: `linear-gradient(135deg, ${I} 0%, #818CF8 100%)`,
+            background: `linear-gradient(135deg, ${I} 0%, #4ADE80 100%)`,
             padding: 18, marginBottom: 12,
-            boxShadow: "0 20px 40px rgba(99,102,241,0.4)",
+            boxShadow: "0 20px 40px rgba(34,197,94,0.35)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
@@ -617,64 +616,6 @@ function IPhoneMockup() {
   );
 }
 
-/* ─── SOCIAL PROOF ──────────────────────────────────────────────────────── */
-function SocialProof() {
-  const stats = [
-    { value: 500, suffix: "+", label: "Commerçants actifs" },
-    { value: 98, suffix: "%", label: "Taux de satisfaction" },
-    { value: 28, suffix: "%", label: "Retour clients moyen" },
-    { value: 30, suffix: "s", label: "Inscription client" },
-  ];
-
-  return (
-    <div style={{ background: "#0D0F1A", borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: "48px 0" }}>
-      <div className="container">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x" style={{ "--tw-divide-opacity": 1 } as React.CSSProperties}>
-          {stats.map((s, i) => (
-            <CounterStat key={i} value={s.value} suffix={s.suffix} label={s.label} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CounterStat({ value, suffix, label }: { value: number; suffix: string; label: string }) {
-  const [display, setDisplay] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !started.current) {
-        started.current = true;
-        const dur = 1200;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const t = Math.min((now - start) / dur, 1);
-          const ease = 1 - Math.pow(1 - t, 3);
-          setDisplay(Math.round(ease * value));
-          if (t < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      }
-    }, { threshold: 0.4 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [value]);
-
-  return (
-    <div ref={ref} className="text-center px-6 py-4">
-      <div style={{ fontSize: "clamp(36px, 4vw, 52px)", fontWeight: 700, letterSpacing: "-0.04em", color: T, lineHeight: 1 }}>
-        {display}{suffix}
-      </div>
-      <div style={{ fontSize: 14, color: TD, marginTop: 8 }}>{label}</div>
-    </div>
-  );
-}
-
 /* ─── FEATURES ──────────────────────────────────────────────────────────── */
 function FeaturesSection() {
   return (
@@ -686,7 +627,7 @@ function FeaturesSection() {
           </p>
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 52px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
             Tout ce qu&apos;il faut pour{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>fidéliser.</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>fidéliser.</span>
           </h2>
           <p style={{ color: TD, fontSize: 18, marginTop: 16 }}>
             Une plateforme complète. Une seule interface. Zéro complexité.
@@ -737,7 +678,7 @@ function FeatureCard({ icon, title, desc, visual, delay }: { icon: React.ReactNo
 /* ─── DASHBOARD PREVIEW ─────────────────────────────────────────────────── */
 function DashboardPreview() {
   return (
-    <section style={{ background: "#0D0F1A", padding: "96px 0" }}>
+    <section style={{ background: "#0A0A0A", padding: "96px 0" }}>
       <div className="container">
         <div className="text-center mb-16 reveal">
           <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 16 }}>
@@ -745,7 +686,7 @@ function DashboardPreview() {
           </p>
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 52px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
             Pilotez votre fidélité{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>en temps réel.</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>en temps réel.</span>
           </h2>
           <p style={{ color: TD, fontSize: 18, marginTop: 16, maxWidth: 560, margin: "16px auto 0" }}>
             Chiffre d&apos;affaires, clients actifs, tendances — tout en un coup d&apos;œil.
@@ -764,7 +705,7 @@ function DashboardPreview() {
             </div>
           </div>
           {/* Content */}
-          <div style={{ background: "#09090B", padding: "20px 20px 24px", display: "grid", gridTemplateColumns: "160px 1fr", gap: 16, minHeight: 340 }}>
+          <div style={{ background: "#080808", padding: "20px 20px 24px", display: "grid", gridTemplateColumns: "160px 1fr", gap: 16, minHeight: 340 }}>
             {/* Sidebar */}
             <div style={{ borderRight: `1px solid ${LINE}`, paddingRight: 16 }}>
               <div className="flex items-center gap-2 mb-6">
@@ -795,7 +736,7 @@ function DashboardPreview() {
                 {[
                   { label: "Clients", value: "248", delta: "+12", color: I },
                   { label: "Points distribués", value: "1 840", delta: "+94", color: EM },
-                  { label: "Récompenses", value: "31", delta: "+5", color: "#818CF8" },
+                  { label: "Récompenses", value: "31", delta: "+5", color: "#4ADE80" },
                 ].map(kpi => (
                   <div key={kpi.label} style={{ background: SURF, borderRadius: 10, padding: "12px 14px", border: `1px solid ${LINE}` }}>
                     <div style={{ fontSize: 10, color: TD, marginBottom: 4 }}>{kpi.label}</div>
@@ -857,7 +798,7 @@ function BeforeAfter() {
         <div className="text-center mb-16 reveal">
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 52px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
             La différence est{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>immédiate.</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>immédiate.</span>
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
@@ -883,7 +824,7 @@ function BeforeAfter() {
             </ul>
           </div>
           {/* After */}
-          <div style={{ borderRadius: 20, padding: 32, background: "rgba(99,102,241,0.06)", border: `1px solid ${IB}` }}>
+          <div style={{ borderRadius: 20, padding: 32, background: "rgba(34,197,94,0.06)", border: `1px solid ${IB}` }}>
             <div className="flex items-center gap-3 mb-6">
               <div style={{ width: 28, height: 28, borderRadius: "50%", background: IS, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: I, fontWeight: 700, flexShrink: 0 }}>✓</div>
               <span style={{ fontSize: 14, fontWeight: 700, color: I, letterSpacing: "0.06em", textTransform: "uppercase" }}>Avec Fideloo</span>
@@ -952,13 +893,13 @@ function PricingSection() {
   };
 
   return (
-    <section id="pricing" style={{ background: "#0D0F1A", padding: "96px 0" }}>
+    <section id="pricing" style={{ background: "#0A0A0A", padding: "96px 0" }}>
       <div className="container">
         <div className="text-center mb-14 reveal">
           <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 16 }}>Tarifs</p>
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 52px)", fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 16 }}>
             Simple et{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>transparent</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>transparent</span>
           </h2>
           <p style={{ color: TD, marginBottom: 32 }}>Sans engagement. Annulable à tout moment.</p>
 
@@ -971,7 +912,7 @@ function PricingSection() {
                   background: annual === val ? I : "transparent",
                   color: annual === val ? "#fff" : TD,
                   fontWeight: annual === val ? 700 : 500,
-                  boxShadow: annual === val ? `0 4px 12px rgba(99,102,241,0.35)` : "none",
+                  boxShadow: annual === val ? `0 4px 12px rgba(34,197,94,0.30)` : "none",
                 }}>
                 {val ? "Annuel" : "Mensuel"}
                 {val && (
@@ -1013,10 +954,10 @@ function PricingCard({ plan, annual, priceVisible, onCheckoutPro, delay }: {
   return (
     <div className="reveal relative flex flex-col"
       style={{
-        background: plan.highlight ? "#13152A" : SURF,
+        background: plan.highlight ? "#0F1611" : SURF,
         border: `1px solid ${plan.highlight ? IB : hov ? IB : LINE}`,
         borderRadius: 20, padding: 32,
-        boxShadow: plan.highlight ? `0 0 0 1px ${IS} inset, 0 30px 60px rgba(99,102,241,0.12)` : hov ? "0 16px 40px rgba(0,0,0,0.3)" : "none",
+        boxShadow: plan.highlight ? `0 0 0 1px ${IS} inset, 0 30px 60px rgba(34,197,94,0.08)` : hov ? "0 16px 40px rgba(0,0,0,0.3)" : "none",
         transform: !plan.highlight && hov ? "translateY(-4px)" : "translateY(0)",
         transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s",
         animationDelay: `${delay}s`,
@@ -1071,9 +1012,9 @@ function PricingCard({ plan, annual, priceVisible, onCheckoutPro, delay }: {
         marginTop: 28, width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 8,
         padding: "14px 24px", borderRadius: 999, fontSize: 15, fontWeight: 600, cursor: "pointer",
         background: plan.highlight ? I : plan.whiteBtn ? "#F5F5F7" : "transparent",
-        color: plan.highlight ? "#fff" : plan.whiteBtn ? "#0A0A0B" : T,
+        color: plan.highlight ? "#fff" : plan.whiteBtn ? "#080808" : T,
         border: plan.highlight || plan.whiteBtn ? "none" : `1px solid ${IB}`,
-        boxShadow: plan.highlight ? `0 4px 20px rgba(99,102,241,0.4)` : "none",
+        boxShadow: plan.highlight ? `0 4px 20px rgba(34,197,94,0.35)` : "none",
         transition: "all 0.2s",
       }}
         onMouseEnter={e => {
@@ -1103,7 +1044,7 @@ function FaqSection({ openFaq, setOpenFaq }: { openFaq: number | null; setOpenFa
           <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 16 }}>FAQ</p>
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 52px)", fontWeight: 700, letterSpacing: "-0.03em" }}>
             Questions{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>fréquentes</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>fréquentes</span>
           </h2>
         </div>
         <div className="space-y-3">
@@ -1166,13 +1107,13 @@ function ContactSection() {
   };
 
   return (
-    <section id="contact" style={{ background: "#0D0F1A", padding: "96px 0" }}>
+    <section id="contact" style={{ background: "#0A0A0A", padding: "96px 0" }}>
       <div className="container max-w-2xl">
         <div className="text-center mb-12 reveal">
           <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 16 }}>Contact</p>
           <h2 style={{ color: T, fontSize: "clamp(32px, 4.4vw, 48px)", fontWeight: 700, letterSpacing: "-0.03em" }}>
             Une question ?{" "}
-            <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Écrivez-nous</span>
+            <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Écrivez-nous</span>
           </h2>
           <p style={{ color: TD, marginTop: 12 }}>Notre équipe vous répond sous 24h.</p>
         </div>
@@ -1229,7 +1170,7 @@ function ContactSection() {
               )}
               <button type="submit" disabled={submitting}
                 className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-bold text-base transition-all disabled:opacity-60"
-                style={{ background: I, color: "#fff", boxShadow: `0 4px 16px rgba(99,102,241,0.35)` }}
+                style={{ background: I, color: "#fff", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = I2; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = I; }}>
                 {submitting ? "Envoi en cours…" : <><Send className="w-4 h-4" /> Envoyer le message</>}
@@ -1248,14 +1189,14 @@ function CtaFinal() {
     <section style={{ background: BG, padding: "96px 0" }}>
       <div className="container">
         <div className="relative rounded-[32px] overflow-hidden reveal"
-          style={{ background: SURF, border: `1px solid ${IB}`, boxShadow: `0 0 80px rgba(99,102,241,0.1)` }}>
+          style={{ background: SURF, border: `1px solid ${IB}`, boxShadow: `0 0 80px rgba(34,197,94,0.08)` }}>
           <div aria-hidden className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 65%)` }} />
+            style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.10) 0%, transparent 65%)` }} />
           <div className="relative z-10 p-12 sm:p-20 text-center">
             <p style={{ fontFamily: "Geist Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: I, textTransform: "uppercase", marginBottom: 24 }}>Prêt à démarrer ?</p>
             <h2 style={{ color: T, fontSize: "clamp(32px, 4.8vw, 56px)", fontWeight: 700, letterSpacing: "-0.035em", marginBottom: 20 }}>
               Commencez à fidéliser{" "}
-              <span style={{ background: `linear-gradient(135deg, ${I}, #818CF8, #A5B4FC)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <span style={{ background: `linear-gradient(135deg, ${I}, #4ADE80, #86EFAC)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 aujourd&apos;hui.
               </span>
             </h2>
@@ -1264,7 +1205,7 @@ function CtaFinal() {
             </p>
             <Link href="/register"
               className="inline-flex items-center gap-3 font-bold rounded-full transition-all"
-              style={{ background: I, color: "#fff", padding: "20px 48px", fontSize: 18, boxShadow: `0 0 40px rgba(99,102,241,0.4), 0 1px 0 rgba(255,255,255,0.1) inset` }}
+              style={{ background: I, color: "#fff", padding: "20px 48px", fontSize: 18, boxShadow: `0 0 40px rgba(34,197,94,0.35), 0 1px 0 rgba(255,255,255,0.1) inset` }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = I2; (e.currentTarget as HTMLElement).style.transform = "scale(1.03)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = I; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
               Créer mon compte gratuitement <ArrowRight className="w-5 h-5" />
@@ -1293,7 +1234,7 @@ function Footer() {
   ];
 
   return (
-    <footer style={{ background: "#0D0F1A", borderTop: `1px solid ${LINE}`, paddingTop: 64, paddingBottom: 48 }}>
+    <footer style={{ background: "#0A0A0A", borderTop: `1px solid ${LINE}`, paddingTop: 64, paddingBottom: 48 }}>
       <div className="container">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {cols.map(col => (
@@ -1340,7 +1281,7 @@ function CookieBanner({ onAccept }: { onAccept: () => void }) {
   return (
     <div className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4">
       <div className="max-w-3xl mx-auto rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
-        style={{ background: "rgba(17,24,39,0.96)", border: `1px solid ${LINE}`, backdropFilter: "blur(20px)", boxShadow: "0 -8px 40px rgba(0,0,0,0.4)" }}>
+        style={{ background: "rgba(8,8,8,0.96)", border: `1px solid ${LINE}`, backdropFilter: "blur(20px)", boxShadow: "0 -8px 40px rgba(0,0,0,0.4)" }}>
         <p className="text-sm flex-1" style={{ color: TD }}>
           Nous utilisons uniquement des cookies fonctionnels essentiels.{" "}
           <Link href="/politique-confidentialite" className="underline" style={{ color: I }}>
