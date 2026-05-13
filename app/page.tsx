@@ -20,72 +20,148 @@ const TD   = "#A1A1AA";
 const LINE = "rgba(255,255,255,0.07)";
 
 /* ─── DATA ──────────────────────────────────────────────────────────────── */
-const FEATURES: { icon: React.ReactNode; title: string; desc: string }[] = [
+const FEATURES: { icon: React.ReactNode; title: string; desc: string; visual: React.ReactNode }[] = [
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/>
-        <path d="M16 12h5v4h-5a2 2 0 0 1 0-4z"/>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"/>
+        <path d="M9 7h6M9 11h6M9 15h4"/>
+        <circle cx="12" cy="18" r="1"/>
       </svg>
     ),
     title: "Dans le téléphone natif",
     desc: "La carte s'ajoute en un tap dans Apple Wallet ou Google Wallet — l'app déjà installée sur tous les téléphones. Aucun téléchargement pour vos clients.",
+    visual: (
+      <div style={{ marginTop: 20, padding: "12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #22C55E, #16A34A)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "white", fontSize: 14 }}>🃏</span>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#F5F5F5" }}>Carte Fidélité</div>
+            <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)" }}>Ajoutée à Apple Wallet</div>
+          </div>
+          <div style={{ marginLeft: "auto", background: "#22C55E", borderRadius: 999, padding: "3px 8px", fontSize: 10, color: "#080808", fontWeight: 700 }}>✓ Ajoutée</div>
+        </div>
+      </div>
+    ),
   },
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1"/>
         <rect x="14" y="3" width="7" height="7" rx="1"/>
         <rect x="3" y="14" width="7" height="7" rx="1"/>
-        <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3v3M14 21v-3"/>
         <path d="M5 5h3v3H5zM16 5h3v3h-3zM5 16h3v3H5z"/>
+        <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18v3M21 18h-3v3"/>
       </svg>
     ),
     title: "Inscription en 30 secondes",
     desc: "Affichez votre QR code en caisse. Le client scanne avec son appareil photo, remplit son prénom et son email — c'est tout. Sa carte apparaît instantanément.",
+    visual: (
+      <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+        <div style={{ padding: 12, background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,8px)", gap: 2 }}>
+            {[1,1,1,1,1,1,1, 1,0,0,0,0,0,1, 1,0,1,1,1,0,1, 1,0,1,0,1,0,1, 1,0,1,1,1,0,1, 1,0,0,0,0,0,1, 1,1,1,1,1,1,1].map((v, i) => (
+              <div key={i} style={{ width: 8, height: 8, background: v ? "#22C55E" : "transparent", borderRadius: 1 }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    ),
   },
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+        <path d="M8 16H3v5"/>
       </svg>
     ),
     title: "Mise à jour instantanée",
     desc: "Vous ajoutez des points en un clic depuis votre dashboard. La carte dans le Wallet du client se met à jour en temps réel — sans action de sa part.",
+    visual: (
+      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 4 }}>Points</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#F5F5F5" }}>7 <span style={{ fontSize: 11, color: "#22C55E" }}>→ 8</span></div>
+        </div>
+        <div style={{ width: 1, height: 32, background: "rgba(255,255,255,0.06)" }} />
+        <div style={{ flex: 1, paddingLeft: 8 }}>
+          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 4 }}>Wallet mis à jour</div>
+          <div style={{ fontSize: 10, color: "#22C55E", fontWeight: 600 }}>● Instantané</div>
+        </div>
+      </div>
+    ),
   },
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 3v18h18"/>
-        <path d="M18 9l-5 5-4-4-3 3"/>
+        <path d="M7 16l4-4 4 4 4-4"/>
+        <rect x="6" y="12" width="3" height="7" rx="0.5" fill="currentColor" opacity="0.3"/>
+        <rect x="10.5" y="9" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.3"/>
+        <rect x="15" y="11" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.3"/>
       </svg>
     ),
     title: "Analytics qui parlent business",
     desc: "Fréquence de visite, clients les plus fidèles, points distribués, récompenses utilisées. Des chiffres actionnables, pas des tableaux incompréhensibles.",
+    visual: (
+      <div style={{ marginTop: 20, padding: "12px 12px 8px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ fontSize: 10, color: "rgba(245,245,245,0.4)", marginBottom: 8 }}>Visites — 7 derniers jours</div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 32 }}>
+          {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
+            <div key={i} style={{ flex: 1, height: `${h}%`, background: i === 5 ? "#22C55E" : "rgba(34,197,94,0.3)", borderRadius: "3px 3px 0 0" }} />
+          ))}
+        </div>
+      </div>
+    ),
   },
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="13.5" cy="6.5" r="2.5"/>
-        <circle cx="17.5" cy="10.5" r="2.5"/>
-        <circle cx="8.5" cy="7.5" r="2.5"/>
-        <circle cx="6.5" cy="12.5" r="2.5"/>
-        <path d="M12 20v-4"/><path d="M8 20h8"/>
-        <path d="M7 16c1.5-2 5-2 5 0"/>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/>
+        <circle cx="6.5" cy="11.5" r="1.5" fill="currentColor"/>
+        <circle cx="9.5" cy="7.5" r="1.5" fill="currentColor"/>
+        <circle cx="14.5" cy="7.5" r="1.5" fill="currentColor"/>
+        <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor"/>
       </svg>
     ),
     title: "100% à votre image",
     desc: "Couleur principale, logo, nom de la récompense, seuil de points — chaque détail est personnalisable. Votre carte reflète votre identité de marque.",
+    visual: (
+      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+        {["#22C55E", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6"].map((c, i) => (
+          <div key={i} style={{ width: i === 0 ? 28 : 20, height: i === 0 ? 28 : 20, borderRadius: "50%", background: c, border: i === 0 ? "2px solid white" : "none", flexShrink: 0 }} />
+        ))}
+        <div style={{ marginLeft: "auto", fontSize: 10, color: "rgba(245,245,245,0.4)" }}>Votre couleur</div>
+      </div>
+    ),
   },
   {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        <circle cx="18" cy="5" r="3" fill="#22C55E" stroke="none"/>
+        <text x="16.5" y="7" fontSize="4" fill="#080808" fontWeight="bold">!</text>
       </svg>
     ),
     title: "Notifications push natives",
     desc: "Envoyez une offre directement sur l'écran de verrouillage de vos clients. Taux d'ouverture 4× supérieur aux SMS. Zéro spam, zéro désabonnement.",
+    visual: (
+      <div style={{ marginTop: 20, padding: "10px 12px", background: "#0D0D0D", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 28, height: 28, background: "#22C55E", borderRadius: 8, display: "grid", placeItems: "center", fontSize: 14, flexShrink: 0 }}>🎁</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#F5F5F5" }}>Boulangerie Martin</div>
+            <div style={{ fontSize: 10, color: "rgba(245,245,245,0.5)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Offre spéciale — Café offert aujourd&apos;hui !</div>
+          </div>
+          <div style={{ fontSize: 10, color: "rgba(245,245,245,0.3)", flexShrink: 0 }}>maintenant</div>
+        </div>
+      </div>
+    ),
   },
 ];
 
@@ -515,7 +591,7 @@ function FeaturesSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <FeatureCard key={i} icon={f.icon} title={f.title} desc={f.desc} delay={i * 0.06} />
+            <FeatureCard key={i} icon={f.icon} title={f.title} desc={f.desc} visual={f.visual} delay={i * 0.06} />
           ))}
         </div>
       </div>
@@ -523,7 +599,7 @@ function FeaturesSection() {
   );
 }
 
-function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode; title: string; desc: string; delay: number }) {
+function FeatureCard({ icon, title, desc, visual, delay }: { icon: React.ReactNode; title: string; desc: string; visual: React.ReactNode; delay: number }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div className="reveal" style={{
@@ -546,6 +622,7 @@ function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode; titl
       </div>
       <h3 style={{ fontSize: 17, fontWeight: 600, color: T, marginTop: 20, letterSpacing: "-0.02em" }}>{title}</h3>
       <p style={{ fontSize: 14, lineHeight: 1.65, color: TD, marginTop: 10 }}>{desc}</p>
+      {visual}
     </div>
   );
 }
