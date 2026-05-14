@@ -21,7 +21,7 @@ const BORD2 = "#D8D5CE";
 /* ─── TRANSLATIONS ──────────────────────────────────────────────────────── */
 const translations = {
   fr: {
-    nav: { features: "Fonctionnalités", pricing: "Tarifs", faq: "FAQ", contact: "Contact", login: "Se connecter", cta: "Démarrer ↗" },
+    nav: { features: "Fonctionnalités", pricing: "Tarifs", faq: "FAQ", contact: "Contact", login: "Se connecter", cta: "Démarrer" },
     hero: {
       badge: "B2B · CARTES APPLE WALLET & GOOGLE WALLET",
       h1a: "La fidélité de vos commerces,",
@@ -129,7 +129,7 @@ const translations = {
     },
   },
   en: {
-    nav: { features: "Features", pricing: "Pricing", faq: "FAQ", contact: "Contact", login: "Log in", cta: "Get started ↗" },
+    nav: { features: "Features", pricing: "Pricing", faq: "FAQ", contact: "Contact", login: "Log in", cta: "Get started" },
     hero: {
       badge: "B2B · APPLE WALLET & GOOGLE WALLET CARDS",
       h1a: "Loyalty for your stores,",
