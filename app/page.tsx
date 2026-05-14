@@ -421,11 +421,7 @@ export default function LandingPage() {
         <div style={{ ...px, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           {/* Logo */}
           <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <svg height="36" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "auto", display: "block" }}>
-              <text x="2" y="88" fontFamily="'Playfair Display', Georgia, serif" fontSize="90" fontWeight="700" fill="#0B0F0E">Fidel</text>
-              <circle cx="338" cy="58" r="42" fill="#0B0F0E"/>
-              <circle cx="380" cy="58" r="40" fill="none" stroke="#B8873A" strokeWidth="10"/>
-            </svg>
+            <img src="/brand/fideloo-logo-linked.svg" alt="Fideloo" style={{ height: 32, width: "auto", display: "block" }} />
           </Link>
 
           {/* Center nav */}
@@ -973,15 +969,8 @@ export default function LandingPage() {
 
             {/* Col 1 — Brand */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                  <circle cx="60" cy="60" r="58" fill="#1A1A1A"/>
-                  <circle cx="60" cy="60" r="55" fill="none" stroke="#B8873A" strokeWidth="3"/>
-                  <text x="28" y="82" fontFamily="'Playfair Display', Georgia, serif" fontSize="62" fontWeight="700" fill="#B8873A">F</text>
-                  <circle cx="82" cy="84" r="5" fill="#B8873A"/>
-                  <circle cx="96" cy="84" r="5" fill="#B8873A"/>
-                </svg>
-                <span style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 700, fontSize: 20, color: WHITE }}>Fideloo</span>
+              <div style={{ marginBottom: 16 }}>
+                <img src="/brand/fideloo-logo-linked-onDark.svg" alt="Fideloo" style={{ height: 28, width: "auto", display: "block" }} />
               </div>
               <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.6, maxWidth: 220, margin: 0 }}>
                 La carte de fidélité digitale pour les commerçants qui veulent fidéliser sans friction.

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="420" height="100">
+  
+  <text x="0" y="78" font-family="Sora, system-ui, sans-serif" font-weight="700" font-size="96" letter-spacing="-3" fill="#F4F1EA">Fidel</text>
+  <circle cx="265" cy="58" r="34" fill="none" stroke="#F4F1EA" stroke-width="12"></circle>
+  <circle cx="320" cy="58" r="34" fill="none" stroke="#34B27A" stroke-width="12"></circle>
+  <path d="M 290 38 A 34 34 0 0 1 290 78" fill="none" stroke="#34B27A" stroke-width="12"></path>
+</svg>

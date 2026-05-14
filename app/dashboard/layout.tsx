@@ -117,15 +117,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Logo + Search */}
       <div className="px-4 pt-5 pb-3 space-y-3">
-        <div className="flex items-center gap-2.5 px-2 mb-1">
-          <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-            <circle cx="60" cy="60" r="58" fill="#1A1918"/>
-            <circle cx="60" cy="60" r="55" fill="none" stroke="#B8873A" strokeWidth="3"/>
-            <text x="28" y="82" fontFamily="'Playfair Display', Georgia, serif" fontSize="62" fontWeight="700" fill="#B8873A">F</text>
-            <circle cx="82" cy="84" r="5" fill="#B8873A"/>
-            <circle cx="96" cy="84" r="5" fill="#B8873A"/>
-          </svg>
-          <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: 18, color: SIDET }}>Fideloo</span>
+        <div className="px-2 mb-1">
+          <img src="/brand/fideloo-logo-stamp-onDark.svg" alt="Fideloo" style={{ height: 36, width: "auto", display: "block" }} />
         </div>
 
         <button
