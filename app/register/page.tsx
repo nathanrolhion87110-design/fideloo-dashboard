@@ -3,17 +3,32 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Mail, Lock, Store, Tag, Loader2 } from "lucide-react";
+import { Mail, Lock, Store, Tag, Loader2, ChevronDown } from "lucide-react";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 import { FideloLogoStamp } from "../../components/FideloLogoStamp";
+
+const BG   = "#EDEBE4";
+const CARD = "#FFFFFF";
+const INK  = "#0B0F0E";
+const GOLD = "#B8873A";
+const GRAY  = "#6B6B6B";
+const BORD  = "#E0DDD6";
+const INPUT = "#F5F3EE";
+
+const inputStyle = {
+  width: "100%", padding: "12px 16px 12px 40px",
+  background: INPUT, border: `1px solid ${BORD}`, borderRadius: 8,
+  fontSize: 14, color: INK, outline: "none", fontFamily: "inherit",
+  transition: "border-color 0.15s",
+};
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("restaurant");
-  const [honeypot, setHoneypot] = useState(""); // anti-bots
+  const [honeypot, setHoneypot] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
@@ -64,7 +79,7 @@ export default function RegisterPage() {
         const c = document.getElementById("google-fallback-btn-register");
         if (c && window.google) {
           c.innerHTML = ""; c.style.display = "flex";
-          window.google.accounts.id.renderButton(c, { theme: "filled_black", size: "large", width: 320, text: "signup_with", locale: "fr" });
+          window.google.accounts.id.renderButton(c, { theme: "outline", size: "large", width: 320, text: "signup_with", locale: "fr" });
         }
       }
     });
@@ -80,11 +95,7 @@ export default function RegisterPage() {
     script.onload = () => {
       if (!window.AppleID) return;
       try {
-        window.AppleID.auth.init({
-          clientId: serviceId, scope: "name email",
-          redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
-          usePopup: true,
-        });
+        window.AppleID.auth.init({ clientId: serviceId, scope: "name email", redirectURI: process.env.NEXT_PUBLIC_APP_URL || window.location.origin, usePopup: true });
         setAppleReady(true);
       } catch (e) { console.error("[Apple][register] init:", e); }
     };
@@ -117,7 +128,7 @@ export default function RegisterPage() {
       const r = await api.post("/merchants/register", {
         email, password,
         business_name: businessName, business_type: businessType,
-        website: honeypot, // honeypot anti-bots (champ caché)
+        website: honeypot,
       });
       login(r.data.token, r.data.merchant);
       router.push("/onboarding");
@@ -131,104 +142,92 @@ export default function RegisterPage() {
   const appleServiceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: "#0a0a0b" }}>
-      <div aria-hidden className="pointer-events-none absolute"
-        style={{ top: -200, left: -100, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      <div aria-hidden className="pointer-events-none absolute"
-        style={{ bottom: -150, right: -80, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
+    <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ width: "100%", maxWidth: 480, background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 48, margin: "24px 0" }}>
 
-      <div className="w-full max-w-[440px] relative z-10 fade-in-up my-8"
-        style={{ background: "#14141a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 22, padding: 40 }}>
-
-        <div className="flex justify-center mb-8">
+        {/* Logo */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
           <Link href="/">
-            <FideloLogoStamp variant="onDark" size={36} />
+            <FideloLogoStamp variant="default" size={36} />
           </Link>
         </div>
 
-        <div className="mb-8">
-          <h1 style={{ fontWeight: 500, fontSize: 26, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 8 }}>
-            Créer votre{" "}
-            <span className="serif" style={{ color: "var(--violet)" }}>compte</span>
+        {/* Title */}
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, fontSize: 32, color: INK, lineHeight: 1.2, marginBottom: 6 }}>
+            Créez votre compte,<br /><em style={{ fontStyle: "italic" }}>c&apos;est gratuit.</em>
           </h1>
-          <p style={{ fontSize: 14, color: "var(--text-dim)" }}>Lancez votre programme de fidélité en 2 minutes</p>
         </div>
 
-        <div className="space-y-3 mb-6">
+        {/* Social buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
           {googleClientId ? (
             <button type="button" onClick={handleGoogleClick} disabled={loading || !googleReady}
-              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
-              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none", cursor: "pointer" }}>
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
+              style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: CARD, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, fontWeight: 500, color: INK, cursor: "pointer", fontFamily: "inherit", opacity: (loading || !googleReady) ? 0.5 : 1 }}>
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <GoogleIcon />}
               S&apos;inscrire avec Google
             </button>
           ) : (
-            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
-              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none" }}>
+            <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: CARD, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, color: GRAY, opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
               <GoogleIcon /> Google (non configuré)
             </button>
           )}
-          <div id="google-fallback-btn-register" style={{ display: "none" }} className="w-full justify-center" />
+          <div id="google-fallback-btn-register" style={{ display: "none", justifyContent: "center" }} />
 
           {appleServiceId ? (
             <button type="button" onClick={handleAppleSignIn} disabled={loading || !appleReady}
-              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
-              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer" }}>
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
+              style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: INK, border: "none", borderRadius: 999, fontSize: 14, fontWeight: 500, color: "#FFFFFF", cursor: "pointer", fontFamily: "inherit", opacity: (loading || !appleReady) ? 0.5 : 1 }}>
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <AppleIcon />}
               S&apos;inscrire avec Apple
             </button>
           ) : (
-            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
-              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)" }}>
+            <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: INK, border: "none", borderRadius: 999, fontSize: 14, color: "#fff", opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
               <AppleIcon /> Apple (non configuré)
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-          <span style={{ fontSize: 12, color: "var(--text-dim)", letterSpacing: "0.08em" }}>OU</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+          <div style={{ flex: 1, height: 1, background: BORD }} />
+          <span style={{ fontSize: 12, color: GRAY, letterSpacing: "0.08em" }}>OU</span>
+          <div style={{ flex: 1, height: 1, background: BORD }} />
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl text-sm"
-            style={{ background: "rgba(251,113,133,0.1)", color: "#fb7185", border: "1px solid rgba(251,113,133,0.25)" }}>
+          <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 8, background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)", fontSize: 13 }}>
             {error}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleRegister}>
-          {/* Honeypot anti-bots — invisible aux humains, rempli par les bots */}
-          <input
-            type="text" name="website" tabIndex={-1} autoComplete="off"
+        <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Honeypot */}
+          <input type="text" name="website" tabIndex={-1} autoComplete="off"
             value={honeypot} onChange={(e) => setHoneypot(e.target.value)}
             aria-hidden="true"
-            style={{ position: "absolute", left: "-9999px", top: "-9999px", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
-          />
+            style={{ position: "absolute", left: "-9999px", top: "-9999px", width: 0, height: 0, opacity: 0, pointerEvents: "none" }} />
 
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
-              Nom du commerce
-            </label>
-            <div className="relative">
-              <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: INK, marginBottom: 6 }}>Nom du commerce</label>
+            <div style={{ position: "relative" }}>
+              <Store style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
               <input type="text" required value={businessName} onChange={(e) => setBusinessName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
-                placeholder="Ma Boulangerie" />
+                style={inputStyle} placeholder="Ma Boulangerie"
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
             </div>
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
-              Type de commerce
-            </label>
-            <div className="relative">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: INK, marginBottom: 6 }}>Type de commerce</label>
+            <div style={{ position: "relative" }}>
+              <Tag style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none", zIndex: 1 }} />
+              <ChevronDown style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GOLD, pointerEvents: "none", zIndex: 1 }} />
               <select value={businessType} onChange={(e) => setBusinessType(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors appearance-none pl-10"
-                style={{ backgroundColor: "#111111" }}>
+                style={{ ...inputStyle, paddingRight: 36, appearance: "none" }}
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)}>
                 <option value="restaurant">Restaurant</option>
                 <option value="boulangerie">Boulangerie</option>
                 <option value="coiffeur">Coiffeur</option>
@@ -240,45 +239,50 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: INK, marginBottom: 6 }}>Email</label>
+            <div style={{ position: "relative" }}>
+              <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
-                placeholder="vous@commerce.fr" />
+                style={inputStyle} placeholder="vous@commerce.fr"
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
             </div>
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
-              Mot de passe
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: INK, marginBottom: 6 }}>Mot de passe</label>
+            <div style={{ position: "relative" }}>
+              <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
               <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
-                placeholder="••••••••" />
+                style={inputStyle} placeholder="••••••••"
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
             </div>
           </div>
 
           <button type="submit" disabled={loading}
-            className="btn btn-accent btn-lg w-full justify-center disabled:opacity-50 mt-2">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Créer mon compte — c&apos;est gratuit <ArrowRight className="w-4 h-4" /></>}
+            style={{ width: "100%", padding: "14px", background: loading ? GRAY : INK, color: "#FFFFFF", borderRadius: 999, fontSize: 15, fontWeight: 600, border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
+            {loading ? <><Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} /> Création…</> : "Créer mon compte — c'est gratuit"}
           </button>
         </form>
 
-        <p className="mt-6 text-center" style={{ fontSize: 14, color: "var(--text-dim)" }}>
+        <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: GRAY }}>
           Déjà un compte ?{" "}
-          <Link href="/login" className="font-semibold"
-            style={{ color: "var(--violet)" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
-            Se connecter
-          </Link>
+          <Link href="/login" style={{ color: GOLD, fontWeight: 600, textDecoration: "none" }}>Se connecter</Link>
         </p>
       </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px #F5F3EE inset !important;
+          -webkit-text-fill-color: #0B0F0E !important;
+          caret-color: #0B0F0E !important;
+        }
+        select option { background: #F5F3EE; color: #0B0F0E; }
+      `}</style>
     </div>
   );
 }

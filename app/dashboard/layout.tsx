@@ -15,17 +15,18 @@ import TutorialOverlay from "@/app/components/TutorialOverlay";
 import { FideloLogoStamp } from "@/components/FideloLogoStamp";
 
 /* ── Design tokens ─────────────────────────────────── */
-const DB   = "#09090B";
-const DS   = "#18181B";
-const DS2  = "#1C1C21";
-const DL   = "rgba(255,255,255,0.06)";
-const DL2  = "rgba(255,255,255,0.10)";
-const DT   = "#FAFAFA";
-const DTD  = "rgba(250,250,250,0.45)";
-const DI   = "#6366F1";
-const DIS  = "rgba(99,102,241,0.12)";
-const DIB  = "rgba(99,102,241,0.22)";
-const DE   = "#10B981";
+const DB   = "#EDEBE4";   // page background
+const DL   = "#E0DDD6";   // border
+const DT   = "#0B0F0E";   // main text
+const DTD  = "#6B6B6B";   // dim text
+const GOLD = "#B8873A";
+const GS   = "rgba(184,135,58,0.12)";
+const GB   = "rgba(184,135,58,0.25)";
+
+/* ── Sidebar tokens ────────────────────────────────── */
+const SIDE   = "#0B0F0E";
+const SIDET  = "#FFFFFF";
+const SIDETD = "rgba(255,255,255,0.55)";
 
 interface NavItem {
   name: string;
@@ -65,8 +66,8 @@ const NAV: NavSection[] = [
 ];
 
 const NOTIFS = [
-  { text: "Nouvelle inscription",       sub: "Marie L. vient de rejoindre",     time: "2min",  dot: DE },
-  { text: "Campagne push envoyée",      sub: "847 clients notifiés",            time: "1h",    dot: DI },
+  { text: "Nouvelle inscription",       sub: "Marie L. vient de rejoindre",     time: "2min",  dot: GOLD },
+  { text: "Campagne push envoyée",      sub: "847 clients notifiés",            time: "1h",    dot: GOLD },
   { text: "Objectif du mois atteint",   sub: "50 nouvelles cartes installées",  time: "3h",    dot: "#F59E0B" },
 ];
 
@@ -112,7 +113,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   /* ── Sidebar inner ─────────────────────────────── */
   const SidebarInner = ({ onNav }: { onNav?: () => void }) => (
-    <div className="flex flex-col h-full" style={{ background: DB, borderRight: `1px solid ${DL}` }}>
+    <div className="flex flex-col h-full" style={{ background: SIDE, borderRight: "1px solid rgba(255,255,255,0.08)" }}>
 
       {/* Logo + Search */}
       <div className="px-4 pt-5 pb-3 space-y-3">
@@ -123,11 +124,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <button
           onClick={() => { setSearchOpen(true); onNav?.(); }}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-left transition-all"
-          style={{ background: DS, border: `1px solid ${DL}`, color: DTD }}>
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: SIDETD }}>
           <Search className="w-3.5 h-3.5 flex-shrink-0" />
           <span className="flex-1 text-xs">Rechercher…</span>
           <kbd className="text-xs rounded font-mono px-1"
-            style={{ background: DB, border: `1px solid ${DL}`, color: DTD, fontSize: 9 }}>⌘K</kbd>
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: SIDETD, fontSize: 9 }}>⌘K</kbd>
         </button>
       </div>
 
@@ -135,16 +136,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="px-4 pb-3 flex gap-2">
         <Link href="/dashboard/scanner" onClick={onNav}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium transition-all"
-          style={{ background: DIS, border: `1px solid ${DIB}`, color: DI }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = DIB)}
-          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = DIS)}>
+          style={{ background: GS, border: `1px solid ${GB}`, color: GOLD }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = GB)}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = GS)}>
           <ScanLine className="w-3 h-3" /> Scanner
         </Link>
         <Link href="/dashboard/clients" onClick={onNav}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium transition-all"
-          style={{ background: DS, border: `1px solid ${DL}`, color: DTD }}
-          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = DIB; el.style.color = DT; }}
-          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = DL; el.style.color = DTD; }}>
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: SIDETD }}
+          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = GB; el.style.color = SIDET; }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(255,255,255,0.08)"; el.style.color = SIDETD; }}>
           <UserPlus className="w-3 h-3" /> Client
         </Link>
       </div>
@@ -154,7 +155,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {NAV.map(section => (
           <div key={section.label}>
             <p className="px-3 mb-1 uppercase tracking-widest font-medium"
-              style={{ fontSize: 10, color: "rgba(250,250,250,0.22)", letterSpacing: "0.1em" }}>
+              style={{ fontSize: 10, color: "rgba(255,255,255,0.22)", letterSpacing: "0.1em" }}>
               {section.label}
             </p>
             <div className="space-y-0.5">
@@ -167,38 +168,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={item.soon ? undefined : onNav}
                     className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
                     style={{
-                      background:    active ? DIS : "transparent",
-                      color:         active ? DT  : DTD,
+                      background:    active ? "rgba(255,255,255,0.06)" : "transparent",
+                      color:         active ? SIDET : SIDETD,
                       fontWeight:    active ? 500 : 400,
                       pointerEvents: item.soon ? "none" : "auto",
                     }}
                     onMouseEnter={e => {
                       if (!active && !item.soon) {
-                        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
-                        (e.currentTarget as HTMLElement).style.color = DT;
+                        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
+                        (e.currentTarget as HTMLElement).style.color = SIDET;
                       }
                     }}
                     onMouseLeave={e => {
                       if (!active) {
                         (e.currentTarget as HTMLElement).style.background = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = DTD;
+                        (e.currentTarget as HTMLElement).style.color = SIDETD;
                       }
                     }}>
                     {active && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                        style={{ background: DI }} />
+                        style={{ background: GOLD }} />
                     )}
                     <item.icon className="w-4 h-4 flex-shrink-0"
-                      style={{ color: active ? DI : "inherit", opacity: active ? 1 : 0.55 }} />
+                      style={{ color: active ? GOLD : "inherit", opacity: active ? 1 : 0.55 }} />
                     <span className="flex-1">{item.name}</span>
                     {item.soon && (
                       <span className="rounded-md px-1.5 py-0.5 font-medium"
-                        style={{ fontSize: 9, background: DIS, color: DI, letterSpacing: "0.04em" }}>
+                        style={{ fontSize: 9, background: GS, color: GOLD, letterSpacing: "0.04em" }}>
                         Bientôt
                       </span>
                     )}
                     {active && (
-                      <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: DI, opacity: 0.5 }} />
+                      <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: GOLD, opacity: 0.5 }} />
                     )}
                   </Link>
                 );
@@ -209,23 +210,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </nav>
 
       {/* Bottom actions */}
-      <div className="p-3 space-y-0.5" style={{ borderTop: `1px solid ${DL}` }}>
+      <div className="p-3 space-y-0.5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
 
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setNotifOpen(v => !v)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
-            style={{ color: DTD, background: notifOpen ? "rgba(255,255,255,0.04)" : "transparent" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.color = DT; }}
-            onMouseLeave={e => { if (!notifOpen) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = DTD; } }}>
+            style={{ color: SIDETD, background: notifOpen ? "rgba(255,255,255,0.06)" : "transparent" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = SIDET; }}
+            onMouseLeave={e => { if (!notifOpen) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = SIDETD; } }}>
             <div className="relative">
               <Bell className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full" style={{ background: DE }} />
+              <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full" style={{ background: GOLD }} />
             </div>
             <span>Notifications</span>
             <span className="ml-auto rounded-full px-1.5 py-0.5 text-xs font-semibold"
-              style={{ background: "rgba(16,185,129,0.15)", color: DE }}>3</span>
+              style={{ background: "rgba(184,135,58,0.2)", color: GOLD }}>3</span>
           </button>
 
           <AnimatePresence>
@@ -236,33 +237,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 exit={{ opacity: 0, x: -8, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
                 className="absolute bottom-full mb-2 left-0 w-72 z-50 rounded-2xl overflow-hidden"
-                style={{ background: DS2, border: `1px solid ${DL2}`, boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}>
-                <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${DL}` }}>
-                  <span className="text-sm font-semibold" style={{ color: DT }}>Notifications</span>
+                style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}>
+                <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  <span className="text-sm font-semibold" style={{ color: SIDET }}>Notifications</span>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={{ background: DIS, color: DI }}>3</span>
+                    style={{ background: GS, color: GOLD }}>3</span>
                 </div>
                 <div className="p-2">
                   {NOTIFS.map((n, i) => (
                     <div key={i}
                       className="flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
-                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
                       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                       <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: n.dot }} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium" style={{ color: DT }}>{n.text}</div>
-                        <div className="text-xs truncate" style={{ color: DTD }}>{n.sub}</div>
+                        <div className="text-sm font-medium" style={{ color: SIDET }}>{n.text}</div>
+                        <div className="text-xs truncate" style={{ color: SIDETD }}>{n.sub}</div>
                       </div>
-                      <span className="text-xs flex-shrink-0 mt-0.5" style={{ color: DTD }}>{n.time}</span>
+                      <span className="text-xs flex-shrink-0 mt-0.5" style={{ color: SIDETD }}>{n.time}</span>
                     </div>
                   ))}
                 </div>
-                <div className="px-4 py-2.5" style={{ borderTop: `1px solid ${DL}` }}>
+                <div className="px-4 py-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <Link href="/dashboard/notifications" onClick={() => setNotifOpen(false)}
                     className="block text-center text-xs font-medium transition-colors"
-                    style={{ color: DI }}
-                    onMouseEnter={e => (e.currentTarget.style.color = DT)}
-                    onMouseLeave={e => (e.currentTarget.style.color = DI)}>
+                    style={{ color: GOLD }}
+                    onMouseEnter={e => (e.currentTarget.style.color = SIDET)}
+                    onMouseLeave={e => (e.currentTarget.style.color = GOLD)}>
                     Voir tout →
                   </Link>
                 </div>
@@ -276,18 +277,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button
             onClick={() => setProfileOpen(v => !v)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
-            style={{ color: DTD, background: profileOpen ? "rgba(255,255,255,0.04)" : "transparent" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.color = DT; }}
-            onMouseLeave={e => { if (!profileOpen) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = DTD; } }}>
+            style={{ color: SIDETD, background: profileOpen ? "rgba(255,255,255,0.06)" : "transparent" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = SIDET; }}
+            onMouseLeave={e => { if (!profileOpen) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = SIDETD; } }}>
             <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-              style={{ background: DIS, border: `1px solid ${DIB}`, color: DI }}>
+              style={{ background: GS, border: `1px solid ${GB}`, color: GOLD }}>
               {initials}
             </div>
             <div className="flex-1 text-left overflow-hidden">
-              <div className="text-sm font-medium truncate leading-tight" style={{ color: DT }}>
+              <div className="text-sm font-medium truncate leading-tight" style={{ color: SIDET }}>
                 {merchant?.business_name || "Mon Commerce"}
               </div>
-              <div className="truncate" style={{ fontSize: 11, color: DTD }}>Plan Pro</div>
+              <div className="truncate" style={{ fontSize: 11, color: SIDETD }}>Plan Pro</div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200"
               style={{ transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
@@ -301,15 +302,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 exit={{ opacity: 0, y: 6, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
                 className="absolute bottom-full mb-2 left-0 right-0 z-50 rounded-xl p-1.5"
-                style={{ background: DS2, border: `1px solid ${DL2}`, boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}>
+                style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}>
                 <Link href="/dashboard/parametres" onClick={() => setProfileOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors"
-                  style={{ color: DTD }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLElement).style.color = DT; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = DTD; }}>
+                  style={{ color: SIDETD }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = SIDET; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = SIDETD; }}>
                   <Settings className="w-4 h-4" /> Paramètres
                 </Link>
-                <div style={{ height: 1, background: DL, margin: "4px 0" }} />
+                <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "4px 0" }} />
                 <button onClick={() => { logout(); setProfileOpen(false); }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors text-left"
                   style={{ color: "#EF4444" }}
@@ -350,7 +351,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <SidebarInner onNav={() => setMobileOpen(false)} />
                 <button onClick={() => setMobileOpen(false)}
                   className="absolute top-4 right-4 p-1.5 rounded-lg"
-                  style={{ color: DTD }} aria-label="Fermer">
+                  style={{ color: SIDETD }} aria-label="Fermer">
                   <X className="w-5 h-5" />
                 </button>
               </motion.aside>
@@ -363,7 +364,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Mobile header */}
           <header className="md:hidden h-14 flex items-center px-4 justify-between sticky top-0 z-30"
-            style={{ background: "rgba(9,9,11,0.95)", backdropFilter: "blur(20px)", borderBottom: `1px solid ${DL}` }}>
+            style={{ background: "rgba(237,235,228,0.95)", backdropFilter: "blur(20px)", borderBottom: `1px solid ${DL}` }}>
             <div className="flex items-center gap-2">
               <FideloLogoStamp variant="onDark" size={32} />
             </div>
@@ -391,7 +392,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 z-50"
-              style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+              style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)" }}
               onClick={() => setSearchOpen(false)} />
             <motion.div
               initial={{ opacity: 0, y: -16, scale: 0.97 }}
@@ -400,7 +401,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               transition={{ duration: 0.18 }}
               className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4">
               <div className="rounded-2xl overflow-hidden"
-                style={{ background: DS2, border: `1px solid ${DL2}`, boxShadow: "0 40px 100px rgba(0,0,0,0.7)" }}>
+                style={{ background: "#FFFFFF", border: `1px solid ${DL}`, boxShadow: "0 40px 100px rgba(0,0,0,0.2)" }}>
                 <div className="flex items-center gap-3 px-4 py-3.5" style={{ borderBottom: `1px solid ${DL}` }}>
                   <Search className="w-4 h-4 flex-shrink-0" style={{ color: DTD }} />
                   <input
@@ -418,9 +419,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <Link key={item.name} href={item.href} onClick={() => setSearchOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
                       style={{ color: DTD }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLElement).style.color = DT; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#F5F3EE"; (e.currentTarget as HTMLElement).style.color = DT; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = DTD; }}>
-                      <item.icon className="w-4 h-4" style={{ color: DI, opacity: 0.7 }} />
+                      <item.icon className="w-4 h-4" style={{ color: GOLD, opacity: 0.7 }} />
                       {item.name}
                     </Link>
                   ))}

@@ -319,14 +319,21 @@ export default function LandingPage() {
           {/* Right */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* Lang toggle */}
-            <button onClick={() => setLang(l => l === "fr" ? "en" : "fr")}
-              style={{
-                background: "none", border: `1px solid ${BORD2}`, borderRadius: 999,
-                padding: "5px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer",
-                color: GRAY, letterSpacing: "0.05em", fontFamily: "var(--font-sora, system-ui)",
-              }}>
-              {lang === "fr" ? "FR | EN" : "EN | FR"}
-            </button>
+            <div style={{ display: "inline-flex", alignItems: "center", background: "#D8D5CE", borderRadius: 999, padding: 3, gap: 2 }}>
+              {(["fr", "en"] as const).map((l) => (
+                <button key={l} onClick={() => setLang(l)}
+                  style={{
+                    padding: "5px 12px", borderRadius: 999, border: "none", cursor: "pointer",
+                    fontSize: 12, fontWeight: 600, letterSpacing: "0.06em",
+                    fontFamily: "var(--font-sora, system-ui)",
+                    background: lang === l ? INK : "transparent",
+                    color: lang === l ? WHITE : GRAY,
+                    transition: "background 0.2s, color 0.2s",
+                  }}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <Link href="/login"
               style={{ fontSize: 14, fontWeight: 500, color: GRAY, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)" }}
               className="hidden-mobile">

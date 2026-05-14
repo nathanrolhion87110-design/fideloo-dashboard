@@ -5,9 +5,11 @@ import { Search, User, Award, CheckCircle2, QrCode, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
-import GlassCard from "../../../components/GlassCard";
-import GlowButton from "../../../components/GlowButton";
-import GradientText from "../../../components/GradientText";
+
+/* ── Tokens ─────────────────────────────── */
+const CARD = "#FFFFFF"; const CARD2 = "#F5F3EE"; const INK = "#0B0F0E";
+const GRAY = "#6B6B6B"; const BORD = "#E0DDD6"; const BORD2 = "#D0CDC6";
+const GOLD = "#B8873A"; const GS = "rgba(184,135,58,0.10)"; const GB = "rgba(184,135,58,0.25)";
 
 interface ScanEntry { time: string; name: string; points: string }
 interface ApiClient { id: string; name: string; email?: string | null; points: number; }
@@ -65,147 +67,160 @@ export default function ScannerPage() {
   const threshold = merchant?.reward_threshold || 10;
   const progress = activeClient ? Math.min((activeClient.points / threshold) * 100, 100) : 0;
 
+  const inputStyle = {
+    width: "100%", padding: "12px 16px", background: CARD2, border: `1px solid ${BORD}`,
+    borderRadius: 10, fontSize: 14, color: INK, outline: "none", fontFamily: "inherit",
+  };
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 fade-in-up">
-      <div className="text-center">
-        <h1 className="heading-display text-4xl"><GradientText>Scanner un client</GradientText></h1>
-        <p className="text-text-muted mt-2">Recherchez un client pour lui ajouter des points</p>
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
+
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <h1 style={{ fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: INK, letterSpacing: "-0.03em", fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)" }}>
+          Scanner un client
+        </h1>
+        <p style={{ fontSize: 14, color: GRAY, marginTop: 8 }}>Recherchez un client pour lui ajouter des points</p>
       </div>
 
-      <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted pointer-events-none" />
+      {/* Search */}
+      <form onSubmit={handleSearch} style={{ position: "relative", maxWidth: 600, margin: "0 auto 32px" }}>
+        <Search style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", width: 18, height: 18, color: GRAY, pointerEvents: "none" }} />
         <input
           type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-          className="input-dark pl-12 pr-36 w-full rounded-2xl py-4 text-base shadow-lg"
           placeholder="Nom, email ou ID client…"
+          style={{ ...inputStyle, paddingLeft: 48, paddingRight: 140, fontSize: 15, borderRadius: 14, boxShadow: "0 4px 16px rgba(11,15,14,0.06)" }}
         />
-        <div className="absolute inset-y-2 right-2">
-          <GlowButton type="submit" disabled={loading}>{loading ? "…" : "Rechercher"}</GlowButton>
-        </div>
+        <button type="submit" disabled={loading}
+          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", padding: "8px 20px", background: INK, color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          {loading ? "…" : "Rechercher"}
+        </button>
       </form>
 
-      {error && <p className="text-center text-error text-sm font-medium">{error}</p>}
+      {error && <p style={{ textAlign: "center", color: "#DC2626", fontSize: 14, fontWeight: 500, marginBottom: 16 }}>{error}</p>}
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: 20 }}>
+
+        {/* Client card */}
+        <div>
           <AnimatePresence mode="wait">
             {activeClient ? (
               <motion.div key={activeClient.id}
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .96 }}>
-                <GlassCard variant="strong" className="overflow-hidden relative">
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}>
+                <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, overflow: "hidden", position: "relative" }}>
                   {showReward && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-10 flex items-center justify-center"
-                      style={{ background: "rgba(16,185,129,0.10)", backdropFilter: "blur(8px)" }}>
-                      <motion.div initial={{ scale: .8 }} animate={{ scale: 1 }}
-                        className="p-8 rounded-2xl glass-strong flex flex-col items-center text-center">
-                        <Award className="w-16 h-16 mb-4" style={{ color: "#F59E0B" }} />
-                        <h3 className="text-2xl font-extrabold text-text-main">Récompense atteinte !</h3>
-                        <p className="text-text-muted mt-2">
-                          {activeClient.name} a droit à : <strong className="text-text-main">{merchant?.reward_description}</strong>
+                      style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(237,235,228,0.85)", backdropFilter: "blur(8px)" }}>
+                      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+                        style={{ padding: 36, borderRadius: 20, background: CARD, border: `1px solid ${BORD}`, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", boxShadow: "0 20px 60px rgba(11,15,14,0.1)" }}>
+                        <Award style={{ width: 56, height: 56, color: GOLD, marginBottom: 16 }} />
+                        <h3 style={{ fontSize: 22, fontWeight: 700, color: INK, marginBottom: 8 }}>Récompense atteinte !</h3>
+                        <p style={{ fontSize: 14, color: GRAY }}>
+                          {activeClient.name} a droit à : <strong style={{ color: INK }}>{merchant?.reward_description}</strong>
                         </p>
                       </motion.div>
                     </motion.div>
                   )}
 
-                  <div className="p-8">
-                    <div className="flex items-center gap-6 mb-8">
-                      <div className="w-20 h-20 rounded-full flex items-center justify-center shrink-0 pulse-glow"
-                           style={{ background: "rgba(167,139,250,0.15)",
-                                    border: "1px solid rgba(167,139,250,0.4)" }}>
-                        <User className="w-10 h-10" style={{ color: "var(--violet)" }} />
+                  <div style={{ padding: 32 }}>
+                    {/* Client info */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 32 }}>
+                      <div style={{ width: 72, height: 72, borderRadius: 36, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: GS, border: `1px solid ${GB}` }}>
+                        <User style={{ width: 36, height: 36, color: GOLD }} />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-extrabold text-text-main">{activeClient.name}</h2>
-                        <p className="text-text-muted">{activeClient.email || "Pas d'email"}</p>
+                        <h2 style={{ fontSize: 22, fontWeight: 700, color: INK }}>{activeClient.name}</h2>
+                        <p style={{ fontSize: 14, color: GRAY }}>{activeClient.email || "Pas d'email"}</p>
                       </div>
                     </div>
 
-                    <div className="mb-10">
-                      <div className="flex justify-between items-end mb-3">
-                        <span className="font-medium text-text-main">Progression</span>
-                        <span className="text-3xl font-extrabold"><GradientText>{activeClient.points}</GradientText>
-                          <span className="text-lg text-text-muted">/{threshold}</span></span>
+                    {/* Progress */}
+                    <div style={{ marginBottom: 32 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10 }}>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: INK }}>Progression</span>
+                        <span style={{ fontSize: 28, fontWeight: 700, color: GOLD }}>{activeClient.points}<span style={{ fontSize: 16, color: GRAY }}>/{threshold}</span></span>
                       </div>
-                      <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
-                        <motion.div className="h-full rounded-full"
-                          animate={{ width: `${progress}%` }} transition={{ type: "spring", bounce: 0, duration: .8 }}
-                          style={{ background: activeClient.points >= threshold
-                              ? "linear-gradient(90deg, #10B981, #34D399)"
-                              : "linear-gradient(90deg, #a78bfa, #8b6dfb)",
-                            boxShadow: "0 0 20px rgba(167,139,250,0.5)" }} />
+                      <div style={{ height: 10, background: CARD2, borderRadius: 999, overflow: "hidden", border: `1px solid ${BORD}` }}>
+                        <motion.div
+                          animate={{ width: `${progress}%` }} transition={{ type: "spring", bounce: 0, duration: 0.8 }}
+                          style={{ height: "100%", background: activeClient.points >= threshold ? GOLD : `linear-gradient(90deg,${GOLD}88,${GOLD})`, borderRadius: 999 }} />
                       </div>
                       {activeClient.points >= threshold && (
-                        <p className="text-sm font-semibold mt-2 flex items-center gap-1" style={{ color: "#34D399" }}>
-                          <Award className="w-4 h-4" /> Récompense disponible !
+                        <p style={{ fontSize: 13, fontWeight: 600, marginTop: 8, color: GOLD, display: "flex", alignItems: "center", gap: 4 }}>
+                          <Award style={{ width: 14, height: 14 }} /> Récompense disponible !
                         </p>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                    {/* Point buttons */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 16 }}>
                       {[1, 2, 5, 10].map((pts) => (
                         <button key={pts} onClick={() => addPoints(pts)} disabled={adding}
-                          className="card-lift py-4 rounded-2xl flex flex-col items-center gap-2 group disabled:opacity-50"
-                          style={{ background: "rgba(167,139,250,0.04)", border: "1px solid rgba(167,139,250,0.2)" }}>
-                          <div className="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-xl group-hover:scale-110 transition-transform"
-                               style={{ background: "linear-gradient(135deg, #a78bfa, #8b6dfb)", color: "#ffffff",
-                                        boxShadow: "0 0 18px rgba(167,139,250,0.4)" }}>
+                          style={{ padding: "16px 8px", borderRadius: 14, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, background: GS, border: `1px solid ${GB}`, cursor: "pointer", transition: "all 0.15s", opacity: adding ? 0.5 : 1 }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = GB; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = GS; }}>
+                          <div style={{ width: 44, height: 44, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 18, background: GOLD, color: "#FFFFFF" }}>
                             +{pts}
                           </div>
-                          <span className="text-xs font-medium text-text-main">{pts} point{pts > 1 ? "s" : ""}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: INK }}>{pts} point{pts > 1 ? "s" : ""}</span>
                         </button>
                       ))}
                     </div>
 
-                    <div className="flex gap-2">
+                    {/* Custom points */}
+                    <div style={{ display: "flex", gap: 10 }}>
                       <input type="number" value={customPoints} onChange={(e) => setCustomPoints(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleCustomAdd()}
                         placeholder="Montant personnalisé" min={1}
-                        className="input-dark flex-1 rounded-xl py-2.5 px-4 text-sm" />
-                      <GlowButton onClick={handleCustomAdd} disabled={adding || !customPoints || parseInt(customPoints) <= 0}>
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <button onClick={handleCustomAdd} disabled={adding || !customPoints || parseInt(customPoints) <= 0}
+                        style={{ padding: "12px 20px", background: INK, color: "#FFFFFF", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", opacity: (adding || !customPoints || parseInt(customPoints) <= 0) ? 0.5 : 1, whiteSpace: "nowrap" }}>
                         Ajouter
-                      </GlowButton>
+                      </button>
                     </div>
                   </div>
-                </GlassCard>
+                </div>
               </motion.div>
             ) : (
-              <GlassCard className="min-h-[420px] flex flex-col items-center justify-center text-center p-8 gap-4">
-                <QrCode className="w-16 h-16" style={{ color: "rgba(167,139,250,0.5)" }} />
-                <p className="text-text-muted max-w-sm">
+              <div style={{ minHeight: 400, background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 32 }}>
+                <QrCode style={{ width: 56, height: 56, color: BORD2 }} />
+                <p style={{ fontSize: 14, color: GRAY, maxWidth: 280, textAlign: "center", lineHeight: 1.6 }}>
                   Recherchez un client par nom ou email pour afficher sa carte et ajouter des points.
                 </p>
-              </GlassCard>
+              </div>
             )}
           </AnimatePresence>
         </div>
 
-        <GlassCard className="p-6 h-fit">
-          <h3 className="font-bold text-text-main mb-6 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-text-muted" /> Scans cette session
+        {/* Recent scans */}
+        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, padding: 20, height: "fit-content" }}>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: INK, marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+            <Clock style={{ width: 16, height: 16, color: GRAY }} /> Scans cette session
           </h3>
           {recentScans.length === 0 ? (
-            <p className="text-sm text-text-muted text-center py-4">Aucun scan pour l&apos;instant</p>
+            <p style={{ fontSize: 13, color: GRAY, textAlign: "center", padding: "16px 0" }}>Aucun scan pour l&apos;instant</p>
           ) : (
-            <div className="space-y-2">
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               {recentScans.map((s, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.04] transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                         style={{ background: "rgba(16,185,129,0.15)", color: "#34D399" }}>
-                      <CheckCircle2 className="w-4 h-4" />
+                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 12 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = CARD2)}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: GS, flexShrink: 0 }}>
+                      <CheckCircle2 style={{ width: 14, height: 14, color: GOLD }} />
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-text-main">{s.name}</div>
-                      <div className="text-xs text-text-muted">{s.time}</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: INK }}>{s.name}</div>
+                      <div style={{ fontSize: 11, color: GRAY }}>{s.time}</div>
                     </div>
                   </div>
-                  <div className="font-bold text-sm" style={{ color: "var(--violet)" }}>{s.points}</div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>{s.points}</span>
                 </div>
               ))}
             </div>
           )}
-        </GlassCard>
+        </div>
       </div>
     </div>
   );

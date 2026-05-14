@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2 } from "lucide-react";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 import { FideloLogoStamp } from "../../components/FideloLogoStamp";
@@ -41,6 +41,21 @@ declare global {
     getMomentType: () => string;
   }
 }
+
+const BG   = "#EDEBE4";
+const CARD = "#FFFFFF";
+const INK  = "#0B0F0E";
+const GOLD = "#B8873A";
+const GRAY  = "#6B6B6B";
+const BORD  = "#E0DDD6";
+const INPUT = "#F5F3EE";
+
+const inputStyle = {
+  width: "100%", padding: "12px 16px 12px 40px",
+  background: INPUT, border: `1px solid ${BORD}`, borderRadius: 8,
+  fontSize: 14, color: INK, outline: "none", fontFamily: "inherit",
+  transition: "border-color 0.15s",
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -98,7 +113,7 @@ export default function LoginPage() {
           const c = document.getElementById("google-fallback-btn");
           if (c && window.google) {
             c.innerHTML = ""; c.style.display = "flex";
-            window.google.accounts.id.renderButton(c, { theme: "filled_black", size: "large", width: 320, text: "signin_with", locale: "fr" });
+            window.google.accounts.id.renderButton(c, { theme: "outline", size: "large", width: 320, text: "signin_with", locale: "fr" });
           }
         }
       });
@@ -156,118 +171,118 @@ export default function LoginPage() {
   const appleServiceId = process.env.NEXT_PUBLIC_APPLE_SERVICE_ID;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: "#0a0a0b" }}>
-      <div aria-hidden className="pointer-events-none absolute"
-        style={{ top: -200, left: -100, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%)", filter: "blur(80px)" }} />
-      <div aria-hidden className="pointer-events-none absolute"
-        style={{ bottom: -150, right: -80, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%)", filter: "blur(80px)" }} />
+    <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ width: "100%", maxWidth: 480, background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 48 }}>
 
-      <div className="w-full max-w-[440px] relative z-10 fade-in-up"
-        style={{ background: "#14141a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 22, padding: 40 }}>
-
-        <div className="flex justify-center mb-8">
+        {/* Logo */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
           <Link href="/">
-            <FideloLogoStamp variant="onDark" size={36} />
+            <FideloLogoStamp variant="default" size={36} />
           </Link>
         </div>
 
-        <div className="mb-8">
-          <h1 style={{ fontWeight: 500, fontSize: 26, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 8 }}>
-            Bon retour 👋
+        {/* Title */}
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, fontSize: 32, color: INK, lineHeight: 1.2, marginBottom: 6 }}>
+            Bon retour,<br /><em style={{ fontStyle: "italic" }}>content de vous revoir.</em>
           </h1>
-          <p style={{ fontSize: 14, color: "var(--text-dim)" }}>Connectez-vous à votre dashboard</p>
         </div>
 
-        <div className="space-y-3 mb-6">
+        {/* Social buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
           {googleClientId ? (
             <button type="button" onClick={handleGoogleClick} disabled={loading || !googleReady}
-              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
-              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none", cursor: "pointer" }}>
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
+              style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: CARD, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, fontWeight: 500, color: INK, cursor: "pointer", fontFamily: "inherit", opacity: (loading || !googleReady) ? 0.5 : 1 }}>
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <GoogleIcon />}
               Continuer avec Google
             </button>
           ) : (
-            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
-              style={{ height: 44, background: "#f5f5f3", color: "#19181a", borderRadius: 10, fontSize: 14, border: "none" }}>
+            <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: CARD, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, color: GRAY, opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
               <GoogleIcon /> Google (non configuré)
             </button>
           )}
-          <div id="google-fallback-btn" style={{ display: "none" }} className="w-full justify-center" />
+          <div id="google-fallback-btn" style={{ display: "none", justifyContent: "center" }} />
 
           {appleServiceId ? (
             <button type="button" onClick={handleAppleSignIn} disabled={loading || !appleReady}
-              className="w-full flex items-center justify-center gap-3 font-medium transition-all disabled:opacity-50"
-              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer" }}>
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AppleIcon />}
+              style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: INK, border: "none", borderRadius: 999, fontSize: 14, fontWeight: 500, color: "#FFFFFF", cursor: "pointer", fontFamily: "inherit", opacity: (loading || !appleReady) ? 0.5 : 1 }}>
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <AppleIcon />}
               Continuer avec Apple
             </button>
           ) : (
-            <button disabled className="w-full flex items-center justify-center gap-3 font-medium opacity-40"
-              style={{ height: 44, background: "#19181a", color: "#f5f5f3", borderRadius: 10, fontSize: 14, border: "1px solid rgba(255,255,255,0.12)" }}>
+            <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: INK, border: "none", borderRadius: 999, fontSize: 14, color: "#fff", opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
               <AppleIcon /> Apple (non configuré)
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-          <span style={{ fontSize: 12, color: "var(--text-dim)", letterSpacing: "0.08em" }}>OU</span>
-          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+          <div style={{ flex: 1, height: 1, background: BORD }} />
+          <span style={{ fontSize: 12, color: GRAY, letterSpacing: "0.08em", fontFamily: "inherit" }}>OU</span>
+          <div style={{ flex: 1, height: 1, background: BORD }} />
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl text-sm"
-            style={{ background: "rgba(251,113,133,0.1)", color: "#fb7185", border: "1px solid rgba(251,113,133,0.25)" }}>
+          <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 8, background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)", fontSize: 13 }}>
             {error}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleLogin}>
+        {/* Form */}
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)", marginBottom: 6 }}>
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: INK, marginBottom: 6 }}>Email</label>
+            <div style={{ position: "relative" }}>
+              <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
-                placeholder="vous@commerce.fr" />
+                style={inputStyle} placeholder="vous@commerce.fr"
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
             </div>
           </div>
+
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label style={{ fontSize: 13, fontWeight: 500, color: "rgba(245,245,243,0.8)" }}>Mot de passe</label>
-              <Link href="/forgot-password" style={{ fontSize: 13, color: "var(--violet)" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <label style={{ fontSize: 14, fontWeight: 500, color: INK }}>Mot de passe</label>
+              <Link href="/forgot-password" style={{ fontSize: 13, color: GOLD, textDecoration: "none", fontWeight: 500 }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = "0.75")}
+                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                 Mot de passe oublié ?
               </Link>
             </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-dim)" }} />
+            <div style={{ position: "relative" }}>
+              <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
               <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors pl-10"
-                placeholder="••••••••" />
+                style={inputStyle} placeholder="••••••••"
+                onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
             </div>
           </div>
 
           <button type="submit" disabled={loading}
-            className="btn btn-accent btn-lg w-full justify-center disabled:opacity-50 mt-2">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Se connecter <ArrowRight className="w-4 h-4" /></>}
+            style={{ width: "100%", padding: "14px", background: loading ? GRAY : INK, color: "#FFFFFF", borderRadius: 999, fontSize: 15, fontWeight: 600, border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
+            {loading ? <><Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} /> Connexion…</> : "Se connecter"}
           </button>
         </form>
 
-        <p className="mt-6 text-center" style={{ fontSize: 14, color: "var(--text-dim)" }}>
+        <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: GRAY }}>
           Pas encore de compte ?{" "}
-          <Link href="/register" className="font-semibold"
-            style={{ color: "var(--violet)" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "var(--violet)")}>
-            Créer un compte
-          </Link>
+          <Link href="/register" style={{ color: GOLD, fontWeight: 600, textDecoration: "none" }}>Créer un compte</Link>
         </p>
       </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0px 1000px #F5F3EE inset !important;
+          -webkit-text-fill-color: #0B0F0E !important;
+          caret-color: #0B0F0E !important;
+        }
+      `}</style>
     </div>
   );
 }

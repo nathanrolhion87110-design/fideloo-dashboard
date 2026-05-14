@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { Download, Search, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
-import GlassCard from "../../../components/GlassCard";
-import GlowButton from "../../../components/GlowButton";
-import GradientText from "../../../components/GradientText";
+
+/* ── Tokens ─────────────────────────────── */
+const CARD = "#FFFFFF"; const CARD2 = "#F5F3EE"; const INK = "#0B0F0E";
+const GRAY = "#6B6B6B"; const BORD = "#E0DDD6";
+const GOLD = "#B8873A"; const GS = "rgba(184,135,58,0.10)"; const GB = "rgba(184,135,58,0.25)";
 
 interface Transaction {
   id: string; customer_id: string; points: number; note?: string | null;
@@ -58,82 +60,99 @@ export default function TransactionsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const inputStyle = {
+    background: CARD2, border: `1px solid ${BORD}`, borderRadius: 10,
+    padding: "10px 14px", fontSize: 14, color: INK, outline: "none", fontFamily: "inherit",
+  };
+
   return (
-    <div className="space-y-6 fade-in-up">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
         <div>
-          <h1 className="heading-display text-3xl"><GradientText>Historique des transactions</GradientText></h1>
-          <p className="text-text-muted mt-1">
+          <h1 style={{ fontSize: "clamp(22px,3vw,28px)", fontWeight: 700, color: INK, letterSpacing: "-0.03em", fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)" }}>
+            Historique des transactions
+          </h1>
+          <p style={{ fontSize: 13, color: GRAY, marginTop: 4 }}>
             {loading ? "Chargement…" : `${filtered.length} transaction${filtered.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <GlowButton variant="ghost" onClick={exportCSV}><Download className="w-4 h-4" /> Export CSV</GlowButton>
+        <button onClick={exportCSV}
+          style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: CARD2, border: `1px solid ${BORD}`, color: INK, cursor: "pointer" }}>
+          <Download style={{ width: 15, height: 15 }} /> Export CSV
+        </button>
       </div>
 
-      <GlassCard className="overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex flex-col sm:flex-row gap-3 justify-between">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none" />
-            <input
-              type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              className="input-dark pl-10 w-full rounded-xl py-2.5 text-sm" placeholder="Rechercher par nom de client…"
+      {/* Card */}
+      <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
+
+        {/* Filters */}
+        <div style={{ padding: 16, borderBottom: `1px solid ${BORD}`, display: "flex", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
+            <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: GRAY, pointerEvents: "none" }} />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher par nom de client…"
+              style={{ ...inputStyle, width: "100%", paddingLeft: 40 }}
             />
           </div>
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as "all" | "add" | "redeem")}
-                  className="input-dark rounded-xl px-3 py-2.5 text-sm">
+            style={{ ...inputStyle, minWidth: 180 }}>
             <option value="all">Tous les types</option>
             <option value="add">Ajouts de points</option>
             <option value="redeem">Récompenses</option>
           </select>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ minWidth: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
-                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Date</th>
-                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Client</th>
-                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Mouvement</th>
-                <th className="px-6 py-3" style={{ background: "rgba(255,255,255,0.02)" }}>Note</th>
+              <tr style={{ background: CARD2 }}>
+                {["Date", "Client", "Mouvement", "Note"].map((h) => (
+                  <th key={h} style={{ padding: "10px 24px", fontSize: 11, fontWeight: 600, color: GRAY, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "left" }}>
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {loading ? (
-                <tr><td colSpan={4} className="px-6 py-10 text-center text-text-muted text-sm">Chargement…</td></tr>
+                <tr><td colSpan={4} style={{ padding: "40px 24px", textAlign: "center", fontSize: 14, color: GRAY }}>Chargement…</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={4} className="px-6 py-10 text-center text-text-muted text-sm">Aucune transaction trouvée.</td></tr>
+                <tr><td colSpan={4} style={{ padding: "40px 24px", textAlign: "center", fontSize: 14, color: GRAY }}>Aucune transaction trouvée.</td></tr>
               ) : (
                 filtered.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-white/[0.03] transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-text-main">{formatDate(tx.created_at)}</div>
-                      <div className="text-xs text-text-muted font-mono">{tx.id.slice(0, 8)}…</div>
+                  <tr key={tx.id} style={{ borderTop: `1px solid ${BORD}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = CARD2)}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <td style={{ padding: "14px 24px", whiteSpace: "nowrap" }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: INK }}>{formatDate(tx.created_at)}</div>
+                      <div style={{ fontSize: 11, color: GRAY, fontFamily: "monospace" }}>{tx.id.slice(0, 8)}…</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-text-main">{tx.customers?.name || "Inconnu"}</div>
-                      <div className="text-xs text-text-muted">{tx.customers?.email || ""}</div>
+                    <td style={{ padding: "14px 24px", whiteSpace: "nowrap" }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: INK }}>{tx.customers?.name || "Inconnu"}</div>
+                      <div style={{ fontSize: 12, color: GRAY }}>{tx.customers?.email || ""}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td style={{ padding: "14px 24px", whiteSpace: "nowrap" }}>
                       {tx.points > 0 ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium"
-                              style={{ background: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.3)" }}>
-                          <ArrowUpRight className="w-4 h-4" /> +{tx.points} pts
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 12px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: GS, color: GOLD, border: `1px solid ${GB}` }}>
+                          <ArrowUpRight style={{ width: 14, height: 14 }} /> +{tx.points} pts
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium"
-                              style={{ background: "rgba(251,113,133,0.15)", color: "#fb7185", border: "1px solid rgba(251,113,133,0.3)" }}>
-                          <ArrowDownRight className="w-4 h-4" /> {tx.points} pts
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 12px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)" }}>
+                          <ArrowDownRight style={{ width: 14, height: 14 }} /> {tx.points} pts
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-muted">{tx.note || "—"}</td>
+                    <td style={{ padding: "14px 24px", whiteSpace: "nowrap", fontSize: 13, color: GRAY }}>{tx.note || "—"}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 }

@@ -15,19 +15,19 @@ import { useAuth, Merchant } from "@/context/AuthContext";
 import api from "@/utils/api";
 
 /* ── Design tokens ───────────────────────────────────────── */
-const DS   = "#111111";
-const DS2  = "#0D0D0D";
-const DL   = "rgba(255,255,255,0.06)";
-const DL2  = "rgba(255,255,255,0.10)";
-const DT   = "#F5F5F5";
-const DTD  = "rgba(245,245,245,0.6)";
-const DTD2 = "rgba(245,245,245,0.3)";
-const DG   = "#22C55E";
-const DG2  = "#16A34A";
-const DGS  = "rgba(34,197,94,0.08)";
-const DGB  = "rgba(34,197,94,0.25)";
-const DW   = "#F59E0B";
-const DR   = "#EF4444";
+const DS   = "#FFFFFF";
+const DS2  = "#F5F3EE";
+const DL   = "#E0DDD6";
+const DL2  = "#D8D5CE";
+const DT   = "#0B0F0E";
+const DTD  = "#6B6B6B";
+const DTD2 = "rgba(11,15,14,0.35)";
+const DG   = "#B8873A";   // gold accent (was green)
+const DG2  = "#8B6020";
+const DGS  = "rgba(184,135,58,0.10)";
+const DGB  = "rgba(184,135,58,0.22)";
+const DW   = "#B8873A";
+const DR   = "#DC2626";
 
 /* ── Types ───────────────────────────────────────────────── */
 interface Customer {
@@ -89,7 +89,7 @@ function KpiCard({ label, value, suffix, delta, sparkData, color, icon: Icon, to
         background: DS, border: `1px solid ${hov ? DL2 : DL}`, borderRadius: 16,
         padding: "20px 20px 16px", transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s",
         transform: hov ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hov ? "0 8px 24px rgba(0,0,0,0.3)" : "none",
+        boxShadow: hov ? "0 8px 24px rgba(11,15,14,0.06)" : "none",
         cursor: "default", position: "relative",
       }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
@@ -106,7 +106,7 @@ function KpiCard({ label, value, suffix, delta, sparkData, color, icon: Icon, to
               <Info style={{ width: 13, height: 13, color: DTD2, cursor: "pointer" }}
                 onMouseEnter={() => setShowTip(true)} onMouseLeave={() => setShowTip(false)} />
               {showTip && (
-                <div style={{ position: "absolute", right: 0, bottom: "100%", marginBottom: 6, background: DS2, border: `1px solid ${DL2}`, borderRadius: 8, padding: "6px 10px", fontSize: 11, color: DTD, whiteSpace: "nowrap", zIndex: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+                <div style={{ position: "absolute", right: 0, bottom: "100%", marginBottom: 6, background: DS, border: `1px solid ${DL2}`, borderRadius: 8, padding: "6px 10px", fontSize: 11, color: DTD, whiteSpace: "nowrap", zIndex: 10, boxShadow: "0 8px 24px rgba(11,15,14,0.08)" }}>
                   {tooltip}
                 </div>
               )}
@@ -129,17 +129,17 @@ function KpiCard({ label, value, suffix, delta, sparkData, color, icon: Icon, to
 function FeatureLocked({ name, requiredPlan }: { name: string; requiredPlan: string }) {
   return (
     <div style={{
-      padding: 24, background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
+      padding: 24, background: DS2,
+      border: `1px solid ${DL}`, borderRadius: 16,
       display: "flex", alignItems: "center", gap: 12,
-      opacity: 0.5, filter: "blur(0.5px)",
+      opacity: 0.7,
     }}>
       <span style={{ fontSize: 20 }}>🔒</span>
       <div>
         <div style={{ fontSize: 14, fontWeight: 600, color: DT }}>{name}</div>
         <div style={{ fontSize: 12, color: DTD }}>Disponible dans le plan {requiredPlan}</div>
       </div>
-      <a href="/dashboard/parametres" style={{ marginLeft: "auto", padding: "6px 12px", background: DG, color: "#080808", borderRadius: 999, fontSize: 12, fontWeight: 700, textDecoration: "none" }}>
+      <a href="/dashboard/parametres" style={{ marginLeft: "auto", padding: "6px 12px", background: "#0B0F0E", color: "#FFFFFF", borderRadius: 999, fontSize: 12, fontWeight: 700, textDecoration: "none" }}>
         Upgrader →
       </a>
     </div>
@@ -150,7 +150,7 @@ function FeatureLocked({ name, requiredPlan }: { name: string; requiredPlan: str
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: DS2, border: `1px solid ${DL2}`, borderRadius: 10, padding: "10px 14px", fontSize: 12, color: DT, boxShadow: "0 8px 32px rgba(0,0,0,0.4)" }}>
+    <div style={{ background: DS, border: `1px solid ${DL}`, borderRadius: 10, padding: "10px 14px", fontSize: 12, color: DT, boxShadow: "0 8px 32px rgba(11,15,14,0.08)" }}>
       <p style={{ color: DTD, marginBottom: 6, fontSize: 11 }}>{label}</p>
       {payload.map(p => <p key={p.name} style={{ color: p.color, fontWeight: 600 }}>{p.name} : {p.value}</p>)}
     </div>
@@ -163,7 +163,7 @@ function ClientRow({ c, i, total, merchant, formatRel }: { c: Customer; i: numbe
   const isVip = c.points >= (merchant?.reward_threshold || 10);
   return (
     <div style={{ padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, borderBottom: i < total - 1 ? `1px solid ${DL}` : "none", transition: "background 0.15s", cursor: "default" }}
-      onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+      onMouseEnter={e => (e.currentTarget.style.background = DS2)}
       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
       <div style={{ width: 36, height: 36, borderRadius: 18, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, background: DGS, color: DG, border: `1px solid ${DGB}` }}>
         {initials}
@@ -187,17 +187,17 @@ function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan |
   const appUrl = typeof window !== "undefined" ? window.location.origin : "";
   const joinUrl = `${appUrl}/join/${merchant?.id}`;
   const qrSrc = merchant
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}&color=22C55E&bgcolor=111111`
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}&color=B8873A&bgcolor=FFFFFF`
     : null;
 
   const handleDl = () => {
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(joinUrl)}&color=22C55E&bgcolor=080808`;
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(joinUrl)}&color=B8873A&bgcolor=FFFFFF`;
     const a = document.createElement("a"); a.href = url; a.download = "fideloo-qr.png"; a.click();
   };
   const handlePrint = () => {
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(`<html><body style="background:#080808;display:flex;justify-content:center;align-items:center;height:100vh;margin:0"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(joinUrl)}&color=22C55E&bgcolor=080808"/></body></html>`);
+    w.document.write(`<html><body style="background:#FFFFFF;display:flex;justify-content:center;align-items:center;height:100vh;margin:0"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(joinUrl)}&color=B8873A&bgcolor=FFFFFF"/></body></html>`);
     w.document.close(); w.print();
   };
 
@@ -205,7 +205,7 @@ function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan |
     <div style={{ background: DS, border: `1px solid ${DL}`, borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 200, width: 220 }}>
       <h3 style={{ fontSize: 14, fontWeight: 600, color: DT, marginBottom: 4, textAlign: "center" }}>Votre QR Code</h3>
       <p style={{ fontSize: 11, color: DTD, marginBottom: 16, textAlign: "center" }}>Affichez-le en caisse</p>
-      <div style={{ width: 160, height: 160, borderRadius: 14, padding: 10, background: "#fff", marginBottom: 14, flexShrink: 0, boxShadow: `0 0 0 1px ${DGB}, 0 8px 24px rgba(34,197,94,0.15)` }}>
+      <div style={{ width: 160, height: 160, borderRadius: 14, padding: 10, background: "#fff", marginBottom: 14, flexShrink: 0, boxShadow: `0 0 0 1px ${DL}, 0 8px 24px rgba(11,15,14,0.06)` }}>
         {qrSrc && <img src={qrSrc} alt="QR Code" width={140} height={140} style={{ borderRadius: 6 }} />}
       </div>
       <div style={{ display: "flex", gap: 8, width: "100%" }}>
@@ -230,7 +230,7 @@ function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan |
 
 /* ── Skeleton ────────────────────────────────────────────── */
 const Skel = ({ h = 20, w = "100%" }: { h?: number; w?: number | string }) => (
-  <div style={{ height: h, width: w, borderRadius: 8, background: "rgba(255,255,255,0.06)" }} />
+  <div style={{ height: h, width: w, borderRadius: 8, background: "rgba(0,0,0,0.06)" }} />
 );
 
 /* ══════════════════════════════════════════════════════════
@@ -280,12 +280,12 @@ function DashboardStandard({ merchant, customers, transactions, loading }: Share
           <p style={{ fontSize: 12, color: DTD, marginBottom: 4 }}>
             {now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
           </p>
-          <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em" }}>
+          <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em", fontFamily: "Playfair Display, serif" }}>
             Bonjour, {merchant?.business_name} 👋
           </h1>
         </div>
         <Link href="/dashboard/scanner"
-          style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DG, color: "#080808", textDecoration: "none", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}>
+          style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: "#0B0F0E", color: "#FFFFFF", textDecoration: "none" }}>
           <ScanLine style={{ width: 15, height: 15 }} /> Scanner un client
         </Link>
       </div>
@@ -299,13 +299,13 @@ function DashboardStandard({ merchant, customers, transactions, loading }: Share
       </div>
 
       {/* Barre de progression clients */}
-      <div style={{ background: DS, border: `1px solid ${isNearLimit ? "rgba(239,68,68,0.3)" : DL}`, borderRadius: 14, padding: "16px 20px", marginBottom: 14 }}>
+      <div style={{ background: DS, border: `1px solid ${isNearLimit ? "rgba(220,38,38,0.3)" : DL}`, borderRadius: 14, padding: "16px 20px", marginBottom: 14 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: DT }}>Clients utilisés — Plan Standard</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: isNearLimit ? DR : DG }}>{totalClients} / {CLIENT_LIMIT}</span>
         </div>
-        <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${progressPct}%`, background: isNearLimit ? DR : `linear-gradient(90deg, ${DG2}, ${DG})`, borderRadius: 999, transition: "width 0.5s ease" }} />
+        <div style={{ height: 8, background: "rgba(0,0,0,0.06)", borderRadius: 999, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${progressPct}%`, background: isNearLimit ? DR : DG, borderRadius: 999, transition: "width 0.5s ease" }} />
         </div>
         {isNearLimit ? (
           <p style={{ fontSize: 12, color: DR, marginTop: 8 }}>⚠️ Vous approchez de la limite. Passez au Pro pour des clients illimités.</p>
@@ -353,13 +353,13 @@ function DashboardStandard({ merchant, customers, transactions, loading }: Share
       </div>
 
       {/* Bandeau d'upgrade */}
-      <div style={{ padding: "18px 24px", background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 16, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+      <div style={{ padding: "18px 24px", background: DGS, border: `1px solid ${DGB}`, borderRadius: 16, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: DT, marginBottom: 4 }}>Passez au plan Pro</div>
           <div style={{ fontSize: 13, color: DTD }}>Débloquez les analytics, les campagnes push, l&apos;export CSV, les clients illimités et bien plus →</div>
         </div>
         <a href="/dashboard/parametres"
-          style={{ padding: "10px 20px", background: DG, color: "#080808", borderRadius: 999, fontSize: 13, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}>
+          style={{ padding: "10px 20px", background: "#0B0F0E", color: "#FFFFFF", borderRadius: 999, fontSize: 13, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
           Voir le plan Pro
         </a>
       </div>
@@ -445,7 +445,7 @@ function DashboardPro({ merchant, customers, transactions, loading }: SharedProp
             {now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em" }}>
+            <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em", fontFamily: "Playfair Display, serif" }}>
               Bonjour, {merchant?.business_name}
             </h1>
             <span style={{ padding: "3px 10px", background: DGS, border: `1px solid ${DGB}`, borderRadius: 999, fontSize: 12, fontWeight: 700, color: DG }}>Pro ✦</span>
@@ -453,15 +453,15 @@ function DashboardPro({ merchant, customers, transactions, loading }: SharedProp
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button onClick={handleExportCSV}
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DGS, border: `1px solid ${DGB}`, color: DG, cursor: "pointer" }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: DS2, border: `1px solid ${DL}`, color: DT, cursor: "pointer" }}>
             <Download style={{ width: 15, height: 15 }} /> Export CSV
           </button>
           <Link href="/dashboard/notifications"
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DGS, border: `1px solid ${DGB}`, color: DG, textDecoration: "none" }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: DS2, border: `1px solid ${DL}`, color: DT, textDecoration: "none" }}>
             <Megaphone style={{ width: 15, height: 15 }} /> Campagne push
           </Link>
           <Link href="/dashboard/scanner"
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DG, color: "#080808", textDecoration: "none", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: "#0B0F0E", color: "#FFFFFF", textDecoration: "none" }}>
             <ScanLine style={{ width: 15, height: 15 }} /> Scanner
           </Link>
         </div>
@@ -571,7 +571,7 @@ function DashboardPro({ merchant, customers, transactions, loading }: SharedProp
             <div style={{ padding: "40px 20px", textAlign: "center" }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
               <p style={{ fontSize: 14, fontWeight: 600, color: DT, marginBottom: 6 }}>Aucun client pour le moment</p>
-              <Link href="/dashboard/scanner" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600, background: DG, color: "#080808", textDecoration: "none" }}>
+              <Link href="/dashboard/scanner" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 999, fontSize: 12, fontWeight: 600, background: "#0B0F0E", color: "#FFFFFF", textDecoration: "none" }}>
                 <ScanLine style={{ width: 14, height: 14 }} /> Scanner maintenant
               </Link>
             </div>
@@ -667,35 +667,35 @@ function DashboardBusiness({ merchant, customers, transactions, loading }: Share
             {now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em" }}>
+            <h1 style={{ fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: DT, letterSpacing: "-0.03em", fontFamily: "Playfair Display, serif" }}>
               Bonjour, {merchant?.business_name}
             </h1>
-            <span style={{ padding: "3px 10px", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.35)", borderRadius: 999, fontSize: 12, fontWeight: 700, color: DG, boxShadow: "0 0 12px rgba(34,197,94,0.2)" }}>Business ★</span>
+            <span style={{ padding: "3px 10px", background: DGS, border: `1px solid ${DGB}`, borderRadius: 999, fontSize: 12, fontWeight: 700, color: DG }}>Business ★</span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <select value={selectedSite} onChange={e => setSelectedSite(e.target.value)}
-            style={{ padding: "10px 14px", borderRadius: 12, fontSize: 13, background: DS, border: `1px solid ${DL2}`, color: DT, cursor: "pointer" }}>
+            style={{ padding: "10px 14px", borderRadius: 12, fontSize: 13, background: DS2, border: `1px solid ${DL}`, color: DT, cursor: "pointer" }}>
             <option value="all">Tous les commerces</option>
             <option value={merchant?.id || ""}>{merchant?.business_name}</option>
           </select>
           <button onClick={handleExportCSV}
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DGS, border: `1px solid ${DGB}`, color: DG, cursor: "pointer" }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: DS2, border: `1px solid ${DL}`, color: DT, cursor: "pointer" }}>
             <Download style={{ width: 15, height: 15 }} /> Export CSV
           </button>
           <Link href="/dashboard/notifications"
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DGS, border: `1px solid ${DGB}`, color: DG, textDecoration: "none" }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: DS2, border: `1px solid ${DL}`, color: DT, textDecoration: "none" }}>
             <Megaphone style={{ width: 15, height: 15 }} /> Campagnes
           </Link>
           <Link href="/dashboard/scanner"
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600, background: DG, color: "#080808", textDecoration: "none", boxShadow: `0 4px 16px rgba(34,197,94,0.30)` }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: 999, fontSize: 13, fontWeight: 600, background: "#0B0F0E", color: "#FFFFFF", textDecoration: "none" }}>
             <ScanLine style={{ width: 15, height: 15 }} /> Scanner
           </Link>
         </div>
       </div>
 
       {/* Stats consolidées */}
-      <div style={{ padding: "12px 20px", background: "rgba(34,197,94,0.04)", border: "1px solid rgba(34,197,94,0.12)", borderRadius: 12, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ padding: "12px 20px", background: DS2, border: `1px solid ${DL}`, borderRadius: 12, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ width: 8, height: 8, borderRadius: "50%", background: DG, flexShrink: 0 }} />
         <span style={{ fontSize: 12, color: DTD, fontFamily: "monospace" }}>CONSOLIDÉ · Tous les établissements</span>
         <span style={{ marginLeft: "auto", fontSize: 12, color: DG, fontWeight: 600 }}>{totalClients.toLocaleString("fr-FR")} clients · {pointsTotal.toLocaleString("fr-FR")} pts distribués</span>
@@ -759,14 +759,14 @@ function DashboardBusiness({ merchant, customers, transactions, loading }: Share
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 16 }}>
             {[{ label: "Parties jouées", value: "342" }, { label: "Avis déposés", value: "289" }, { label: "Taux conv.", value: "84%" }].map((s, i) => (
-              <div key={i} style={{ textAlign: "center", padding: "12px 8px", background: DS2, borderRadius: 10 }}>
+              <div key={i} style={{ textAlign: "center", padding: "12px 8px", background: DS2, borderRadius: 10, border: `1px solid ${DL}` }}>
                 <div style={{ fontSize: 20, fontWeight: 700, color: i === 2 ? DG : DT }}>{s.value}</div>
                 <div style={{ fontSize: 11, color: DTD, marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
-          <div style={{ height: 6, background: "rgba(34,197,94,0.1)", borderRadius: 999, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: "84%", background: `linear-gradient(90deg, ${DG2}, ${DG})`, borderRadius: 999 }} />
+          <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 999, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: "84%", background: DG, borderRadius: 999 }} />
           </div>
           <p style={{ fontSize: 11, color: DTD, marginTop: 6 }}>84% des joueurs laissent un avis Google</p>
         </div>

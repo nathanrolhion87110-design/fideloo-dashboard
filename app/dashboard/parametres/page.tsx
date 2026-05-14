@@ -6,14 +6,15 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
-import GlassCard from "../../../components/GlassCard";
-import GlowButton from "../../../components/GlowButton";
-import GradientText from "../../../components/GradientText";
+
+/* ── Tokens ─────────────────────────────── */
+const CARD = "#FFFFFF"; const CARD2 = "#F5F3EE"; const INK = "#0B0F0E";
+const GRAY = "#6B6B6B"; const BORD = "#E0DDD6"; const BORD2 = "#D0CDC6";
+const GOLD = "#B8873A"; const GS = "rgba(184,135,58,0.10)"; const GB = "rgba(184,135,58,0.25)";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 interface PlanStatus { plan: "free" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
-
 interface MerchantUpdate {
   business_name?: string; business_type?: string;
   primary_color?: string; reward_threshold?: number; reward_description?: string;
@@ -22,7 +23,7 @@ interface MerchantUpdate {
 
 export default function SettingsPageWrapper() {
   return (
-    <Suspense fallback={<div className="text-text-muted">Chargement…</div>}>
+    <Suspense fallback={<div style={{ color: GRAY, padding: 24 }}>Chargement…</div>}>
       <SettingsPage />
     </Suspense>
   );
@@ -39,7 +40,6 @@ function SettingsPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [customerCount, setCustomerCount] = useState<number | null>(null);
 
-  // Si on revient de Stripe avec ?upgraded=true → ouvrir l'onglet abonnement + message
   useEffect(() => {
     if (searchParams?.get("upgraded") === "true") {
       setActiveTab("abonnement");
@@ -48,7 +48,6 @@ function SettingsPage() {
     }
   }, [searchParams]);
 
-  // Charger le statut Stripe + compter les clients pour la barre Free
   useEffect(() => {
     if (!merchant) return;
     api.get<PlanStatus>(`/stripe/status/${merchant.id}`)
@@ -81,7 +80,7 @@ function SettingsPage() {
 
   const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("restaurant");
-  const [color, setColor] = useState("#a78bfa");
+  const [color, setColor] = useState("#B8873A");
   const [threshold, setThreshold] = useState(10);
   const [rewardDesc, setRewardDesc] = useState("");
 
@@ -92,7 +91,7 @@ function SettingsPage() {
     if (!merchant) return;
     setBusinessName(merchant.business_name || "");
     setBusinessType((merchant.business_type as string) || "restaurant");
-    setColor(merchant.primary_color || "#a78bfa");
+    setColor(merchant.primary_color || "#B8873A");
     setThreshold(merchant.reward_threshold || 10);
     setRewardDesc(merchant.reward_description || "");
   }, [merchant]);
@@ -151,306 +150,335 @@ function SettingsPage() {
     { id: "abonnement", label: "Abonnement", icon: CreditCard },
   ];
 
+  const inputStyle = {
+    width: "100%", padding: "12px 16px", background: CARD2, border: `1px solid ${BORD}`,
+    borderRadius: 10, fontSize: 14, color: INK, outline: "none", fontFamily: "inherit",
+    transition: "border-color 0.15s",
+  };
+
+  const btnPrimary = {
+    display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px",
+    background: INK, color: "#FFFFFF", border: "none", borderRadius: 999,
+    fontSize: 14, fontWeight: 600, cursor: "pointer",
+  } as const;
+
+  const btnSecondary = {
+    display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px",
+    background: CARD2, color: INK, border: `1px solid ${BORD}`, borderRadius: 999,
+    fontSize: 14, fontWeight: 600, cursor: "pointer",
+  } as const;
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
-      <div>
-        <h1 className="heading-display text-3xl"><GradientText>Paramètres</GradientText></h1>
-        <p className="text-text-muted mt-1">Gérez votre commerce et votre abonnement</p>
+    <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: "clamp(22px,3vw,28px)", fontWeight: 700, color: INK, letterSpacing: "-0.03em", fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)" }}>
+          Paramètres
+        </h1>
+        <p style={{ fontSize: 13, color: GRAY, marginTop: 4 }}>Gérez votre commerce et votre abonnement</p>
       </div>
 
       {successMsg && (
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
-          style={{ background: "rgba(16,185,129,0.12)", color: "#34D399", border: "1px solid rgba(16,185,129,0.3)" }}>
-          <CheckCircle2 className="w-4 h-4" /> {successMsg}
+          style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 500, background: GS, color: GOLD, border: `1px solid ${GB}`, marginBottom: 20 }}>
+          <CheckCircle2 style={{ width: 16, height: 16 }} /> {successMsg}
         </motion.div>
       )}
 
-      <GlassCard className="overflow-hidden flex flex-col md:flex-row min-h-[600px]">
-        <div className="w-full md:w-64 p-4" style={{ background: "rgba(255,255,255,0.02)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-          <nav className="flex md:flex-col gap-1 overflow-x-auto pb-2 md:pb-0">
-            {tabs.map((t) => (
-              <button key={t.id} onClick={() => setActiveTab(t.id)}
-                className={[
-                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
-                  activeTab === t.id ? "nav-active" : "text-text-muted hover:text-white hover:bg-white/5"
-                ].join(" ")}>
-                <t.icon className={`w-5 h-5 ${activeTab === t.id ? "" : "opacity-70"}`} />
-                {t.label}
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* Settings card */}
+      <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 600 }}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
 
-        <div className="flex-1 p-6 md:p-8">
-          {activeTab === "commerce" && (
-            <div className="max-w-2xl space-y-6">
-              <h2 className="text-lg font-bold text-text-main">Informations du commerce</h2>
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-text-main mb-1.5">Nom du commerce</label>
-                  <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)}
-                    className="input-dark w-full rounded-xl py-3 px-4 text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-main mb-1.5">Type de commerce</label>
-                  <select value={businessType} onChange={(e) => setBusinessType(e.target.value)}
-                    className="input-dark w-full rounded-xl py-3 px-4 text-sm appearance-none">
-                    <option value="restaurant">Restaurant</option>
-                    <option value="boulangerie">Boulangerie</option>
-                    <option value="boutique">Boutique</option>
-                    <option value="coiffeur">Coiffeur</option>
-                    <option value="cafe">Café</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-main mb-1.5">Logo du commerce</label>
-                  <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden shrink-0"
-                         style={{ background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)" }}>
-                      {merchant?.logo_url ? (
-                        <img src={merchant.logo_url} alt="Logo" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="font-extrabold text-2xl" style={{ color: "var(--violet)" }}>{businessName.charAt(0) || "?"}</span>
-                      )}
-                    </div>
-                    <input ref={logoRef} type="file" accept="image/*" className="hidden"
-                      onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], "logo"); }} />
-                    <GlowButton variant="ghost" onClick={() => logoRef.current?.click()} disabled={uploading}>
-                      <Upload className="w-4 h-4" /> {uploading ? "Upload…" : "Changer le logo"}
-                    </GlowButton>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-6 border-t border-white/5">
-                <GlowButton onClick={saveCommerce} disabled={saving}>
-                  <Save className="w-4 h-4" /> {saving ? "Enregistrement…" : "Enregistrer"}
-                </GlowButton>
-              </div>
-            </div>
-          )}
+          {/* Sidebar nav */}
+          <div style={{ width: 220, flexShrink: 0, borderRight: `1px solid ${BORD}`, background: CARD2, padding: 12 }}>
+            <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {tabs.map((t) => {
+                const active = activeTab === t.id;
+                return (
+                  <button key={t.id} onClick={() => setActiveTab(t.id)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
+                      borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 400, cursor: "pointer",
+                      background: active ? CARD : "transparent",
+                      color: active ? INK : GRAY,
+                      border: active ? `1px solid ${BORD}` : "1px solid transparent",
+                      textAlign: "left", transition: "all 0.15s",
+                      borderLeft: active ? `2px solid ${GOLD}` : "1px solid transparent",
+                    }}
+                    onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "rgba(11,15,14,0.04)"; }}
+                    onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                    <t.icon style={{ width: 16, height: 16, opacity: active ? 1 : 0.6 }} />
+                    {t.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
 
-          {activeTab === "carte" && (
-            <div className="flex flex-col lg:flex-row gap-12">
-              <div className="flex-1 space-y-6">
-                <h2 className="text-lg font-bold text-text-main">Personnalisation de la carte</h2>
+          {/* Content */}
+          <div style={{ flex: 1, padding: 32 }}>
 
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-text-main">Couleur principale</label>
-                  <div className="flex items-center gap-4">
-                    <input type="color" value={color} onChange={(e) => setColor(e.target.value)}
-                      className="w-12 h-12 rounded cursor-pointer border-0 p-0" />
-                    <span className="text-sm font-mono text-text-muted">{color}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-text-main">Image d&apos;en-tête (Strip)</label>
-                  <input ref={stripRef} type="file" accept="image/*" className="hidden"
-                    onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], "strip"); }} />
-                  <div onClick={() => stripRef.current?.click()}
-                    className="p-4 rounded-xl text-center cursor-pointer transition-colors hover:bg-white/5"
-                    style={{ border: "2px dashed rgba(255,255,255,0.12)" }}>
-                    <Upload className="w-6 h-6 mx-auto mb-2 text-text-muted" />
-                    <span className="text-sm text-text-main font-medium">{uploading ? "Upload…" : "Uploader une image"}</span>
-                    <p className="text-xs text-text-muted mt-1">320x100px recommandé · Max 2MB</p>
-                  </div>
-                  {merchant?.strip_url && (
-                    <p className="text-xs flex items-center gap-1" style={{ color: "#34D399" }}>
-                      <CheckCircle2 className="w-3 h-3" /> Image d&apos;en-tête configurée
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-6 border-t border-white/5 space-y-5">
-                  <h3 className="font-bold text-text-main">Règles de fidélité</h3>
+            {/* Commerce */}
+            {activeTab === "commerce" && (
+              <div style={{ maxWidth: 560 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 24 }}>Informations du commerce</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   <div>
-                    <label className="block text-sm font-medium text-text-main mb-1.5">Points pour la récompense</label>
-                    <input type="number" min={1} value={threshold} onChange={(e) => setThreshold(Math.max(1, Number(e.target.value)))}
-                      className="input-dark w-full rounded-xl py-3 px-4 text-sm" />
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Nom du commerce</label>
+                    <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} style={inputStyle} />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-text-main mb-1.5">Récompense offerte</label>
-                    <input type="text" value={rewardDesc} onChange={(e) => setRewardDesc(e.target.value)}
-                      className="input-dark w-full rounded-xl py-3 px-4 text-sm" placeholder="Ex: 1 café offert" />
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Type de commerce</label>
+                    <select value={businessType} onChange={(e) => setBusinessType(e.target.value)} style={{ ...inputStyle, appearance: "none" }}>
+                      <option value="restaurant">Restaurant</option>
+                      <option value="boulangerie">Boulangerie</option>
+                      <option value="boutique">Boutique</option>
+                      <option value="coiffeur">Coiffeur</option>
+                      <option value="cafe">Café</option>
+                      <option value="autre">Autre</option>
+                    </select>
                   </div>
-                </div>
-
-                <GlowButton onClick={saveCarte} disabled={saving}>
-                  <Save className="w-4 h-4" /> {saving ? "Enregistrement…" : "Mettre à jour la carte"}
-                </GlowButton>
-              </div>
-
-              <div className="hidden lg:block w-72 pt-4">
-                <p className="text-sm text-text-muted mb-4 text-center">Aperçu en direct</p>
-                <motion.div
-                  className="relative w-full h-[400px] rounded-3xl overflow-hidden text-white"
-                  style={{ backgroundColor: color, boxShadow: `0 30px 60px ${color}55` }}
-                  animate={{ backgroundColor: color }}
-                  transition={{ duration: 0.3 }}>
-                  <div className="p-6 pb-2">
-                    <div className="flex justify-between items-start">
-                      <div className="font-extrabold text-xl">{businessName || "Mon Commerce"}</div>
-                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold backdrop-blur">
-                        {(businessName || "M").charAt(0)}
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Logo du commerce</label>
+                    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                      <div style={{ width: 72, height: 72, borderRadius: 12, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: GS, border: `1px solid ${GB}` }}>
+                        {merchant?.logo_url ? (
+                          <img src={merchant.logo_url} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontWeight: 700, fontSize: 22, color: GOLD }}>{businessName.charAt(0) || "?"}</span>
+                        )}
                       </div>
+                      <input ref={logoRef} type="file" accept="image/*" style={{ display: "none" }}
+                        onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], "logo"); }} />
+                      <button onClick={() => logoRef.current?.click()} disabled={uploading} style={btnSecondary}>
+                        <Upload style={{ width: 15, height: 15 }} /> {uploading ? "Upload…" : "Changer le logo"}
+                      </button>
                     </div>
                   </div>
-                  <div className="px-6 py-4" style={{ background: "rgba(255,255,255,0.1)" }}>
-                    <div className="text-xs opacity-70">Récompense</div>
-                    <div className="font-bold">{rewardDesc || "1 café offert"}</div>
-                  </div>
-                  <div className="absolute bottom-6 left-6">
-                    <div className="text-xs opacity-70 mb-1">Points actuels</div>
-                    <div className="text-4xl font-extrabold">0/{threshold}</div>
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "compte" && (
-            <div className="max-w-2xl space-y-6">
-              <h2 className="text-lg font-bold text-text-main">Sécurité du compte</h2>
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-text-main mb-1.5">Email de connexion</label>
-                  <input type="email" defaultValue={merchant?.email} disabled
-                    className="input-dark w-full rounded-xl py-3 px-4 text-sm cursor-not-allowed opacity-60" />
                 </div>
-                <a href="/forgot-password" className="text-sm font-semibold inline-block" style={{ color: "var(--violet)" }}>
-                  → Changer le mot de passe
-                </a>
+                <div style={{ marginTop: 28, paddingTop: 24, borderTop: `1px solid ${BORD}` }}>
+                  <button onClick={saveCommerce} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>
+                    <Save style={{ width: 15, height: 15 }} /> {saving ? "Enregistrement…" : "Enregistrer"}
+                  </button>
+                </div>
               </div>
-              <div className="pt-6 border-t border-white/5">
-                <h2 className="text-lg font-bold mb-4" style={{ color: "#FCA5A5" }}>Zone de danger</h2>
-                <p className="text-sm text-text-muted mb-4">
-                  La suppression de votre compte est définitive et supprimera toutes les cartes de vos clients.
-                </p>
-                <button className="px-6 py-3 rounded-xl font-medium transition-colors"
-                  style={{ background: "rgba(239,68,68,0.1)", color: "#FCA5A5", border: "1px solid rgba(239,68,68,0.3)" }}>
-                  Supprimer mon compte
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === "abonnement" && (
-            <div className="max-w-2xl space-y-6">
-              {!planStatus ? (
-                <div className="text-text-muted text-sm">Chargement du statut d&apos;abonnement…</div>
-              ) : planStatus.plan === "pro" ? (
-                <div className="p-6 rounded-2xl space-y-5"
-                     style={{ background: "linear-gradient(135deg, rgba(167,139,250,0.15), rgba(139,109,251,0.08))",
-                              border: "1px solid rgba(167,139,250,0.4)" }}>
-                  <div className="flex items-center justify-between gap-3">
+            {/* Carte */}
+            {activeTab === "carte" && (
+              <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 280 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 24 }}>Personnalisation de la carte</h2>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                     <div>
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
-                           style={{ background: "var(--violet)", color: "#ffffff" }}>
-                        <Sparkles className="w-3.5 h-3.5" /> Plan Pro
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 8 }}>Couleur principale</label>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <input type="color" value={color} onChange={(e) => setColor(e.target.value)}
+                          style={{ width: 44, height: 44, borderRadius: 8, cursor: "pointer", border: `1px solid ${BORD}`, padding: 2 }} />
+                        <span style={{ fontSize: 13, fontFamily: "monospace", color: GRAY }}>{color}</span>
                       </div>
-                      <h3 className="text-2xl font-extrabold text-text-main">Votre plan Pro est actif</h3>
-                      {planStatus.plan_expires_at && (
-                        <p className="text-sm text-text-muted mt-1">
-                          Prochaine échéance : <strong className="text-text-main">
-                            {new Date(planStatus.plan_expires_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                          </strong>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 8 }}>Image d&apos;en-tête (Strip)</label>
+                      <input ref={stripRef} type="file" accept="image/*" style={{ display: "none" }}
+                        onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], "strip"); }} />
+                      <div onClick={() => stripRef.current?.click()}
+                        style={{ padding: 20, borderRadius: 12, textAlign: "center", cursor: "pointer", border: `2px dashed ${BORD2}`, transition: "border-color 0.15s" }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = GOLD)}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = BORD2)}>
+                        <Upload style={{ width: 20, height: 20, margin: "0 auto 8px", color: GRAY }} />
+                        <span style={{ fontSize: 14, color: INK, fontWeight: 500 }}>{uploading ? "Upload…" : "Uploader une image"}</span>
+                        <p style={{ fontSize: 12, color: GRAY, marginTop: 4 }}>320x100px recommandé · Max 2MB</p>
+                      </div>
+                      {merchant?.strip_url && (
+                        <p style={{ fontSize: 12, color: GOLD, display: "flex", alignItems: "center", gap: 4, marginTop: 8 }}>
+                          <CheckCircle2 style={{ width: 12, height: 12 }} /> Image d&apos;en-tête configurée
                         </p>
                       )}
                     </div>
-                    <div className="text-3xl font-extrabold"><GradientText>70€</GradientText>
-                      <span className="text-base font-medium text-text-muted">/mois</span></div>
+                    <div style={{ paddingTop: 20, borderTop: `1px solid ${BORD}`, display: "flex", flexDirection: "column", gap: 16 }}>
+                      <h3 style={{ fontSize: 15, fontWeight: 600, color: INK }}>Règles de fidélité</h3>
+                      <div>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Points pour la récompense</label>
+                        <input type="number" min={1} value={threshold} onChange={(e) => setThreshold(Math.max(1, Number(e.target.value)))} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Récompense offerte</label>
+                        <input type="text" value={rewardDesc} onChange={(e) => setRewardDesc(e.target.value)}
+                          placeholder="Ex: 1 café offert" style={inputStyle} />
+                      </div>
+                    </div>
                   </div>
-                  <ul className="space-y-2 text-sm text-text-main">
-                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Clients illimités</li>
-                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Notifications push</li>
-                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Mise à jour temps réel</li>
-                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Support prioritaire</li>
-                  </ul>
-                  <GlowButton variant="ghost" fullWidth onClick={handleManageSubscription}>
-                    <ExternalLink className="w-4 h-4" /> Gérer mon abonnement
-                  </GlowButton>
-                  <button onClick={handleManageSubscription}
-                          className="block mx-auto text-xs text-text-muted hover:text-text-main transition-colors underline">
-                    Annuler mon abonnement
+                  <div style={{ marginTop: 24 }}>
+                    <button onClick={saveCarte} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>
+                      <Save style={{ width: 15, height: 15 }} /> {saving ? "Enregistrement…" : "Mettre à jour la carte"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card preview */}
+                <div style={{ width: 240, flexShrink: 0 }}>
+                  <p style={{ fontSize: 13, color: GRAY, marginBottom: 12, textAlign: "center" }}>Aperçu en direct</p>
+                  <motion.div
+                    style={{ position: "relative", width: "100%", height: 380, borderRadius: 24, overflow: "hidden", color: "#FFFFFF", backgroundColor: color, boxShadow: `0 24px 60px ${color}55` }}
+                    animate={{ backgroundColor: color }}
+                    transition={{ duration: 0.3 }}>
+                    <div style={{ padding: 24, paddingBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div style={{ fontWeight: 700, fontSize: 18 }}>{businessName || "Mon Commerce"}</div>
+                        <div style={{ width: 36, height: 36, borderRadius: 18, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, backdropFilter: "blur(4px)" }}>
+                          {(businessName || "M").charAt(0)}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ padding: "12px 24px", background: "rgba(255,255,255,0.12)" }}>
+                      <div style={{ fontSize: 11, opacity: 0.7 }}>Récompense</div>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{rewardDesc || "1 café offert"}</div>
+                    </div>
+                    <div style={{ position: "absolute", bottom: 24, left: 24 }}>
+                      <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 4 }}>Points actuels</div>
+                      <div style={{ fontSize: 36, fontWeight: 700 }}>0/{threshold}</div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            )}
+
+            {/* Compte */}
+            {activeTab === "compte" && (
+              <div style={{ maxWidth: 560 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 24 }}>Sécurité du compte</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>Email de connexion</label>
+                    <input type="email" defaultValue={merchant?.email} disabled
+                      style={{ ...inputStyle, opacity: 0.6, cursor: "not-allowed" }} />
+                  </div>
+                  <a href="/forgot-password" style={{ fontSize: 14, fontWeight: 600, color: GOLD, textDecoration: "none" }}>
+                    → Changer le mot de passe
+                  </a>
+                </div>
+                <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORD}` }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: "#DC2626", marginBottom: 12 }}>Zone de danger</h2>
+                  <p style={{ fontSize: 14, color: GRAY, marginBottom: 16, lineHeight: 1.6 }}>
+                    La suppression de votre compte est définitive et supprimera toutes les cartes de vos clients.
+                  </p>
+                  <button style={{ padding: "12px 24px", borderRadius: 10, fontSize: 14, fontWeight: 500, background: "rgba(220,38,38,0.06)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)", cursor: "pointer" }}>
+                    Supprimer mon compte
                   </button>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-5">
-                  {/* Plan actuel : Gratuit */}
-                  <div className="p-6 rounded-2xl"
-                       style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex justify-between items-center mb-4">
+              </div>
+            )}
+
+            {/* Abonnement */}
+            {activeTab === "abonnement" && (
+              <div style={{ maxWidth: 560 }}>
+                {!planStatus ? (
+                  <div style={{ color: GRAY, fontSize: 14 }}>Chargement du statut d&apos;abonnement…</div>
+                ) : planStatus.plan === "pro" ? (
+                  <div style={{ padding: 28, borderRadius: 20, background: GS, border: `1px solid ${GB}` }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 24 }}>
                       <div>
-                        <h3 className="text-lg font-extrabold text-text-main">Plan Gratuit</h3>
-                        <p className="text-sm text-text-muted mt-1">Limité à 50 clients</p>
-                      </div>
-                      <div className="text-2xl font-extrabold text-text-main">0€<span className="text-sm font-medium text-text-muted">/mois</span></div>
-                    </div>
-                    {customerCount !== null && (
-                      <>
-                        <div className="flex justify-between text-xs font-medium text-text-muted mb-2">
-                          <span>Clients utilisés</span>
-                          <span><strong className="text-text-main">{customerCount}</strong> / 50</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-                          <div className="h-full rounded-full transition-all"
-                               style={{
-                                 width: `${Math.min((customerCount / 50) * 100, 100)}%`,
-                                 background: customerCount >= 50
-                                   ? "linear-gradient(90deg, #EF4444, #F59E0B)"
-                                   : customerCount >= 40
-                                     ? "linear-gradient(90deg, #F59E0B, #FCD34D)"
-                                     : "linear-gradient(90deg, #a78bfa, #8b6dfb)",
-                               }} />
-                        </div>
-                        {customerCount >= 50 && (
-                          <p className="text-xs mt-3" style={{ color: "#FCA5A5" }}>
-                            ⚠️ Limite atteinte — passez au Plan Pro pour continuer à enregistrer des clients.
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700, background: GOLD, color: "#FFFFFF", marginBottom: 10 }}>
+                          <Sparkles style={{ width: 12, height: 12 }} /> Plan Pro
+                        </span>
+                        <h3 style={{ fontSize: 22, fontWeight: 700, color: INK }}>Votre plan Pro est actif</h3>
+                        {planStatus.plan_expires_at && (
+                          <p style={{ fontSize: 13, color: GRAY, marginTop: 6 }}>
+                            Prochaine échéance : <strong style={{ color: INK }}>{new Date(planStatus.plan_expires_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</strong>
                           </p>
                         )}
-                      </>
-                    )}
-                  </div>
-
-                  {/* Plan Pro avec CTA */}
-                  <div className="relative">
-                    <div className="absolute -inset-px rounded-2xl pulse-glow"
-                         style={{ background: "linear-gradient(135deg, #a78bfa, #8b6dfb)" }} aria-hidden />
-                    <div className="relative p-6 rounded-2xl space-y-5"
-                         style={{ background: "rgba(8,8,8,0.95)", border: "1px solid rgba(167,139,250,0.4)" }}>
-                      <div className="flex justify-between items-start gap-3">
-                        <div>
-                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-2"
-                               style={{ background: "var(--violet)", color: "#ffffff" }}>
-                            <Sparkles className="w-3.5 h-3.5" /> Recommandé
-                          </div>
-                          <h3 className="text-2xl font-extrabold text-text-main">Plan Pro</h3>
-                          <p className="text-sm text-text-muted mt-1">Pour scaler votre fidélité</p>
-                        </div>
-                        <div className="text-3xl font-extrabold"><GradientText>70€</GradientText>
-                          <span className="text-base font-medium text-text-muted">/mois</span></div>
                       </div>
-                      <ul className="space-y-2 text-sm text-text-main">
-                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Clients <strong>illimités</strong></li>
-                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Notifications push</li>
-                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Mise à jour temps réel</li>
-                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Analytics avancés</li>
-                        <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-success" /> Support prioritaire</li>
+                      <div style={{ textAlign: "right" }}>
+                        <span style={{ fontSize: 28, fontWeight: 700, color: INK }}>70€</span>
+                        <span style={{ fontSize: 14, color: GRAY }}>/mois</span>
+                      </div>
+                    </div>
+                    <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                      {["Clients illimités", "Notifications push", "Mise à jour temps réel", "Support prioritaire"].map((f) => (
+                        <li key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: INK }}>
+                          <CheckCircle2 style={{ width: 16, height: 16, color: GOLD, flexShrink: 0 }} /> {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <button onClick={handleManageSubscription} style={{ ...btnSecondary, width: "100%", justifyContent: "center" }}>
+                      <ExternalLink style={{ width: 15, height: 15 }} /> Gérer mon abonnement
+                    </button>
+                    <button onClick={handleManageSubscription}
+                      style={{ display: "block", margin: "12px auto 0", background: "transparent", border: "none", fontSize: 13, color: GRAY, cursor: "pointer", textDecoration: "underline" }}>
+                      Annuler mon abonnement
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {/* Free plan current */}
+                    <div style={{ padding: 24, borderRadius: 16, background: CARD2, border: `1px solid ${BORD}` }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                        <div>
+                          <h3 style={{ fontSize: 18, fontWeight: 700, color: INK }}>Plan Gratuit</h3>
+                          <p style={{ fontSize: 13, color: GRAY, marginTop: 2 }}>Limité à 50 clients</p>
+                        </div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: INK }}>0€<span style={{ fontSize: 14, fontWeight: 400, color: GRAY }}>/mois</span></div>
+                      </div>
+                      {customerCount !== null && (
+                        <>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 500, color: GRAY, marginBottom: 6 }}>
+                            <span>Clients utilisés</span>
+                            <span><strong style={{ color: INK }}>{customerCount}</strong> / 50</span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 999, overflow: "hidden", background: BORD }}>
+                            <div style={{ height: "100%", borderRadius: 999, transition: "width 0.5s ease",
+                              width: `${Math.min((customerCount / 50) * 100, 100)}%`,
+                              background: customerCount >= 50 ? "#DC2626" : customerCount >= 40 ? "#F59E0B" : GOLD }} />
+                          </div>
+                          {customerCount >= 50 && (
+                            <p style={{ fontSize: 12, color: "#DC2626", marginTop: 10 }}>
+                              ⚠️ Limite atteinte — passez au Plan Pro pour continuer à enregistrer des clients.
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Pro CTA */}
+                    <div style={{ padding: 28, borderRadius: 20, background: INK, border: `2px solid ${GOLD}`, position: "relative" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
+                        <div>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700, background: GOLD, color: "#FFFFFF", marginBottom: 10 }}>
+                            <Sparkles style={{ width: 12, height: 12 }} /> Recommandé
+                          </span>
+                          <h3 style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF" }}>Plan Pro</h3>
+                          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>Pour scaler votre fidélité</p>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <span style={{ fontSize: 28, fontWeight: 700, color: GOLD }}>70€</span>
+                          <span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>/mois</span>
+                        </div>
+                      </div>
+                      <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                        {["Clients illimités", "Notifications push", "Mise à jour temps réel", "Analytics avancés", "Support prioritaire"].map((f) => (
+                          <li key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
+                            <CheckCircle2 style={{ width: 16, height: 16, color: GOLD, flexShrink: 0 }} /> {f}
+                          </li>
+                        ))}
                       </ul>
-                      <GlowButton fullWidth size="lg" onClick={handleUpgrade} disabled={checkoutLoading}>
+                      <button onClick={handleUpgrade} disabled={checkoutLoading}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "16px 24px", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: checkoutLoading ? 0.7 : 1 }}>
                         {checkoutLoading ? "Redirection vers Stripe…" : "Passer au Plan Pro — 70€/mois"}
-                      </GlowButton>
-                      <p className="text-xs text-text-muted text-center">Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment</p>
+                      </button>
+                      <p style={{ fontSize: 12, textAlign: "center", color: "rgba(255,255,255,0.4)", marginTop: 12 }}>
+                        Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment
+                      </p>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+
+          </div>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 }

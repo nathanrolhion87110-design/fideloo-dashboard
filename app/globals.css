@@ -284,9 +284,9 @@ body {
 /* ─── Sidebar nav active ────────────────────────────────────────────────────── */
 .nav-active {
   position: relative;
-  background: rgba(34,197,94,0.10) !important;
-  color: var(--green) !important;
-  border-left: 2px solid var(--green) !important;
+  background: rgba(255,255,255,0.06) !important;
+  color: #FFFFFF !important;
+  border-left: 2px solid #B8873A !important;
 }
 
 /* ─── Inputs ────────────────────────────────────────────────────────────────── */

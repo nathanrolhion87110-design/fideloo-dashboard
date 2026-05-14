@@ -16,9 +16,9 @@ export function FideloLogoStamp({
   style,
 }: Props) {
   let bg: string, fg: string, txt: string;
-  if (variant === "onDark") { bg = "#1F8A5B"; fg = "#F4F1EA"; txt = "#F4F1EA"; }
-  else if (variant === "green") { bg = "#1F8A5B"; fg = "#F4F1EA"; txt = "#0F1411"; }
-  else { bg = "#0F1411"; fg = "#1F8A5B"; txt = "#0F1411"; }
+  if (variant === "onDark") { bg = "#0B0F0E"; fg = "#B8873A"; txt = "#FFFFFF"; }
+  else if (variant === "green") { bg = "#B8873A"; fg = "#0B0F0E"; txt = "#0B0F0E"; }
+  else { bg = "#0B0F0E"; fg = "#B8873A"; txt = "#0B0F0E"; }
 
   if (markOnly) {
     return (
