@@ -393,6 +393,7 @@ export default function LandingPage() {
   const pricingRef  = useRef<HTMLElement>(null);
   const faqRef      = useRef<HTMLElement>(null);
   const contactRef  = useRef<HTMLElement>(null);
+  const miniJeuRef  = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -419,11 +420,12 @@ export default function LandingPage() {
       }}>
         <div style={{ ...px, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: INK, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: GOLD }} />
-            </div>
-            <span style={{ fontFamily: "var(--font-sora, system-ui)", fontWeight: 700, fontSize: 18, color: INK, letterSpacing: "-0.02em" }}>Fideloo</span>
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <svg height="36" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "auto", display: "block" }}>
+              <text x="2" y="88" fontFamily="'Playfair Display', Georgia, serif" fontSize="90" fontWeight="700" fill="#0B0F0E">Fidel</text>
+              <circle cx="338" cy="58" r="42" fill="#0B0F0E"/>
+              <circle cx="380" cy="58" r="40" fill="none" stroke="#B8873A" strokeWidth="10"/>
+            </svg>
           </Link>
 
           {/* Center nav */}
@@ -640,7 +642,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── MINI-JEU ────────────────────────────────────────────────── */}
-        <section style={{ background: "#1C1A16", width: "100%" }}>
+        <section ref={miniJeuRef} style={{ background: "#1C1A16", width: "100%" }}>
 
           {/* Header */}
           <div style={{ ...px, paddingTop: 48, textAlign: "center" }}>
@@ -963,38 +965,84 @@ export default function LandingPage() {
       </main>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer style={{ background: INK, ...px, paddingTop: 40, paddingBottom: 40 }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20,
-        }}>
-          {/* Logo */}
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: GOLD }} />
-            </div>
-            <span style={{ fontFamily: "var(--font-sora, system-ui)", fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>Fideloo</span>
-          </span>
+      <footer style={{ background: INK }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px clamp(24px,6vw,80px) 0" }}>
 
-          {/* Links */}
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
-            {[
-              { label: t.footer.legal, href: "/mentions-legales" },
-              { label: t.footer.tos, href: "/cgu" },
-              { label: t.footer.contact, href: "/contact" },
-            ].map(({ label, href }) => (
-              <Link key={label} href={href} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
-                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>
-                {label}
-              </Link>
-            ))}
+          {/* 4-column grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr 1fr", gap: 48 }} className="footer-grid">
+
+            {/* Col 1 — Brand */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                  <circle cx="60" cy="60" r="58" fill="#1A1A1A"/>
+                  <circle cx="60" cy="60" r="55" fill="none" stroke="#B8873A" strokeWidth="3"/>
+                  <text x="28" y="82" fontFamily="'Playfair Display', Georgia, serif" fontSize="62" fontWeight="700" fill="#B8873A">F</text>
+                  <circle cx="82" cy="84" r="5" fill="#B8873A"/>
+                  <circle cx="96" cy="84" r="5" fill="#B8873A"/>
+                </svg>
+                <span style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 700, fontSize: 20, color: WHITE }}>Fideloo</span>
+              </div>
+              <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.6, maxWidth: 220, margin: 0 }}>
+                La carte de fidélité digitale pour les commerçants qui veulent fidéliser sans friction.
+              </p>
+            </div>
+
+            {/* Col 2 — Produit */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Produit</div>
+              {[
+                { label: "Fonctionnalités", action: () => scrollTo(featuresRef) },
+                { label: "Tarifs", action: () => scrollTo(pricingRef) },
+                { label: "FAQ", action: () => scrollTo(faqRef) },
+                { label: "Mini-jeu", action: () => scrollTo(miniJeuRef) },
+                { label: "Contact", action: () => scrollTo(contactRef) },
+              ].map(({ label, action }) => (
+                <button key={label} onClick={action}
+                  style={{ display: "block", background: "none", border: "none", cursor: "pointer", fontSize: 14, color: GRAY, textAlign: "left", padding: 0, marginBottom: 10, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = GRAY)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Col 3 — Légal */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Légal</div>
+              {[
+                { label: "Mentions légales", href: "/mentions-legales" },
+                { label: "CGU", href: "/cgu" },
+                { label: "Politique de confidentialité", href: "/politique-confidentialite" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href}
+                  style={{ display: "block", fontSize: 14, color: GRAY, textDecoration: "none", marginBottom: 10, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = GRAY)}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Col 4 — Contact */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Contact</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Mail size={14} color={GOLD} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 14, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>contact@fideloo.fr</span>
+              </div>
+              <p style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)", margin: "8px 0 0" }}>Réponse sous 24h</p>
+            </div>
           </div>
 
-          {/* Copyright */}
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-sora, system-ui)" }}>
-            {t.footer.copy}
-          </span>
+          {/* Separator */}
+          <div style={{ borderTop: "1px solid #1F1F1F", marginTop: 48, marginBottom: 24 }} />
+
+          {/* Bottom bar */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 40, flexWrap: "wrap", gap: 12 }}>
+            <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>{t.footer.copy}</span>
+            <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)", textAlign: "right" }}>Hébergé en France 🇫🇷 · Conforme RGPD</span>
+          </div>
         </div>
       </footer>
 
@@ -1015,6 +1063,7 @@ export default function LandingPage() {
           .steps-grid { grid-template-columns: 1fr !important; }
           .minijeu-cta-grid { grid-template-columns: 1fr !important; }
           .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
           .pricing-grid { grid-template-columns: 1fr !important; }
           .faq-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .cta-grid { grid-template-columns: 1fr !important; }
