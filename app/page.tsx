@@ -76,7 +76,7 @@ const translations = {
           annualPrice: 40,
           sub: "Pour un commerce indépendant qui démarre",
           cta: "Démarrer ↗",
-          href: "/register",
+          href: "/register?plan=trial",
           features: ["1 commerce", "Jusqu'à 200 clients", "Apple Wallet & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email (72h)"],
         },
         {
@@ -86,7 +86,7 @@ const translations = {
           sub: "Pour les enseignes qui veulent scaler",
           badge: "LE PLUS POPULAIRE",
           cta: "Essai gratuit 14 jours ↗",
-          href: "/register",
+          href: "/register?plan=trial",
           dark: true,
           features: ["Jusqu'à 3 commerces", "Jusqu'à 5 000 clients", "Analytics avancés", "5 campagnes push/mois", "Gestion staff", "Support prioritaire (48h)"],
         },
@@ -96,7 +96,7 @@ const translations = {
           annualPrice: 120,
           sub: "Pour les réseaux et franchises",
           cta: "Nous contacter ↗",
-          href: "/contact",
+          href: "mailto:contact@fideloo.fr",
           features: ["Commerces illimités", "Clients illimités", "Analytics multi-sites", "Campagnes push illimitées", "API & webhooks", "Mini-jeu avis Google", "Account manager", "Support (24h)"],
         },
       ],
@@ -184,7 +184,7 @@ const translations = {
           annualPrice: 40,
           sub: "For independent merchants starting out",
           cta: "Get started ↗",
-          href: "/register",
+          href: "/register?plan=trial",
           features: ["1 store", "Up to 200 customers", "Apple Wallet & Google Wallet", "Custom QR code", "Basic analytics", "Email support (72h)"],
         },
         {
@@ -194,7 +194,7 @@ const translations = {
           sub: "For merchants ready to scale",
           badge: "MOST POPULAR",
           cta: "Free 14-day trial ↗",
-          href: "/register",
+          href: "/register?plan=trial",
           dark: true,
           features: ["Up to 3 stores", "Up to 5,000 customers", "Advanced analytics", "5 push campaigns/month", "Staff management", "Priority support (48h)"],
         },
@@ -204,7 +204,7 @@ const translations = {
           annualPrice: 120,
           sub: "For networks and franchises",
           cta: "Contact us ↗",
-          href: "/contact",
+          href: "mailto:contact@fideloo.fr",
           features: ["Unlimited stores", "Unlimited customers", "Multi-site analytics", "Unlimited push campaigns", "API & webhooks", "Google review mini-game", "Account manager", "Support (24h)"],
         },
       ],
@@ -631,7 +631,7 @@ function ROICalculator() {
             </div>
           </div>
 
-          <Link href="/register" style={{ display: "block", textAlign: "center", padding: "13px 24px", background: INK, color: WHITE, borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)" }}>
+          <Link href="/register?plan=trial" style={{ display: "block", textAlign: "center", padding: "13px 24px", background: INK, color: WHITE, borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)" }}>
             Commencer à gagner plus →
           </Link>
         </div>
@@ -754,7 +754,7 @@ export default function LandingPage() {
               className="hidden-mobile">
               {t.nav.login}
             </Link>
-            <Link href="/register"
+            <Link href="/register?plan=trial"
               style={{
                 background: INK, color: WHITE, borderRadius: 999, padding: "9px 18px",
                 fontSize: 14, fontWeight: 600, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)",
@@ -799,7 +799,7 @@ export default function LandingPage() {
 
               {/* CTAs */}
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <Link href="/register" style={{
+                <Link href="/register?plan=trial" style={{
                   background: INK, color: WHITE, borderRadius: 999, padding: "12px 28px",
                   fontSize: 15, fontWeight: 600, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)",
                 }}>
@@ -991,7 +991,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <Link href="/register" style={{ display: "inline-block", padding: "14px 32px", background: "#B8873A", color: "#0B0F0E", borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap" }}>
+              <Link href="mailto:contact@fideloo.fr" style={{ display: "inline-block", padding: "14px 32px", background: "#B8873A", color: "#0B0F0E", borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap" }}>
                 Essayer Business →
               </Link>
             </div>
@@ -1267,7 +1267,7 @@ export default function LandingPage() {
 
             {/* Right */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
-              <Link href="/register" style={{
+              <Link href="/register?plan=trial" style={{
                 background: GOLD, color: WHITE, borderRadius: 999, padding: "14px 32px",
                 fontSize: 15, fontWeight: 700, textDecoration: "none",
                 fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap",
