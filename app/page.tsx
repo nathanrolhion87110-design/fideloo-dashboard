@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
   Wallet, RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
-  Mail, Clock,
+  Mail, Clock, Play, TrendingUp, Users, Calculator,
 } from "lucide-react";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
@@ -350,6 +350,296 @@ function DiceGame() {
   );
 }
 
+/* ─── PRODUCT SHOWCASE ──────────────────────────────────────────────────── */
+const SHOWCASE_STEPS = [
+  {
+    label: "Étape 1/4", title: "Client scanne le QR code",
+    content: (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "20px 0" }}>
+        <QrCode size={72} color={GOLD} />
+        <div style={{ position: "relative", width: "100%", height: 4, background: "rgba(184,135,58,0.15)", borderRadius: 2, overflow: "hidden" }}>
+          <div style={{ position: "absolute", inset: 0, background: GOLD, borderRadius: 2, animation: "scanLine 1.8s ease-in-out infinite" }} />
+        </div>
+        <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>Scan en cours…</span>
+      </div>
+    ),
+  },
+  {
+    label: "Étape 2/4", title: "Inscription en 10 secondes",
+    content: (
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
+        {["marie@email.fr", ""].map((v, i) => (
+          <div key={i} style={{ padding: "10px 14px", background: "rgba(255,255,255,0.06)", border: `1px solid ${i === 0 ? GOLD : BORD}`, borderRadius: 8, fontSize: 13, color: i === 0 ? GOLD : GRAY, fontFamily: "var(--font-sora, system-ui)", animation: i === 0 ? "typeIn 0.6s ease" : "none" }}>
+            {i === 0 ? v : "Nom (optionnel)"}
+          </div>
+        ))}
+        <div style={{ padding: "10px 14px", background: GOLD, borderRadius: 8, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#0B0F0E", fontFamily: "var(--font-sora, system-ui)" }}>
+          Rejoindre le programme →
+        </div>
+      </div>
+    ),
+  },
+  {
+    label: "Étape 3/4", title: "Carte dans le Wallet",
+    content: (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ background: "#0B0F0E", borderRadius: 16, padding: 20, width: 200, animation: "popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)" }}>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
+          <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 14 }}>Le Bon Café</div>
+          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} style={{ width: 20, height: 20, borderRadius: "50%", background: i === 0 ? GOLD : "rgba(255,255,255,0.1)", transition: "background 0.3s", animation: i === 0 ? "dotPop 0.4s ease" : "none" }} />
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)" }}>1 / 10 points</div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    label: "Étape 4/4", title: "Points augmentent",
+    content: (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", justifyContent: "center" }}>
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} style={{ width: 24, height: 24, borderRadius: "50%", background: i < 7 ? GOLD : "rgba(255,255,255,0.1)", animation: i < 7 ? `dotPop ${0.1 + i * 0.08}s ease` : "none" }} />
+          ))}
+        </div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: GOLD, fontFamily: "var(--font-playfair, Georgia, serif)", animation: "countUp 0.8s ease" }}>7 / 10</div>
+        <div style={{ padding: "6px 16px", background: "rgba(184,135,58,0.15)", border: `1px solid rgba(184,135,58,0.3)`, borderRadius: 999, fontSize: 12, color: GOLD, fontFamily: "var(--font-sora, system-ui)" }}>
+          +3 avant la récompense !
+        </div>
+      </div>
+    ),
+  },
+];
+
+function ProductShowcase() {
+  const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearAll = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (progressRef.current) clearInterval(progressRef.current);
+  }, []);
+
+  const startPlay = useCallback(() => {
+    clearAll();
+    setPlaying(true);
+    setProgress(0);
+    setActive(0);
+    let step = 0;
+    let prog = 0;
+    progressRef.current = setInterval(() => {
+      prog += 100 / (3000 / 50);
+      setProgress(Math.min(prog, 100));
+    }, 50);
+    intervalRef.current = setInterval(() => {
+      step = (step + 1) % SHOWCASE_STEPS.length;
+      setActive(step);
+      setProgress(0);
+      prog = 0;
+      if (step === 0) {
+        clearAll();
+        setPlaying(false);
+      }
+    }, 3000);
+  }, [clearAll]);
+
+  useEffect(() => () => clearAll(), [clearAll]);
+
+  const step = SHOWCASE_STEPS[active];
+
+  return (
+    <div style={{ marginTop: 48, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+      <div style={{
+        background: "#111111", border: `1px solid rgba(184,135,58,0.2)`, borderRadius: 20,
+        overflow: "hidden", width: "100%", maxWidth: 440,
+      }}>
+        {/* Top bar */}
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: "0.1em", fontFamily: "var(--font-sora, system-ui)" }}>{step.label}</span>
+          <span style={{ fontSize: 12, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>{step.title}</span>
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: "24px 20px", minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+          {!playing ? (
+            <button
+              onClick={startPlay}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, background: "none", border: "none", cursor: "pointer" }}>
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 0 12px rgba(184,135,58,0.12)` }}>
+                <Play size={22} color="#0B0F0E" fill="#0B0F0E" />
+              </div>
+              <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>Voir la démo en action</span>
+            </button>
+          ) : (
+            <div style={{ width: "100%", animation: "fadeInSlide 0.3s ease" }}>{step.content}</div>
+          )}
+        </div>
+
+        {/* Progress bar */}
+        <div style={{ height: 3, background: "rgba(255,255,255,0.06)" }}>
+          <div style={{ height: "100%", width: `${playing ? progress : 0}%`, background: GOLD, transition: "width 0.05s linear" }} />
+        </div>
+
+        {/* Step dots */}
+        <div style={{ padding: "12px 20px", display: "flex", gap: 6, justifyContent: "center" }}>
+          {SHOWCASE_STEPS.map((_, i) => (
+            <div key={i} style={{ width: playing && i === active ? 20 : 6, height: 6, borderRadius: 999, background: playing && i === active ? GOLD : "rgba(255,255,255,0.12)", transition: "all 0.25s ease" }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── COUNTDOWN TIMER ────────────────────────────────────────────────────── */
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
+  const [expired, setExpired] = useState(false);
+  const DURATION_MS = 72 * 60 * 60 * 1000;
+
+  useEffect(() => {
+    const key = "fideloo_offer_end";
+    let end = Number(localStorage.getItem(key));
+    if (!end || end < Date.now()) {
+      end = Date.now() + DURATION_MS;
+      localStorage.setItem(key, String(end));
+    }
+    const tick = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        setExpired(true);
+        const newEnd = Date.now() + DURATION_MS;
+        localStorage.setItem(key, String(newEnd));
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft({ h, m, s });
+    };
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
+  }, [DURATION_MS]);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  if (expired) {
+    return (
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 12px", background: "rgba(184,135,58,0.08)", border: "1px solid rgba(184,135,58,0.2)", borderRadius: 8, marginTop: 10 }}>
+        <span style={{ fontSize: 12, color: GOLD, fontFamily: "var(--font-sora, system-ui)", fontWeight: 600 }}>Offre renouvelée !</span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 12px", background: "rgba(184,135,58,0.08)", border: "1px solid rgba(184,135,58,0.2)", borderRadius: 8, marginTop: 10 }}>
+      <Clock size={13} color={GOLD} style={{ flexShrink: 0 }} />
+      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-sora, system-ui)" }}>Offre expire dans :</span>
+      <span style={{ fontSize: 13, fontWeight: 700, color: GOLD, fontFamily: "monospace", letterSpacing: "0.05em" }}>
+        {pad(timeLeft.h)}:{pad(timeLeft.m)}:{pad(timeLeft.s)}
+      </span>
+    </div>
+  );
+}
+
+/* ─── ROI CALCULATOR ─────────────────────────────────────────────────────── */
+function ROICalculator() {
+  const [clients, setClients] = useState(200);
+  const [panier, setPanier] = useState(25);
+  const [freq, setFreq] = useState(1);
+  const [displayed, setDisplayed] = useState(0);
+
+  const caActuel = clients * panier * freq;
+  const caFideloo = clients * panier * (freq * 1.35);
+  const gainMensuel = Math.round(caFideloo - caActuel);
+  const gainAnnuel = gainMensuel * 12;
+  const coutAnnuel = 50 * 12;
+  const roi = Math.round(gainAnnuel / coutAnnuel);
+  const progressPct = Math.min((gainMensuel / (gainMensuel + coutAnnuel / 12)) * 100, 98);
+
+  useEffect(() => {
+    const step = Math.max(1, Math.floor(gainMensuel / 30));
+    let current = 0;
+    const iv = setInterval(() => {
+      current = Math.min(current + step, gainMensuel);
+      setDisplayed(current);
+      if (current >= gainMensuel) clearInterval(iv);
+    }, 16);
+    return () => clearInterval(iv);
+  }, [gainMensuel]);
+
+  const sliderStyle = { width: "100%", accentColor: GOLD, cursor: "pointer" };
+
+  return (
+    <div style={{ background: WHITE, border: `1px solid ${BORD}`, borderRadius: 20, padding: "clamp(28px,4vw,48px)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }} className="roi-grid">
+        {/* Sliders */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          {[
+            { label: "Clients par mois", value: clients, min: 50, max: 2000, step: 10, set: setClients, fmt: (v: number) => `${v} clients` },
+            { label: "Panier moyen", value: panier, min: 5, max: 200, step: 5, set: setPanier, fmt: (v: number) => `${v}€` },
+            { label: "Fréquence de retour", value: freq, min: 0.5, max: 5, step: 0.5, set: setFreq, fmt: (v: number) => `${v}×/mois` },
+          ].map(({ label, value, min, max, step, set, fmt }) => (
+            <div key={label}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: INK, fontFamily: "var(--font-sora, system-ui)" }}>{label}</label>
+                <span style={{ fontSize: 13, fontWeight: 700, color: GOLD, fontFamily: "var(--font-sora, system-ui)" }}>{fmt(value)}</span>
+              </div>
+              <input type="range" min={min} max={max} step={step} value={value}
+                onChange={e => set(Number(e.target.value))} style={sliderStyle} />
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                <span style={{ fontSize: 11, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>{fmt(min)}</span>
+                <span style={{ fontSize: 11, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>{fmt(max)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Results */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 28 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: GRAY, marginBottom: 16, fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase" }}>
+              Résultats estimés
+            </div>
+            <div style={{ fontSize: "clamp(36px, 4vw, 52px)", fontWeight: 700, color: GOLD, fontFamily: "var(--font-playfair, Georgia, serif)", lineHeight: 1, marginBottom: 8 }}>
+              +{displayed.toLocaleString("fr-FR")}€<span style={{ fontSize: "0.45em", color: GRAY }}>/mois</span>
+            </div>
+            <div style={{ fontSize: 15, color: GRAY, marginBottom: 20, fontFamily: "var(--font-sora, system-ui)" }}>
+              Soit <strong style={{ color: INK }}>+{gainAnnuel.toLocaleString("fr-FR")}€/an</strong>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>Gain vs coût abonnement</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: GOLD, fontFamily: "var(--font-sora, system-ui)" }}>ROI {roi}×</span>
+              </div>
+              <div style={{ height: 8, background: `${BORD}`, borderRadius: 999, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${progressPct}%`, background: `linear-gradient(90deg, ${GOLD}, #E8A84E)`, borderRadius: 999, transition: "width 0.5s ease" }} />
+              </div>
+            </div>
+
+            <div style={{ padding: "10px 16px", background: "rgba(184,135,58,0.08)", border: "1px solid rgba(184,135,58,0.2)", borderRadius: 10, fontSize: 13, color: GOLD, fontFamily: "var(--font-sora, system-ui)", textAlign: "center" }}>
+              ROI de <strong>{roi}×</strong> votre abonnement
+            </div>
+          </div>
+
+          <Link href="/register" style={{ display: "block", textAlign: "center", padding: "13px 24px", background: INK, color: WHITE, borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)" }}>
+            Commencer à gagner plus →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── FAQ ITEM ──────────────────────────────────────────────────────────── */
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -385,7 +675,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function LandingPage() {
   const [lang, setLang] = useState<"fr" | "en">("fr");
   const [scrolled, setScrolled] = useState(false);
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState(true);
 
   const t = translations[lang];
 
@@ -515,14 +805,15 @@ export default function LandingPage() {
                 }}>
                   {t.hero.cta1}
                 </Link>
-                <button onClick={() => scrollTo(featuresRef)} style={{
+                <Link href="/demo" style={{
                   background: WHITE, color: INK, borderRadius: 999, padding: "12px 28px",
-                  fontSize: 15, fontWeight: 600, border: `1px solid ${BORD}`, cursor: "pointer",
-                  fontFamily: "var(--font-sora, system-ui)",
+                  fontSize: 15, fontWeight: 600, border: `1px solid ${BORD}`,
+                  fontFamily: "var(--font-sora, system-ui)", textDecoration: "none", display: "inline-block",
                 }}>
                   {t.hero.cta2}
-                </button>
+                </Link>
               </div>
+              <ProductShowcase />
             </div>
 
             {/* Right — wallet card mockup */}
@@ -708,6 +999,25 @@ export default function LandingPage() {
 
         </section>
 
+        {/* ── ROI CALCULATOR ──────────────────────────────────────────── */}
+        <section style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: GRAY, marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>
+                — CALCULATEUR ROI
+              </div>
+              <h2 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, fontSize: "clamp(34px, 4vw, 56px)", lineHeight: 1.15 }}>
+                <span>Combien Fideloo peut</span>{" "}
+                <em style={{ fontStyle: "italic" }}>vous rapporter ?</em>
+              </h2>
+              <p style={{ fontSize: 16, color: GRAY, marginTop: 16, maxWidth: 480, margin: "16px auto 0", lineHeight: 1.6, fontFamily: "var(--font-sora, system-ui)" }}>
+                Estimez votre retour sur investissement en moins d&apos;une minute.
+              </p>
+            </div>
+            <ROICalculator />
+          </div>
+        </section>
+
         {/* ── PRICING ─────────────────────────────────────────────────── */}
         <section ref={pricingRef} style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -724,7 +1034,7 @@ export default function LandingPage() {
             </div>
 
             {/* Toggle */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 48 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginBottom: 48 }}>
               <div style={{ display: "inline-flex", alignItems: "center", background: WHITE, border: `1px solid ${BORD}`, borderRadius: 999, padding: 4, gap: 4 }}>
                 {[false, true].map((val) => (
                   <button key={String(val)} onClick={() => setAnnual(val)}
@@ -739,6 +1049,12 @@ export default function LandingPage() {
                   </button>
                 ))}
               </div>
+              {annual && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: GOLD, fontFamily: "var(--font-sora, system-ui)", fontWeight: 500 }}>
+                  <span>💡</span>
+                  <span>Économisez jusqu&apos;à 360€/an avec le plan annuel</span>
+                </div>
+              )}
             </div>
 
             {/* Cards */}
@@ -755,7 +1071,7 @@ export default function LandingPage() {
                     boxShadow: dark ? "0 24px 60px rgba(11,15,14,0.16)" : "none",
                   }}>
                     {plan.badge && (
-                      <div style={{ textAlign: "center", marginBottom: 20 }}>
+                      <div style={{ textAlign: "center", marginBottom: 12 }}>
                         <span style={{
                           display: "inline-block", background: GOLD, color: INK,
                           borderRadius: 999, padding: "4px 14px",
@@ -764,19 +1080,29 @@ export default function LandingPage() {
                         }}>
                           {plan.badge}
                         </span>
+                        {plan.dark && (
+                          <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+                            <CountdownTimer />
+                          </div>
+                        )}
                       </div>
                     )}
                     <div style={{ marginBottom: 24 }}>
                       <div style={{ fontFamily: "var(--font-sora, system-ui)", fontSize: 14, fontWeight: 600, color: dark ? "rgba(255,255,255,0.5)" : GRAY, marginBottom: 6 }}>
                         {plan.name}
                       </div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
                         <span style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 56, fontWeight: 700, lineHeight: 1, color: dark ? WHITE : INK }}>
                           {price}€
                         </span>
                         <span style={{ fontSize: 14, color: dark ? "rgba(255,255,255,0.4)" : GRAY, fontFamily: "var(--font-sora, system-ui)" }}>
                           {t.pricing.perMonth}
                         </span>
+                        {annual && (
+                          <span style={{ fontSize: 13, color: dark ? "rgba(255,255,255,0.3)" : GRAY, textDecoration: "line-through", fontFamily: "var(--font-sora, system-ui)" }}>
+                            {plan.price}€
+                          </span>
+                        )}
                       </div>
                       <p style={{ fontSize: 13, color: dark ? "rgba(255,255,255,0.4)" : GRAY, marginTop: 8, fontFamily: "var(--font-sora, system-ui)" }}>
                         {plan.sub}
@@ -961,8 +1287,8 @@ export default function LandingPage() {
       <footer style={{ background: INK }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px clamp(24px,6vw,80px) 0" }}>
 
-          {/* 4-column grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr 1fr", gap: 48 }} className="footer-grid">
+          {/* 5-column grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr 1fr 1fr", gap: 40 }} className="footer-grid">
 
             {/* Col 1 — Brand */}
             <div>
@@ -982,7 +1308,6 @@ export default function LandingPage() {
                 { label: "Tarifs", action: () => scrollTo(pricingRef) },
                 { label: "FAQ", action: () => scrollTo(faqRef) },
                 { label: "Mini-jeu", action: () => scrollTo(miniJeuRef) },
-                { label: "Contact", action: () => scrollTo(contactRef) },
               ].map(({ label, action }) => (
                 <button key={label} onClick={action}
                   style={{ display: "block", background: "none", border: "none", cursor: "pointer", fontSize: 14, color: GRAY, textAlign: "left", padding: 0, marginBottom: 10, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
@@ -991,9 +1316,38 @@ export default function LandingPage() {
                   {label}
                 </button>
               ))}
+              {[
+                { label: "Démo interactive", href: "/demo" },
+                { label: "Parrainage", href: "/parrainage" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href}
+                  style={{ display: "block", fontSize: 14, color: GRAY, textDecoration: "none", marginBottom: 10, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = GRAY)}>
+                  {label}
+                </Link>
+              ))}
             </div>
 
-            {/* Col 3 — Légal */}
+            {/* Col 3 — Secteurs */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Secteurs</div>
+              {[
+                { label: "Boulangerie", href: "/boulangerie" },
+                { label: "Restaurant", href: "/restaurant" },
+                { label: "Salon de coiffure", href: "/salon-coiffure" },
+                { label: "Café", href: "/cafe" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href}
+                  style={{ display: "block", fontSize: 14, color: GRAY, textDecoration: "none", marginBottom: 10, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = WHITE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = GRAY)}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Col 4 — Légal */}
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Légal</div>
               {[
@@ -1010,7 +1364,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Col 4 — Contact */}
+            {/* Col 5 — Contact */}
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>Contact</div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1043,6 +1397,17 @@ export default function LandingPage() {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.82; transform: scale(1.06); }
         }
+        @keyframes scanLine {
+          0% { transform: scaleX(0); transform-origin: left; }
+          50% { transform: scaleX(1); transform-origin: left; }
+          51% { transform: scaleX(1); transform-origin: right; }
+          100% { transform: scaleX(0); transform-origin: right; }
+        }
+        @keyframes typeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+        @keyframes dotPop { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
@@ -1050,6 +1415,7 @@ export default function LandingPage() {
           .minijeu-cta-grid { grid-template-columns: 1fr !important; }
           .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+          .roi-grid { grid-template-columns: 1fr !important; }
           .pricing-grid { grid-template-columns: 1fr !important; }
           .faq-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .cta-grid { grid-template-columns: 1fr !important; }

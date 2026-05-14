@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, Suspense } from "react";
-import { Store, CreditCard, Palette, Shield, Save, Upload, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
+import { Store, CreditCard, Palette, Shield, Save, Upload, CheckCircle2, ExternalLink, Sparkles, Copy, Share2, MessageCircle, Mail as MailIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +19,55 @@ interface MerchantUpdate {
   business_name?: string; business_type?: string;
   primary_color?: string; reward_threshold?: number; reward_description?: string;
   logo_url?: string; strip_url?: string;
+}
+
+function ReferralBlock({ link }: { link: string }) {
+  const [copied, setCopied] = useState(false);
+  const copyLink = () => {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`Rejoignez Fideloo, la carte de fidélité dans votre téléphone 👉 ${link}`)}`;
+  const mailUrl = `mailto:?subject=Fideloo — carte de fidélité digitale&body=${encodeURIComponent(`Bonjour,\n\nJe vous recommande Fideloo pour créer une carte de fidélité digitale (Apple Wallet & Google Wallet) pour votre commerce.\n\nCréez votre compte ici : ${link}\n\nÀ bientôt !`)}`;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {/* Link display */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1, padding: "10px 14px", background: "#F5F3EE", border: `1px solid ${BORD}`, borderRadius: 10, fontSize: 12, color: GRAY, fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {link}
+        </div>
+        <button onClick={copyLink}
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 16px", background: copied ? "#F5F3EE" : INK, color: copied ? GOLD : "#FFFFFF", border: `1px solid ${copied ? BORD : INK}`, borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s" }}>
+          {copied ? <CheckCircle2 style={{ width: 14, height: 14 }} /> : <Copy style={{ width: 14, height: 14 }} />}
+          {copied ? "Copié !" : "Copier"}
+        </button>
+      </div>
+      {/* Stats */}
+      <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ flex: 1, padding: "12px 16px", background: "#F5F3EE", border: `1px solid ${BORD}`, borderRadius: 10, textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: GOLD }}>0</div>
+          <div style={{ fontSize: 12, color: GRAY, marginTop: 2 }}>filleuls parrainés</div>
+        </div>
+        <div style={{ flex: 1, padding: "12px 16px", background: "#F5F3EE", border: `1px solid ${BORD}`, borderRadius: 10, textAlign: "center" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: GOLD }}>0</div>
+          <div style={{ fontSize: 12, color: GRAY, marginTop: 2 }}>mois offerts</div>
+        </div>
+      </div>
+      {/* Share buttons */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "10px 0", background: "#25D366", color: "#FFFFFF", border: "none", borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          <MessageCircle style={{ width: 14, height: 14 }} /> WhatsApp
+        </a>
+        <a href={mailUrl}
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "10px 0", background: "#F5F3EE", color: INK, border: `1px solid ${BORD}`, borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          <MailIcon style={{ width: 14, height: 14 }} /> Email
+        </a>
+      </div>
+    </div>
+  );
 }
 
 export default function SettingsPageWrapper() {
@@ -359,6 +408,24 @@ function SettingsPage() {
                     → Changer le mot de passe
                   </a>
                 </div>
+
+                {/* ── Programme de parrainage ── */}
+                <div style={{ marginTop: 32, paddingTop: 28, borderTop: `1px solid ${BORD}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <Share2 style={{ width: 16, height: 16, color: GOLD }} />
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: INK }}>Programme de parrainage</h2>
+                  </div>
+                  <p style={{ fontSize: 13, color: GRAY, marginBottom: 20, lineHeight: 1.6 }}>
+                    Parrainez un commerçant et recevez <strong style={{ color: INK }}>1 mois gratuit</strong> à chaque inscription.
+                  </p>
+                  {merchant && (() => {
+                    const refLink = `${typeof window !== "undefined" ? window.location.origin : "https://fideloo-dashboard-njfq.vercel.app"}/register?ref=${merchant.id}`;
+                    return (
+                      <ReferralBlock link={refLink} />
+                    );
+                  })()}
+                </div>
+
                 <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORD}` }}>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: "#DC2626", marginBottom: 12 }}>Zone de danger</h2>
                   <p style={{ fontSize: 14, color: GRAY, marginBottom: 16, lineHeight: 1.6 }}>

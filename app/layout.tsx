@@ -74,6 +74,36 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  name: "Fideloo",
+                  url: SITE_URL,
+                  logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/fideloo-logo-linked.svg` },
+                  contactPoint: { "@type": "ContactPoint", email: "contact@fideloo.fr", contactType: "customer service", availableLanguage: "French" },
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  name: "Fideloo",
+                  applicationCategory: "BusinessApplication",
+                  operatingSystem: "iOS, Android, Web",
+                  description: "Carte de fidélité digitale pour commerçants. Intégrée à Apple Wallet et Google Wallet. Sans app pour les clients.",
+                  offers: [
+                    { "@type": "Offer", name: "Standard", price: "50", priceCurrency: "EUR", billingPeriod: "P1M" },
+                    { "@type": "Offer", name: "Pro", price: "80", priceCurrency: "EUR", billingPeriod: "P1M" },
+                    { "@type": "Offer", name: "Business", price: "150", priceCurrency: "EUR", billingPeriod: "P1M" },
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
         <AuthProvider>{children}</AuthProvider>
         <TawkTo />
       </body>

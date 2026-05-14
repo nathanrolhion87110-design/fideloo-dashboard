@@ -182,6 +182,120 @@ function ClientRow({ c, i, total, merchant, formatRel }: { c: Customer; i: numbe
   );
 }
 
+/* ── Poster Modal ─────────────────────────────────────────── */
+function PosterModal({ merchant, onClose }: { merchant: MerchantWithPlan | null; onClose: () => void }) {
+  const [format, setFormat] = useState<"A4" | "A5">("A4");
+  const [darkBg, setDarkBg] = useState(false);
+  const [customMsg, setCustomMsg] = useState("Scannez et cumulez des points à chaque visite !");
+  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const joinUrl = `${appUrl}/join/${merchant?.id}`;
+  const qrSrc = merchant ? `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(joinUrl)}&color=${darkBg ? "FFFFFF" : "0B0F0E"}&bgcolor=${darkBg ? "0B0F0E" : "FFFFFF"}` : null;
+  const primaryColor = merchant?.primary_color || "#B8873A";
+  const businessName = merchant?.business_name || "Mon Commerce";
+  const initial = businessName.charAt(0).toUpperCase();
+
+  const handlePrint = () => {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(`<!DOCTYPE html><html><head><style>
+      @page { margin: 0; size: ${format}; }
+      body { margin: 0; padding: 0; }
+      .poster { width: 100%; min-height: 100vh; background: ${darkBg ? "#0B0F0E" : "#FFFFFF"}; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 40px; box-sizing: border-box; font-family: system-ui, sans-serif; }
+      .logo { width: 80px; height: 80px; border-radius: 20px; background: ${primaryColor}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; margin-bottom: 32px; }
+      h1 { font-size: 32px; font-weight: 700; color: ${darkBg ? "#FFFFFF" : "#0B0F0E"}; text-align: center; margin-bottom: 12px; }
+      p { font-size: 16px; color: ${darkBg ? "rgba(255,255,255,0.6)" : "#6B6B6B"}; text-align: center; max-width: 360px; line-height: 1.6; margin-bottom: 40px; }
+      .qr-wrap { padding: 20px; background: #FFFFFF; border-radius: 20px; border: 3px solid ${primaryColor}; margin-bottom: 24px; }
+      .tagline { font-size: 13px; color: ${darkBg ? "rgba(255,255,255,0.4)" : "#9B9B9B"}; text-align: center; margin-bottom: 40px; }
+      footer { border-top: 1px solid ${darkBg ? "rgba(255,255,255,0.1)" : "#E0DDD6"}; padding-top: 20px; font-size: 12px; color: ${darkBg ? "rgba(255,255,255,0.35)" : "#9B9B9B"}; display: flex; align-items: center; gap: 8px; }
+    </style></head><body>
+    <div class="poster">
+      <div class="logo">${initial}</div>
+      <h1>Rejoignez notre programme fidélité</h1>
+      <p>${customMsg}</p>
+      <div class="qr-wrap"><img src="${qrSrc}" width="220" height="220" /></div>
+      <div class="tagline">Gratuit · Aucune app à télécharger</div>
+      <footer>Propulsé par Fideloo · fideloo.app</footer>
+    </div>
+    </body></html>`);
+    w.document.close(); w.focus(); w.print();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(11,15,14,0.6)", backdropFilter: "blur(4px)" }} onClick={onClose} />
+      <div style={{ position: "relative", zIndex: 1, background: DS, border: `1px solid ${DL}`, borderRadius: 20, padding: 28, width: "calc(100% - 48px)", maxWidth: 760, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxHeight: "90vh", overflowY: "auto" }}>
+        {/* Close */}
+        <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: DTD, fontSize: 20 }}>✕</button>
+
+        {/* Left — options */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: DT }}>Générer une affiche</h3>
+
+          {/* Format toggle */}
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: DTD, marginBottom: 8, display: "block" }}>Format</label>
+            <div style={{ display: "flex", gap: 8 }}>
+              {(["A4", "A5"] as const).map((f) => (
+                <button key={f} onClick={() => setFormat(f)}
+                  style={{ flex: 1, padding: "9px 0", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", border: `1px solid ${format === f ? DGB : DL}`, background: format === f ? DGS : DS2, color: format === f ? DG : DTD }}>
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Background toggle */}
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: DTD, marginBottom: 8, display: "block" }}>Fond</label>
+            <div style={{ display: "flex", gap: 8 }}>
+              {[{ label: "Blanc", val: false }, { label: "Coloré", val: true }].map(({ label, val }) => (
+                <button key={label} onClick={() => setDarkBg(val)}
+                  style={{ flex: 1, padding: "9px 0", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", border: `1px solid ${darkBg === val ? DGB : DL}`, background: darkBg === val ? DGS : DS2, color: darkBg === val ? DG : DTD }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Custom message */}
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 600, color: DTD, marginBottom: 8, display: "block" }}>Message personnalisé</label>
+            <textarea value={customMsg} onChange={e => setCustomMsg(e.target.value)} rows={3}
+              style={{ width: "100%", padding: "10px 12px", background: DS2, border: `1px solid ${DL}`, borderRadius: 10, fontSize: 13, color: DT, outline: "none", resize: "none", boxSizing: "border-box" }} />
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <button onClick={handlePrint}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 0", background: DT, color: DS, border: "none", borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <Download style={{ width: 15, height: 15 }} /> Télécharger / Imprimer
+            </button>
+          </div>
+        </div>
+
+        {/* Right — preview */}
+        <div>
+          <label style={{ fontSize: 12, fontWeight: 600, color: DTD, marginBottom: 8, display: "block" }}>Aperçu</label>
+          <div style={{ background: darkBg ? "#0B0F0E" : "#FFFFFF", border: `1px solid ${DL}`, borderRadius: 14, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, minHeight: 360 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 12, background: primaryColor, color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 800 }}>{initial}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: darkBg ? "#FFFFFF" : "#0B0F0E", textAlign: "center" }}>
+              Rejoignez notre programme fidélité
+            </div>
+            <div style={{ fontSize: 12, color: darkBg ? "rgba(255,255,255,0.5)" : "#6B6B6B", textAlign: "center", maxWidth: 220, lineHeight: 1.5 }}>{customMsg}</div>
+            {qrSrc && (
+              <div style={{ padding: 12, background: "#FFFFFF", borderRadius: 12, border: `2px solid ${primaryColor}` }}>
+                <img src={qrSrc} alt="QR" width={120} height={120} />
+              </div>
+            )}
+            <div style={{ fontSize: 11, color: darkBg ? "rgba(255,255,255,0.35)" : "#9B9B9B" }}>Gratuit · Aucune app à télécharger</div>
+            <div style={{ fontSize: 10, color: darkBg ? "rgba(255,255,255,0.2)" : "#C0BDB6", marginTop: "auto" }}>Propulsé par Fideloo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── QR Block ────────────────────────────────────────────── */
 function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan | null; showPrint?: boolean }) {
   const appUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -189,6 +303,7 @@ function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan |
   const qrSrc = merchant
     ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(joinUrl)}&color=B8873A&bgcolor=FFFFFF`
     : null;
+  const [showPoster, setShowPoster] = useState(false);
 
   const handleDl = () => {
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(joinUrl)}&color=B8873A&bgcolor=FFFFFF`;
@@ -202,29 +317,38 @@ function QRBlock({ merchant, showPrint = false }: { merchant: MerchantWithPlan |
   };
 
   return (
-    <div style={{ background: DS, border: `1px solid ${DL}`, borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 200, width: 220 }}>
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: DT, marginBottom: 4, textAlign: "center" }}>Votre QR Code</h3>
-      <p style={{ fontSize: 11, color: DTD, marginBottom: 16, textAlign: "center" }}>Affichez-le en caisse</p>
-      <div style={{ width: 160, height: 160, borderRadius: 14, padding: 10, background: "#fff", marginBottom: 14, flexShrink: 0, boxShadow: `0 0 0 1px ${DL}, 0 8px 24px rgba(11,15,14,0.06)` }}>
-        {qrSrc && <img src={qrSrc} alt="QR Code" width={140} height={140} style={{ borderRadius: 6 }} />}
-      </div>
-      <div style={{ display: "flex", gap: 8, width: "100%" }}>
-        <button onClick={handleDl}
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 500, cursor: "pointer", background: DGS, border: `1px solid ${DGB}`, color: DG, transition: "all 0.2s" }}
-          onMouseEnter={e => (e.currentTarget.style.background = DGB)}
-          onMouseLeave={e => (e.currentTarget.style.background = DGS)}>
-          <Download style={{ width: 12, height: 12 }} /> Télécharger
-        </button>
-        {showPrint && (
-          <button onClick={handlePrint}
-            style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 500, cursor: "pointer", background: DS2, border: `1px solid ${DL2}`, color: DTD, transition: "all 0.2s" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DGB; (e.currentTarget as HTMLElement).style.color = DT; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DL2; (e.currentTarget as HTMLElement).style.color = DTD; }}>
-            <Printer style={{ width: 12, height: 12 }} /> Imprimer
+    <>
+      {showPoster && <PosterModal merchant={merchant} onClose={() => setShowPoster(false)} />}
+      <div style={{ background: DS, border: `1px solid ${DL}`, borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", alignItems: "center", minWidth: 200, width: 220 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: DT, marginBottom: 4, textAlign: "center" }}>Votre QR Code</h3>
+        <p style={{ fontSize: 11, color: DTD, marginBottom: 16, textAlign: "center" }}>Affichez-le en caisse</p>
+        <div style={{ width: 160, height: 160, borderRadius: 14, padding: 10, background: "#fff", marginBottom: 14, flexShrink: 0, boxShadow: `0 0 0 1px ${DL}, 0 8px 24px rgba(11,15,14,0.06)` }}>
+          {qrSrc && <img src={qrSrc} alt="QR Code" width={140} height={140} style={{ borderRadius: 6 }} />}
+        </div>
+        <div style={{ display: "flex", gap: 8, width: "100%", flexWrap: "wrap" }}>
+          <button onClick={handleDl}
+            style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 500, cursor: "pointer", background: DGS, border: `1px solid ${DGB}`, color: DG, transition: "all 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.background = DGB)}
+            onMouseLeave={e => (e.currentTarget.style.background = DGS)}>
+            <Download style={{ width: 12, height: 12 }} /> Télécharger
           </button>
-        )}
+          {showPrint && (
+            <button onClick={handlePrint}
+              style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 500, cursor: "pointer", background: DS2, border: `1px solid ${DL2}`, color: DTD, transition: "all 0.2s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = DGB; (e.currentTarget as HTMLElement).style.color = DT; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = DL2; (e.currentTarget as HTMLElement).style.color = DTD; }}>
+              <Printer style={{ width: 12, height: 12 }} /> Imprimer
+            </button>
+          )}
+        </div>
+        <button onClick={() => setShowPoster(true)}
+          style={{ width: "100%", marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 600, cursor: "pointer", background: DT, border: "none", color: DS, transition: "opacity 0.15s" }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+          onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+          🖨️ Générer une affiche
+        </button>
       </div>
-    </div>
+    </>
   );
 }
 
