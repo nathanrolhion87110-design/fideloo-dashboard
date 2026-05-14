@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora } from "next/font/google";
+import { Sora, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
 import TawkTo from "../components/TawkTo";
@@ -8,6 +8,14 @@ const sora = Sora({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-sora",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -52,7 +60,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`h-full antialiased ${sora.variable}`} suppressHydrationWarning>
+    <html lang="fr" className={`h-full antialiased ${sora.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
