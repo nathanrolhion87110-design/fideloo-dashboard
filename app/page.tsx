@@ -254,7 +254,7 @@ function DiceFace({ value }: { value: number | "?" }) {
   const dots = dotMap[String(value)] ?? [];
   return (
     <svg width="64" height="64" viewBox="0 0 80 80" fill="none">
-      <rect width="80" height="80" rx="12" fill="#2A2A2A" />
+      <rect width="80" height="80" rx="12" fill="#F5F3EE" />
       {value === "?" ? (
         <text x="40" y="52" textAnchor="middle" fontSize="32" fontWeight="700" fill="#B8873A" fontFamily="system-ui, sans-serif">?</text>
       ) : (
@@ -298,7 +298,7 @@ function DiceGame() {
   const res = gameState === "result" ? getResult(finalValue) : null;
 
   return (
-    <div style={{ maxWidth: 400, margin: "0 auto", background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 20, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+    <div style={{ maxWidth: 400, margin: "0 auto", background: "#FFFFFF", border: "1px solid #E0DDD6", borderRadius: 20, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
       <div style={{ animation: gameState === "rolling" ? "diceshake 0.15s infinite" : "none" }}>
         <DiceFace value={face} />
       </div>
@@ -322,7 +322,7 @@ function DiceGame() {
           <span style={{ fontSize: 12, color: res.isWin ? "#B8873A" : "#DC2626", fontWeight: 700, letterSpacing: "0.06em" }}>{res.badge}</span>
         </div>
         <div style={{ textAlign: "center" }}>
-          <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginBottom: 8, animation: res.isJackpot ? "jackpotpulse 0.8s ease-in-out infinite" : "none" }}>
+          <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 22, fontWeight: 700, color: "#0B0F0E", marginBottom: 8, animation: res.isJackpot ? "jackpotpulse 0.8s ease-in-out infinite" : "none" }}>
             {res.title}
           </h3>
           <p style={{ fontSize: 14, color: "#6B6B6B", margin: 0 }}>{res.sub}</p>
@@ -342,7 +342,7 @@ function DiceGame() {
             ))}
           </svg>
         )}
-        <button onClick={reset} style={{ width: "100%", padding: 14, background: "#2A2A2A", color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+        <button onClick={reset} style={{ width: "100%", padding: 14, background: "#0B0F0E", color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
           Rejouer
         </button>
       </>}
@@ -635,7 +635,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── MINI-JEU ────────────────────────────────────────────────── */}
-        <section ref={miniJeuRef} style={{ background: "#1C1A16", width: "100%" }}>
+        <section ref={miniJeuRef} style={{ background: "#EDEBE4", width: "100%" }}>
 
           {/* Header */}
           <div style={{ ...px, paddingTop: 48, textAlign: "center" }}>
@@ -644,7 +644,7 @@ export default function LandingPage() {
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "#B8873A", fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase" }}>Exclusif Plan Business</span>
             </div>
             <h2 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontWeight: 600, lineHeight: 1.18, marginBottom: 16, fontSize: "clamp(26px, 3.5vw, 40px)" }}>
-              <span style={{ display: "block", color: "#FFFFFF" }}>Le Coup de Dé.</span>
+              <span style={{ display: "block", color: "#0B0F0E" }}>Le Coup de Dé.</span>
               <em style={{ display: "block", color: "#B8873A", fontStyle: "italic" }}>Vos clients jouent. Vos avis explosent.</em>
             </h2>
             <p style={{ fontSize: 16, color: "#6B6B6B", maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
@@ -665,17 +665,17 @@ export default function LandingPage() {
                 { Icon: Gift, step: "ÉTAPE 2", title: "Il gagne un cadeau", desc: "Un lot est tiré parmi vos récompenses personnalisées. Un QR code unique lui est envoyé — valable immédiatement ou après un délai que vous choisissez." },
                 { Icon: ShieldCheck, step: "ÉTAPE 3", title: "Vous validez en caisse", desc: "Le client présente son QR cadeau. Votre caissier le scanne depuis le terminal — ou saisit le code à 8 chiffres. Zéro fraude possible." },
               ].map(({ Icon, step, title, desc }) => (
-                <div key={step} style={{ background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 16, padding: 24 }}>
+                <div key={step} style={{ background: "#FFFFFF", border: "1px solid #E0DDD6", borderRadius: 16, padding: 24 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                     <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(184,135,58,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <Icon size={22} color="#B8873A" />
                     </div>
-                    <div style={{ flex: 1, height: 1, borderTop: "1px solid #2A2A2A" }} />
+                    <div style={{ flex: 1, height: 1, borderTop: "1px solid #E0DDD6" }} />
                   </div>
                   <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "#B8873A", fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase", marginBottom: 10 }}>
                     {step}
                   </div>
-                  <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#FFFFFF", marginBottom: 10 }}>
+                  <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#0B0F0E", marginBottom: 10 }}>
                     {title}
                   </h3>
                   <p style={{ fontSize: 14, color: "#6B6B6B", lineHeight: 1.6, margin: 0 }}>{desc}</p>
@@ -692,7 +692,7 @@ export default function LandingPage() {
                   <Sparkles size={20} color="#B8873A" />
                 </div>
                 <div>
-                  <h4 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#FFFFFF", marginBottom: 8 }}>
+                  <h4 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#0B0F0E", marginBottom: 8 }}>
                     En moyenne, 90% des clients laissent un avis Google après avoir joué.
                   </h4>
                   <p style={{ fontSize: 14, color: "#6B6B6B", lineHeight: 1.6, margin: 0 }}>

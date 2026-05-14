@@ -2,7 +2,7 @@
   
   
   <text x="0" y="78" font-family="Sora, system-ui, sans-serif" font-weight="700" font-size="96" letter-spacing="-3" fill="#0F1411">Fidel</text>
-  <circle cx="265" cy="58" r="34" fill="none" stroke="#0F1411" stroke-width="12"></circle>
-  <circle cx="320" cy="58" r="34" fill="none" stroke="#1F8A5B" stroke-width="12"></circle>
-  <path d="M 290 38 A 34 34 0 0 1 290 78" fill="none" stroke="#1F8A5B" stroke-width="12"></path>
+  <circle cx="245" cy="58" r="34" fill="none" stroke="#0F1411" stroke-width="12"></circle>
+  <circle cx="300" cy="58" r="34" fill="none" stroke="#B8873A" stroke-width="12"></circle>
+  <path d="M 270 38 A 34 34 0 0 1 270 78" fill="none" stroke="#B8873A" stroke-width="12"></path>
 </svg>
