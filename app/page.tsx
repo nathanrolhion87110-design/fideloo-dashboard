@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FideloLogoStamp } from "../components/FideloLogoStamp";
 import {
   ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
-  Wallet, RefreshCw, Gamepad2,
+  Wallet, RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
 } from "lucide-react";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
@@ -219,6 +219,116 @@ const translations = {
 };
 
 const featureIcons = [Wallet, QrCode, RefreshCw, BarChart2, Palette, Bell, Gamepad2];
+
+/* ─── DICE FACE SVG ─────────────────────────────────────────────────────── */
+function DiceFace({ value }: { value: number | "?" }) {
+  const dotMap: Record<string, [number, number][]> = {
+    "?": [],
+    "1": [[40, 40]],
+    "2": [[25, 25], [55, 55]],
+    "3": [[25, 25], [40, 40], [55, 55]],
+    "4": [[25, 25], [55, 25], [25, 55], [55, 55]],
+    "5": [[25, 25], [55, 25], [40, 40], [25, 55], [55, 55]],
+    "6": [[25, 20], [55, 20], [25, 40], [55, 40], [25, 60], [55, 60]],
+  };
+  const dots = dotMap[String(value)] ?? [];
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <rect width="80" height="80" rx="12" fill="#2A2A2A" />
+      {value === "?" ? (
+        <text x="40" y="52" textAnchor="middle" fontSize="32" fontWeight="700" fill="#B8873A" fontFamily="system-ui, sans-serif">?</text>
+      ) : (
+        dots.map(([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="5" fill="#B8873A" />)
+      )}
+    </svg>
+  );
+}
+
+/* ─── DICE GAME ──────────────────────────────────────────────────────────── */
+function DiceGame() {
+  const [gameState, setGameState] = useState<"idle" | "rolling" | "result">("idle");
+  const [face, setFace] = useState<number | "?">("?");
+  const [finalValue, setFinalValue] = useState(1);
+
+  const roll = () => {
+    setGameState("rolling");
+    let count = 0;
+    const interval = setInterval(() => {
+      setFace(Math.ceil(Math.random() * 6));
+      count++;
+      if (count >= 15) {
+        clearInterval(interval);
+        const v = Math.ceil(Math.random() * 6);
+        setFace(v);
+        setFinalValue(v);
+        setGameState("result");
+      }
+    }, 80);
+  };
+
+  const reset = () => { setFace("?"); setGameState("idle"); };
+
+  const getResult = (v: number) => {
+    if (v === 1) return { badge: "DOMMAGE", title: "Pas de chance...", sub: "Revenez demain !", isWin: false, isJackpot: false, icon: <XIcon size={16} color="#DC2626" /> };
+    if (v <= 3) return { badge: "VOUS AVEZ GAGNÉ !", title: "10% de réduction", sub: "Sur votre prochaine commande", isWin: true, isJackpot: false, icon: <Tag size={16} color="#B8873A" /> };
+    if (v <= 5) return { badge: "VOUS AVEZ GAGNÉ !", title: "Café offert ☕", sub: "À récupérer en caisse aujourd'hui", isWin: true, isJackpot: false, icon: <Gift size={16} color="#B8873A" /> };
+    return { badge: "JACKPOT !", title: "JACKPOT ! 🎉", sub: "Repas offert — montrez ce QR code", isWin: true, isJackpot: true, icon: <Star size={16} color="#B8873A" /> };
+  };
+
+  const res = gameState === "result" ? getResult(finalValue) : null;
+
+  return (
+    <div style={{ maxWidth: 480, margin: "0 auto", background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 20, padding: 48, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+      <div style={{ animation: gameState === "rolling" ? "diceshake 0.15s infinite" : "none" }}>
+        <DiceFace value={face} />
+      </div>
+
+      {gameState === "idle" && <>
+        <p style={{ fontSize: 14, color: "#6B6B6B", textAlign: "center", margin: 0 }}>Lancez le dé pour tenter votre chance</p>
+        <button onClick={roll} style={{ width: "100%", padding: 16, background: "#B8873A", color: "#0B0F0E", border: "none", borderRadius: 999, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+          Lancer le dé 🎲
+        </button>
+      </>}
+
+      {gameState === "rolling" && (
+        <button disabled style={{ width: "100%", padding: 16, background: "#B8873A", color: "#0B0F0E", border: "none", borderRadius: 999, fontSize: 15, fontWeight: 700, opacity: 0.5, cursor: "not-allowed" }}>
+          Lancement...
+        </button>
+      )}
+
+      {gameState === "result" && res && <>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 20px", borderRadius: 999, background: res.isWin ? "rgba(184,135,58,0.20)" : "rgba(220,38,38,0.10)", border: res.isWin ? "1px solid rgba(184,135,58,0.40)" : "1px solid rgba(220,38,38,0.30)" }}>
+          {res.icon}
+          <span style={{ fontSize: 12, color: res.isWin ? "#B8873A" : "#DC2626", fontWeight: 700, letterSpacing: "0.06em" }}>{res.badge}</span>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginBottom: 8, animation: res.isJackpot ? "jackpotpulse 0.8s ease-in-out infinite" : "none" }}>
+            {res.title}
+          </h3>
+          <p style={{ fontSize: 14, color: "#6B6B6B", margin: 0 }}>{res.sub}</p>
+        </div>
+        {res.isWin && (
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style={{ borderRadius: 8 }}>
+            <rect width="80" height="80" fill="white" />
+            {/* Finder top-left */}
+            <rect x="6" y="6" width="20" height="20" rx="2" fill="#0B0F0E" /><rect x="9" y="9" width="14" height="14" rx="1" fill="white" /><rect x="12" y="12" width="8" height="8" rx="1" fill="#0B0F0E" />
+            {/* Finder top-right */}
+            <rect x="54" y="6" width="20" height="20" rx="2" fill="#0B0F0E" /><rect x="57" y="9" width="14" height="14" rx="1" fill="white" /><rect x="60" y="12" width="8" height="8" rx="1" fill="#0B0F0E" />
+            {/* Finder bottom-left */}
+            <rect x="6" y="54" width="20" height="20" rx="2" fill="#0B0F0E" /><rect x="9" y="57" width="14" height="14" rx="1" fill="white" /><rect x="12" y="60" width="8" height="8" rx="1" fill="#0B0F0E" />
+            {/* Data modules */}
+            {([[32,6],[36,6],[44,6],[40,10],[32,14],[44,14],[36,18],[40,18],[6,32],[14,32],[10,36],[18,36],[6,40],[18,40],[10,44],[14,44],[32,32],[40,32],[44,36],[32,40],[40,44],[44,44],[54,32],[62,32],[58,36],[66,36],[54,40],[66,40],[58,44],[32,54],[40,54],[44,58],[36,62],[44,62],[32,66],[40,66]] as [number,number][]).map(([x,y],i) => (
+              <rect key={i} x={x} y={y} width="4" height="4" fill="#0B0F0E" />
+            ))}
+          </svg>
+        )}
+        <button onClick={reset} style={{ width: "100%", padding: 14, background: "#2A2A2A", color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+          Rejouer
+        </button>
+      </>}
+    </div>
+  );
+}
 
 /* ─── FAQ ITEM ──────────────────────────────────────────────────────────── */
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -515,6 +625,80 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── MINI-JEU ────────────────────────────────────────────────── */}
+        <section style={{ background: "#0B0F0E", width: "100%" }}>
+
+          {/* Header */}
+          <div style={{ ...px, paddingTop: 80, textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 18px", background: "rgba(184,135,58,0.20)", border: "1px solid rgba(184,135,58,0.40)", borderRadius: 999, marginBottom: 24 }}>
+              <Gamepad2 size={14} color="#B8873A" />
+              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "#B8873A", fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase" }}>Exclusif Plan Business</span>
+            </div>
+            <h2 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontWeight: 600, lineHeight: 1.18, marginBottom: 20, fontSize: "clamp(32px, 4.5vw, 52px)" }}>
+              <span style={{ display: "block", color: "#FFFFFF" }}>Le Coup de Dé.</span>
+              <em style={{ display: "block", color: "#B8873A", fontStyle: "italic" }}>Vos clients jouent. Vos avis explosent.</em>
+            </h2>
+            <p style={{ fontSize: 16, color: "#6B6B6B", maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
+              En quelques secondes, chaque client tente sa chance. Simple, rapide, addictif.
+            </p>
+          </div>
+
+          {/* Interactive dice game */}
+          <div style={{ ...px, paddingTop: 48 }}>
+            <DiceGame />
+          </div>
+
+          {/* 3 steps */}
+          <div style={{ ...px, paddingTop: 64 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, maxWidth: 960, margin: "0 auto" }} className="steps-grid">
+              {[
+                { Icon: QrCode, step: "ÉTAPE 1", title: "Le client scanne & joue", desc: "Une affiche dédiée avec QR code. Le client donne son avis Google, entre son numéro, et lance le dé." },
+                { Icon: Gift, step: "ÉTAPE 2", title: "Il gagne un cadeau", desc: "Un lot est tiré parmi vos récompenses personnalisées. Un QR code unique lui est envoyé — valable immédiatement ou après un délai que vous choisissez." },
+                { Icon: ShieldCheck, step: "ÉTAPE 3", title: "Vous validez en caisse", desc: "Le client présente son QR cadeau. Votre caissier le scanne depuis le terminal — ou saisit le code à 8 chiffres. Zéro fraude possible." },
+              ].map(({ Icon, step, title, desc }) => (
+                <div key={step} style={{ background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 16, padding: 32 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(184,135,58,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon size={22} color="#B8873A" />
+                    </div>
+                    <div style={{ flex: 1, height: 1, borderTop: "1px solid #2A2A2A" }} />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "#B8873A", fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase", marginBottom: 10 }}>
+                    {step}
+                  </div>
+                  <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#FFFFFF", marginBottom: 10 }}>
+                    {title}
+                  </h3>
+                  <p style={{ fontSize: 14, color: "#6B6B6B", lineHeight: 1.6, margin: 0 }}>{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Stat / CTA */}
+          <div style={{ ...px, paddingTop: 24, paddingBottom: 80 }}>
+            <div style={{ maxWidth: 960, margin: "0 auto", background: "rgba(184,135,58,0.10)", border: "1px solid rgba(184,135,58,0.30)", borderRadius: 16, padding: "32px 40px", display: "grid", gridTemplateColumns: "1fr auto", gap: 40, alignItems: "center" }} className="minijeu-cta-grid">
+              <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(184,135,58,0.20)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Sparkles size={20} color="#B8873A" />
+                </div>
+                <div>
+                  <h4 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 600, color: "#FFFFFF", marginBottom: 8 }}>
+                    En moyenne, 90% des clients laissent un avis Google après avoir joué.
+                  </h4>
+                  <p style={{ fontSize: 14, color: "#6B6B6B", lineHeight: 1.6, margin: 0 }}>
+                    La roue crée un échange émotionnel positif. Le client a gagné quelque chose — il est naturellement plus enclin à vous laisser un retour.
+                  </p>
+                </div>
+              </div>
+              <Link href="/register" style={{ display: "inline-block", padding: "14px 32px", background: "#B8873A", color: "#0B0F0E", borderRadius: 999, fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap" }}>
+                Essayer Business →
+              </Link>
+            </div>
+          </div>
+
+        </section>
+
         {/* ── PRICING ─────────────────────────────────────────────────── */}
         <section ref={pricingRef} style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -728,9 +912,20 @@ export default function LandingPage() {
 
       {/* ── RESPONSIVE STYLES ───────────────────────────────────────────── */}
       <style>{`
+        @keyframes diceshake {
+          0%, 100% { transform: translateX(0) rotate(0deg); }
+          25% { transform: translateX(-5px) rotate(-6deg); }
+          75% { transform: translateX(5px) rotate(6deg); }
+        }
+        @keyframes jackpotpulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.82; transform: scale(1.06); }
+        }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
+          .steps-grid { grid-template-columns: 1fr !important; }
+          .minijeu-cta-grid { grid-template-columns: 1fr !important; }
           .pricing-grid { grid-template-columns: 1fr !important; }
           .faq-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .cta-grid { grid-template-columns: 1fr !important; }
