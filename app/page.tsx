@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { FideloLogoStamp } from "../components/FideloLogoStamp";
 import {
   ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
   Wallet, RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
+  Mail, Clock,
 } from "lucide-react";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
@@ -21,7 +21,7 @@ const BORD2 = "#D8D5CE";
 /* ─── TRANSLATIONS ──────────────────────────────────────────────────────── */
 const translations = {
   fr: {
-    nav: { features: "Fonctionnalités", pricing: "Tarifs", faq: "FAQ", login: "Se connecter", cta: "Démarrer ↗" },
+    nav: { features: "Fonctionnalités", pricing: "Tarifs", faq: "FAQ", contact: "Contact", login: "Se connecter", cta: "Démarrer ↗" },
     hero: {
       badge: "B2B · CARTES APPLE WALLET & GOOGLE WALLET",
       h1a: "La fidélité de vos commerces,",
@@ -48,8 +48,18 @@ const translations = {
         { n: "04", title: "Analytics actionnables", desc: "Fréquence de visite, top clients, récompenses utilisées. Des chiffres qui parlent business." },
         { n: "05", title: "Aux couleurs de votre enseigne", desc: "Logo, couleurs, seuil de points, nom de la récompense — chaque détail reflète votre marque." },
         { n: "06", title: "Notifications push natives", desc: "Une offre directement sur l'écran de verrouillage. Taux d'ouverture 4× supérieur au SMS." },
-        { n: "07", title: "Mini-jeu avis Google", desc: "Après chaque visite, le client joue à un mini-jeu rapide. S'il gagne, il reçoit un produit offert en échange d'un avis Google. Taux de conversion moyen : 84%." },
       ],
+    },
+    contact: {
+      label: "— CONTACT",
+      h2a: "Une question ?",
+      h2b: "On vous répond.",
+      desc: "Notre équipe est disponible pour vous accompagner dans la mise en place de votre programme de fidélité.",
+      response: "Réponse sous 24h",
+      fields: { name: "Nom complet", email: "Email professionnel", type: "Type de commerce", message: "Message" },
+      placeholders: { name: "Jean Dupont", email: "jean@moncommerce.fr", type: "Sélectionner...", message: "Décrivez votre projet..." },
+      submit: "Envoyer le message →",
+      note: "Pas de carte bancaire requise · Réponse garantie sous 24h",
     },
     pricing: {
       label: "— TARIFS",
@@ -119,7 +129,7 @@ const translations = {
     },
   },
   en: {
-    nav: { features: "Features", pricing: "Pricing", faq: "FAQ", login: "Log in", cta: "Get started ↗" },
+    nav: { features: "Features", pricing: "Pricing", faq: "FAQ", contact: "Contact", login: "Log in", cta: "Get started ↗" },
     hero: {
       badge: "B2B · APPLE WALLET & GOOGLE WALLET CARDS",
       h1a: "Loyalty for your stores,",
@@ -146,8 +156,18 @@ const translations = {
         { n: "04", title: "Actionable analytics", desc: "Visit frequency, top customers, used rewards. Numbers that speak to your business." },
         { n: "05", title: "Your brand, your card", desc: "Logo, colors, point threshold, reward name — every detail reflects your brand." },
         { n: "06", title: "Native push notifications", desc: "An offer straight to the lock screen. 4× higher open rate than SMS." },
-        { n: "07", title: "Google review mini-game", desc: "After each visit, the customer plays a quick mini-game. If they win, they receive a free product in exchange for a Google review. Average conversion rate: 84%." },
       ],
+    },
+    contact: {
+      label: "— CONTACT",
+      h2a: "Got a question?",
+      h2b: "We'll get back to you.",
+      desc: "Our team is available to help you set up your loyalty program.",
+      response: "Response within 24h",
+      fields: { name: "Full name", email: "Business email", type: "Business type", message: "Message" },
+      placeholders: { name: "John Smith", email: "john@mystore.com", type: "Select...", message: "Describe your project..." },
+      submit: "Send message →",
+      note: "No credit card required · Response guaranteed within 24h",
     },
     pricing: {
       label: "— PRICING",
@@ -218,7 +238,7 @@ const translations = {
   },
 };
 
-const featureIcons = [Wallet, QrCode, RefreshCw, BarChart2, Palette, Bell, Gamepad2];
+const featureIcons = [Wallet, QrCode, RefreshCw, BarChart2, Palette, Bell];
 
 /* ─── DICE FACE SVG ─────────────────────────────────────────────────────── */
 function DiceFace({ value }: { value: number | "?" }) {
@@ -233,7 +253,7 @@ function DiceFace({ value }: { value: number | "?" }) {
   };
   const dots = dotMap[String(value)] ?? [];
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+    <svg width="64" height="64" viewBox="0 0 80 80" fill="none">
       <rect width="80" height="80" rx="12" fill="#2A2A2A" />
       {value === "?" ? (
         <text x="40" y="52" textAnchor="middle" fontSize="32" fontWeight="700" fill="#B8873A" fontFamily="system-ui, sans-serif">?</text>
@@ -278,7 +298,7 @@ function DiceGame() {
   const res = gameState === "result" ? getResult(finalValue) : null;
 
   return (
-    <div style={{ maxWidth: 480, margin: "0 auto", background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 20, padding: 48, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+    <div style={{ maxWidth: 400, margin: "0 auto", background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 20, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
       <div style={{ animation: gameState === "rolling" ? "diceshake 0.15s infinite" : "none" }}>
         <DiceFace value={face} />
       </div>
@@ -372,6 +392,7 @@ export default function LandingPage() {
   const featuresRef = useRef<HTMLElement>(null);
   const pricingRef  = useRef<HTMLElement>(null);
   const faqRef      = useRef<HTMLElement>(null);
+  const contactRef  = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -398,19 +419,11 @@ export default function LandingPage() {
       }}>
         <div style={{ ...px, width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              background: INK, borderRadius: 10, padding: "6px 12px 6px 6px",
-            }}>
-              <span style={{
-                width: 26, height: 26, borderRadius: 6, background: GOLD,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: INK }} />
-              </span>
-              <span style={{ fontFamily: "var(--font-sora, system-ui)", fontWeight: 600, fontSize: 15, color: WHITE, letterSpacing: "-0.01em" }}>Fideloo</span>
-            </span>
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: INK, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: GOLD }} />
+            </div>
+            <span style={{ fontFamily: "var(--font-sora, system-ui)", fontWeight: 700, fontSize: 18, color: INK, letterSpacing: "-0.02em" }}>Fideloo</span>
           </Link>
 
           {/* Center nav */}
@@ -419,6 +432,7 @@ export default function LandingPage() {
               { label: t.nav.features, ref: featuresRef },
               { label: t.nav.pricing, ref: pricingRef },
               { label: t.nav.faq, ref: faqRef },
+              { label: t.nav.contact, ref: contactRef },
             ].map(({ label, ref }) => (
               <button key={label} onClick={() => scrollTo(ref)}
                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: GRAY, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.15s" }}
@@ -626,15 +640,15 @@ export default function LandingPage() {
         </section>
 
         {/* ── MINI-JEU ────────────────────────────────────────────────── */}
-        <section style={{ background: "#0B0F0E", width: "100%" }}>
+        <section style={{ background: "#1C1A16", width: "100%" }}>
 
           {/* Header */}
-          <div style={{ ...px, paddingTop: 80, textAlign: "center" }}>
+          <div style={{ ...px, paddingTop: 48, textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 18px", background: "rgba(184,135,58,0.20)", border: "1px solid rgba(184,135,58,0.40)", borderRadius: 999, marginBottom: 24 }}>
               <Gamepad2 size={14} color="#B8873A" />
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "#B8873A", fontFamily: "var(--font-sora, system-ui)", textTransform: "uppercase" }}>Exclusif Plan Business</span>
             </div>
-            <h2 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontWeight: 600, lineHeight: 1.18, marginBottom: 20, fontSize: "clamp(32px, 4.5vw, 52px)" }}>
+            <h2 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontWeight: 600, lineHeight: 1.18, marginBottom: 16, fontSize: "clamp(26px, 3.5vw, 40px)" }}>
               <span style={{ display: "block", color: "#FFFFFF" }}>Le Coup de Dé.</span>
               <em style={{ display: "block", color: "#B8873A", fontStyle: "italic" }}>Vos clients jouent. Vos avis explosent.</em>
             </h2>
@@ -644,19 +658,19 @@ export default function LandingPage() {
           </div>
 
           {/* Interactive dice game */}
-          <div style={{ ...px, paddingTop: 48 }}>
+          <div style={{ ...px, paddingTop: 40 }}>
             <DiceGame />
           </div>
 
           {/* 3 steps */}
-          <div style={{ ...px, paddingTop: 64 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, maxWidth: 960, margin: "0 auto" }} className="steps-grid">
+          <div style={{ ...px, paddingTop: 40 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, maxWidth: 960, margin: "0 auto" }} className="steps-grid">
               {[
                 { Icon: QrCode, step: "ÉTAPE 1", title: "Le client scanne & joue", desc: "Une affiche dédiée avec QR code. Le client donne son avis Google, entre son numéro, et lance le dé." },
                 { Icon: Gift, step: "ÉTAPE 2", title: "Il gagne un cadeau", desc: "Un lot est tiré parmi vos récompenses personnalisées. Un QR code unique lui est envoyé — valable immédiatement ou après un délai que vous choisissez." },
                 { Icon: ShieldCheck, step: "ÉTAPE 3", title: "Vous validez en caisse", desc: "Le client présente son QR cadeau. Votre caissier le scanne depuis le terminal — ou saisit le code à 8 chiffres. Zéro fraude possible." },
               ].map(({ Icon, step, title, desc }) => (
-                <div key={step} style={{ background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 16, padding: 32 }}>
+                <div key={step} style={{ background: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: 16, padding: 24 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                     <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(184,135,58,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <Icon size={22} color="#B8873A" />
@@ -676,7 +690,7 @@ export default function LandingPage() {
           </div>
 
           {/* Stat / CTA */}
-          <div style={{ ...px, paddingTop: 24, paddingBottom: 80 }}>
+          <div style={{ ...px, paddingTop: 16, paddingBottom: 48 }}>
             <div style={{ maxWidth: 960, margin: "0 auto", background: "rgba(184,135,58,0.10)", border: "1px solid rgba(184,135,58,0.30)", borderRadius: 16, padding: "32px 40px", display: "grid", gridTemplateColumns: "1fr auto", gap: 40, alignItems: "center" }} className="minijeu-cta-grid">
               <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(184,135,58,0.20)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -835,6 +849,79 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── CONTACT ─────────────────────────────────────────────────── */}
+        <section ref={contactRef} id="contact" style={{ ...px, paddingTop: 120, paddingBottom: 120 }}>
+          <div style={{ maxWidth: 960, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }} className="contact-grid">
+
+            {/* Left */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: GRAY, marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>
+                {t.contact.label}
+              </div>
+              <h2 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, fontSize: "clamp(30px, 3.2vw, 46px)", lineHeight: 1.2, marginBottom: 20 }}>
+                <span style={{ display: "block" }}>{t.contact.h2a}</span>
+                <em style={{ fontStyle: "italic" }}>{t.contact.h2b}</em>
+              </h2>
+              <p style={{ fontSize: 15, color: GRAY, lineHeight: 1.7, marginBottom: 40 }}>{t.contact.desc}</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(184,135,58,0.10)", border: `1px solid rgba(184,135,58,0.20)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Mail size={16} color={GOLD} />
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: INK }}>contact@fideloo.fr</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(184,135,58,0.10)", border: `1px solid rgba(184,135,58,0.20)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Clock size={16} color={GOLD} />
+                  </div>
+                  <span style={{ fontSize: 14, color: GRAY }}>{t.contact.response}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right — form card */}
+            <div style={{ background: WHITE, border: `1px solid ${BORD}`, borderRadius: 16, padding: 40 }}>
+              <form onSubmit={e => e.preventDefault()} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {[
+                  { label: t.contact.fields.name, type: "text", placeholder: t.contact.placeholders.name },
+                  { label: t.contact.fields.email, type: "email", placeholder: t.contact.placeholders.email },
+                ].map(({ label, type, placeholder }) => (
+                  <div key={label}>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>{label}</label>
+                    <input type={type} placeholder={placeholder}
+                      style={{ width: "100%", padding: "12px 16px", background: CARD, border: `1px solid ${BORD}`, borderRadius: 8, fontSize: 14, color: INK, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }}
+                      onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                      onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
+                  </div>
+                ))}
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>{t.contact.fields.type}</label>
+                  <select style={{ width: "100%", padding: "12px 16px", background: CARD, border: `1px solid ${BORD}`, borderRadius: 8, fontSize: 14, color: INK, outline: "none", fontFamily: "inherit", appearance: "none", boxSizing: "border-box" }}
+                    onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                    onBlur={e => (e.currentTarget.style.borderColor = BORD)}>
+                    <option value="">{t.contact.placeholders.type}</option>
+                    <option value="restaurant">Restaurant / Café</option>
+                    <option value="retail">Commerce de détail</option>
+                    <option value="beaute">Beauté / Bien-être</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: INK, marginBottom: 6 }}>{t.contact.fields.message}</label>
+                  <textarea placeholder={t.contact.placeholders.message} rows={4}
+                    style={{ width: "100%", padding: "12px 16px", background: CARD, border: `1px solid ${BORD}`, borderRadius: 8, fontSize: 14, color: INK, outline: "none", fontFamily: "inherit", resize: "none", height: 120, boxSizing: "border-box" }}
+                    onFocus={e => (e.currentTarget.style.borderColor = GOLD)}
+                    onBlur={e => (e.currentTarget.style.borderColor = BORD)} />
+                </div>
+                <button type="submit" style={{ width: "100%", padding: 14, background: INK, color: WHITE, border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-sora, system-ui)" }}>
+                  {t.contact.submit}
+                </button>
+                <p style={{ fontSize: 12, color: GRAY, textAlign: "center", margin: 0 }}>{t.contact.note}</p>
+              </form>
+            </div>
+          </div>
+        </section>
+
         {/* ── FINAL CTA ───────────────────────────────────────────────── */}
         <section style={{ ...px, paddingTop: 40, paddingBottom: 80 }}>
           <div style={{
@@ -882,10 +969,11 @@ export default function LandingPage() {
           display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20,
         }}>
           {/* Logo */}
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-          }}>
-            <FideloLogoStamp variant="onDark" size={28} />
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: GOLD }} />
+            </div>
+            <span style={{ fontFamily: "var(--font-sora, system-ui)", fontWeight: 700, fontSize: 18, color: WHITE, letterSpacing: "-0.02em" }}>Fideloo</span>
           </span>
 
           {/* Links */}
@@ -926,6 +1014,7 @@ export default function LandingPage() {
           .features-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; }
           .minijeu-cta-grid { grid-template-columns: 1fr !important; }
+          .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .pricing-grid { grid-template-columns: 1fr !important; }
           .faq-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .cta-grid { grid-template-columns: 1fr !important; }

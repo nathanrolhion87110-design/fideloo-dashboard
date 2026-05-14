@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, BarChart3, CreditCard, Megaphone, Zap,
-  Plug, History, Receipt, Settings, Menu, X, LogOut, Bell,
+  Plug, History, Receipt, Settings, Menu, X, LogOut, Bell, Mail,
   Search, ChevronDown, ChevronRight, ScanLine, UserPlus,
 } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -117,8 +117,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Logo + Search */}
       <div className="px-4 pt-5 pb-3 space-y-3">
-        <div className="flex items-center gap-3 px-2 mb-1">
-          <FideloLogoStamp variant="onDark" size={40} />
+        <div className="flex items-center gap-2.5 px-2 mb-1">
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: GOLD }} />
+          </div>
+          <span style={{ fontFamily: "var(--font-sora, system-ui, sans-serif)", fontWeight: 700, fontSize: 18, color: SIDET, letterSpacing: "-0.02em" }}>Fideloo</span>
         </div>
 
         <button
@@ -211,6 +214,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Bottom actions */}
       <div className="p-3 space-y-0.5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+
+        {/* Contact */}
+        <a href="mailto:contact@fideloo.fr"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
+          style={{ color: SIDETD, textDecoration: "none" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = SIDET; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = SIDETD; }}>
+          <Mail className="w-4 h-4 flex-shrink-0" style={{ opacity: 0.55 }} />
+          <span>Contact</span>
+        </a>
 
         {/* Notifications */}
         <div ref={notifRef} className="relative">
