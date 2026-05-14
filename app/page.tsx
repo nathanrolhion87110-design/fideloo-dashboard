@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FideloLogoStamp } from "../components/FideloLogoStamp";
 import {
-  ChevronDown, Coffee, Nfc, Wifi, BarChart2, Palette, Bell, QrCode,
+  ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
+  Wallet, RefreshCw, Gamepad2,
 } from "lucide-react";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
@@ -45,8 +46,9 @@ const translations = {
         { n: "02", title: "Inscription en 30 secondes", desc: "Le client scanne votre QR code en caisse, saisit son email et reçoit sa carte instantanément." },
         { n: "03", title: "Synchronisation temps réel", desc: "Ajoutez des points en un clic. La carte se met à jour sur le téléphone du client immédiatement." },
         { n: "04", title: "Analytics actionnables", desc: "Fréquence de visite, top clients, récompenses utilisées. Des chiffres qui parlent business." },
-        { n: "05", title: "Aux couleurs de votre enseigne", desc: "Logo, couleurs, seuil de points — chaque détail reflète votre marque." },
+        { n: "05", title: "Aux couleurs de votre enseigne", desc: "Logo, couleurs, seuil de points, nom de la récompense — chaque détail reflète votre marque." },
         { n: "06", title: "Notifications push natives", desc: "Une offre directement sur l'écran de verrouillage. Taux d'ouverture 4× supérieur au SMS." },
+        { n: "07", title: "Mini-jeu avis Google", desc: "Après chaque visite, le client joue à un mini-jeu rapide. S'il gagne, il reçoit un produit offert en échange d'un avis Google. Taux de conversion moyen : 84%." },
       ],
     },
     pricing: {
@@ -142,8 +144,9 @@ const translations = {
         { n: "02", title: "Sign up in 30 seconds", desc: "The customer scans your QR code at checkout, enters their email and receives their card instantly." },
         { n: "03", title: "Real-time sync", desc: "Add points in one click. The card updates on the customer's phone immediately." },
         { n: "04", title: "Actionable analytics", desc: "Visit frequency, top customers, used rewards. Numbers that speak to your business." },
-        { n: "05", title: "Your brand, your card", desc: "Logo, colors, point threshold — every detail reflects your brand." },
+        { n: "05", title: "Your brand, your card", desc: "Logo, colors, point threshold, reward name — every detail reflects your brand." },
         { n: "06", title: "Native push notifications", desc: "An offer straight to the lock screen. 4× higher open rate than SMS." },
+        { n: "07", title: "Google review mini-game", desc: "After each visit, the customer plays a quick mini-game. If they win, they receive a free product in exchange for a Google review. Average conversion rate: 84%." },
       ],
     },
     pricing: {
@@ -215,7 +218,7 @@ const translations = {
   },
 };
 
-const featureIcons = [Wifi, QrCode, Wifi, BarChart2, Palette, Bell];
+const featureIcons = [Wallet, QrCode, RefreshCw, BarChart2, Palette, Bell, Gamepad2];
 
 /* ─── FAQ ITEM ──────────────────────────────────────────────────────────── */
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -472,30 +475,42 @@ export default function LandingPage() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="features-grid">
-              {t.features.items.map((item, i) => {
-                const Icon = featureIcons[i];
-                return (
-                  <div key={item.n} style={{
-                    background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 32,
-                    transition: "box-shadow 0.2s ease, transform 0.2s ease", cursor: "default",
-                  }}
-                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = "0 12px 40px rgba(11,15,14,0.10)"; el.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = "none"; el.style.transform = "translateY(0)"; }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                      <span style={{ fontSize: 11, color: BORD2, fontWeight: 600, fontFamily: "var(--font-sora, system-ui)" }}>{item.n}</span>
-                      <div style={{ flex: 1, height: 1, background: BORD }} />
-                      <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(184,135,58,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Icon size={16} color={GOLD} />
+            {/* Table-style grid: border-top + border-left on container, border-right + border-bottom on each cell */}
+            <div style={{ borderTop: `1px solid ${BORD2}`, borderLeft: `1px solid ${BORD2}` }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }} className="features-grid">
+                {t.features.items.map((item, i) => {
+                  const Icon = featureIcons[i];
+                  const isLast = i === t.features.items.length - 1;
+                  return (
+                    <div key={item.n}
+                      style={{
+                        borderRight: `1px solid ${BORD2}`,
+                        borderBottom: `1px solid ${BORD2}`,
+                        padding: 32,
+                        background: "transparent",
+                        cursor: "default",
+                        transition: "background 0.2s ease",
+                        gridColumn: isLast ? "span 3" : undefined,
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#E8E5DE")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                      {/* Top row: number + line + icon */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                        <span style={{ fontSize: 13, color: GRAY, fontWeight: 600, fontFamily: "var(--font-sora, system-ui)", flexShrink: 0 }}>{item.n}</span>
+                        <div style={{ flex: isLast ? "0 0 80px" : 1, height: 1, borderTop: `1px solid ${BORD2}` }} />
+                        <Icon size={18} color={GOLD} style={{ flexShrink: 0 }} />
+                      </div>
+                      {/* Content — on the last item constrain width to 1/3 */}
+                      <div style={isLast ? { maxWidth: "calc(33.33% - 32px)" } : undefined}>
+                        <h3 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 22, fontWeight: 600, color: INK, marginBottom: 12 }}>
+                          {item.title}
+                        </h3>
+                        <p style={{ fontSize: 15, color: GRAY, lineHeight: 1.6 }}>{item.desc}</p>
                       </div>
                     </div>
-                    <h3 style={{ fontFamily: "var(--font-sora, system-ui)", fontSize: 16, fontWeight: 600, color: INK, marginBottom: 10 }}>
-                      {item.title}
-                    </h3>
-                    <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.65 }}>{item.desc}</p>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>

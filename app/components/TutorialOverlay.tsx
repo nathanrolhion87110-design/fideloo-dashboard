@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { QrCode, ScanLine, Users, Bell, Settings, X, ChevronRight } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
+
+const INK = "#0B0F0E";
+const GRAY = "#6B6B6B";
+const BORD = "#E0DDD6";
+const GOLD = "#B8873A";
+const INACTIVE_DOT = "#D8D5CE";
 
 export default function TutorialOverlay({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
@@ -13,13 +19,13 @@ export default function TutorialOverlay({ onComplete }: { onComplete: () => void
     if (!hasSeenTutorial) {
       setIsVisible(true);
     } else {
-      onComplete(); // Skip si déjà vu
+      onComplete();
     }
   }, [onComplete]);
 
   const steps = [
     {
-      title: "Bienvenue sur Fideloo ! 👋",
+      title: "Bienvenue sur Fideloo !",
       content: "Découvrons ensemble comment gérer votre nouveau programme de fidélité en moins d'une minute.",
       target: null,
       position: "center"
@@ -81,15 +87,13 @@ export default function TutorialOverlay({ onComplete }: { onComplete: () => void
   const currentStep = steps[step];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-      {/* Overlay sombre */}
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"
+    <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+      {/* Overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        style={{ position: "absolute", inset: 0, background: "rgba(11,15,14,0.80)", backdropFilter: "blur(8px)", pointerEvents: "auto" }}
       />
-
-      {/* Spotlight (simulé ici en centrant la modale ou en la plaçant arbitrairement pour la démo) */}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -97,44 +101,63 @@ export default function TutorialOverlay({ onComplete }: { onComplete: () => void
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative z-[101] bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 pointer-events-auto border border-slate-100"
+          style={{
+            position: "relative",
+            zIndex: 101,
+            background: "#FFFFFF",
+            border: `1px solid ${BORD}`,
+            borderRadius: 16,
+            padding: 24,
+            maxWidth: 440,
+            width: "calc(100% - 32px)",
+            margin: "0 16px",
+            pointerEvents: "auto",
+          }}
         >
-          <button 
+          <button
             onClick={finishTutorial}
-            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: GRAY, padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <X className="w-5 h-5" />
+            <X size={18} />
           </button>
 
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-text-main mb-2">{currentStep.title}</h3>
-            <p className="text-text-muted leading-relaxed">{currentStep.content}</p>
+          <div style={{ marginBottom: 28 }}>
+            <h3 style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 20, fontWeight: 700, color: INK, marginBottom: 8, paddingRight: 24 }}>
+              {currentStep.title}
+            </h3>
+            <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.6 }}>{currentStep.content}</p>
           </div>
 
-          {/* Indicateurs de progression */}
-          <div className="flex justify-between items-center mt-8">
-            <div className="flex gap-1.5">
+          {/* Progress + actions */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               {steps.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`h-1.5 rounded-full transition-all ${i === step ? 'w-6 bg-primary' : 'w-1.5 bg-slate-200'}`}
+                <div
+                  key={i}
+                  style={{
+                    height: 6,
+                    borderRadius: 999,
+                    background: i === step ? GOLD : INACTIVE_DOT,
+                    width: i === step ? 24 : 6,
+                    transition: "all 0.2s ease",
+                  }}
                 />
               ))}
             </div>
 
-            <div className="flex gap-3">
-              <button 
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <button
                 onClick={finishTutorial}
-                className="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: GRAY, padding: "8px 4px" }}
               >
                 Passer
               </button>
-              <button 
+              <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary/90 transition-all shadow-sm"
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 20px", background: INK, color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer" }}
               >
-                {step === steps.length - 1 ? 'Commencer' : 'Suivant'}
-                {step !== steps.length - 1 && <ChevronRight className="w-4 h-4" />}
+                {step === steps.length - 1 ? "Commencer" : "Suivant"}
+                {step !== steps.length - 1 && <ChevronRight size={15} />}
               </button>
             </div>
           </div>
