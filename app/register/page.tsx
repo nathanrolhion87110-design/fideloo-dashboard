@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -79,7 +79,7 @@ const BUSINESS_TYPES = [
   { value: "autre", label: "Autre" },
 ];
 
-export default function RegisterPage() {
+function RegisterContent() {
   const searchParams = useSearchParams();
   const isTrial = searchParams.get("plan") === "trial";
 
@@ -503,6 +503,14 @@ export default function RegisterPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div style={{ background: "#EDEBE4", minHeight: "100vh" }} />}>
+      <RegisterContent />
+    </Suspense>
   );
 }
 
