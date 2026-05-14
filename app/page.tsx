@@ -602,7 +602,6 @@ export default function LandingPage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }} className="features-grid">
                 {t.features.items.map((item, i) => {
                   const Icon = featureIcons[i];
-                  const isLast = i === t.features.items.length - 1;
                   return (
                     <div key={item.n}
                       style={{
@@ -612,18 +611,16 @@ export default function LandingPage() {
                         background: "transparent",
                         cursor: "default",
                         transition: "background 0.2s ease",
-                        gridColumn: isLast ? "span 3" : undefined,
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#E8E5DE")}
                       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                       {/* Top row: number + line + icon */}
                       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                         <span style={{ fontSize: 13, color: GRAY, fontWeight: 600, fontFamily: "var(--font-sora, system-ui)", flexShrink: 0 }}>{item.n}</span>
-                        <div style={{ flex: isLast ? "0 0 80px" : 1, height: 1, borderTop: `1px solid ${BORD2}` }} />
+                        <div style={{ flex: 1, height: 1, borderTop: `1px solid ${BORD2}` }} />
                         <Icon size={18} color={GOLD} style={{ flexShrink: 0 }} />
                       </div>
-                      {/* Content — on the last item constrain width to 1/3 */}
-                      <div style={isLast ? { maxWidth: "calc(33.33% - 32px)" } : undefined}>
+                      <div>
                         <h3 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 22, fontWeight: 600, color: INK, marginBottom: 12 }}>
                           {item.title}
                         </h3>
