@@ -14,7 +14,7 @@ const API   = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 interface Stats {
   totalMerchants: number;
   proMerchants: number;
-  freeMerchants: number;
+  standardMerchants: number;
   mrr: number;
   arr: number;
   conversionRate: number;
@@ -30,8 +30,8 @@ interface Merchant {
   customer_count: number;
 }
 
-const PLAN_MRR: Record<string, number>    = { free: 0, pro: 80, business: 150 };
-const PLAN_LABELS: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
+const PLAN_MRR: Record<string, number>    = { standard: 50, pro: 80, business: 150 };
+const PLAN_LABELS: Record<string, string> = { standard: "Standard", pro: "Pro", business: "Business" };
 
 const AVATAR_COLORS = ["#B8873A", "#4B9CD3", "#6B8E23", "#9370DB", "#20B2AA"];
 const avatarColor = (s: string) => AVATAR_COLORS[(s?.charCodeAt(0) || 0) % AVATAR_COLORS.length];
@@ -83,16 +83,18 @@ export default function AdminAbonnementsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const standard  = merchants.filter(m => m.plan === "standard");
   const pro       = merchants.filter(m => m.plan === "pro");
   const business  = merchants.filter(m => m.plan === "business");
-  const totalPaid = pro.length + business.length;
-  const mrr       = pro.length * 80 + business.length * 150;
+  const totalPaid = standard.length + pro.length + business.length;
+  const mrr       = standard.length * 50 + pro.length * 80 + business.length * 150;
   const arr       = mrr * 12;
   const convRate  = stats?.conversionRate ?? 0;
 
   const PLAN_BARS = [
-    { label: "Pro",      count: pro.length,      price: 80,  color: GOLD, bg: "rgba(184,135,58,0.15)" },
-    { label: "Business", count: business.length, price: 150, color: INK,  bg: "rgba(11,15,14,0.08)"   },
+    { label: "Standard", count: standard.length, price: 50,  color: "#6B6B6B", bg: "#F0EDE8"              },
+    { label: "Pro",      count: pro.length,      price: 80,  color: GOLD,      bg: "rgba(184,135,58,0.15)" },
+    { label: "Business", count: business.length, price: 150, color: INK,       bg: "rgba(11,15,14,0.08)"   },
   ];
 
   const thStyle: React.CSSProperties = {
@@ -145,7 +147,7 @@ export default function AdminAbonnementsPage() {
             {[
               { icon: Users,      label: "Comptes payants",            value: totalPaid.toLocaleString("fr-FR") },
               { icon: TrendingUp, label: "MRR",                        value: fmtEur(mrr)                       },
-              { icon: BarChart2,  label: "Taux conversion Free → Pro", value: `${convRate}%`                    },
+              { icon: BarChart2,  label: "Taux conversion Standard → Pro", value: `${convRate}%`                    },
               { icon: CreditCard, label: "ARR projeté",                value: fmtEur(arr)                       },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 24 }}>

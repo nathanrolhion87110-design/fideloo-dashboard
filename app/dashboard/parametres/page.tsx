@@ -14,7 +14,7 @@ const GOLD = "#B8873A"; const GS = "rgba(184,135,58,0.10)"; const GB = "rgba(184
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-interface PlanStatus { plan: "free" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
+interface PlanStatus { plan: "standard" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
 interface MerchantUpdate {
   business_name?: string; business_type?: string;
   primary_color?: string; reward_threshold?: number; reward_description?: string;
@@ -101,7 +101,7 @@ function SettingsPage() {
     if (!merchant) return;
     api.get<PlanStatus>(`/stripe/status/${merchant.id}`)
       .then((r) => setPlanStatus(r.data))
-      .catch(() => setPlanStatus({ plan: "free", plan_expires_at: null, has_stripe_customer: false }));
+      .catch(() => setPlanStatus({ plan: "standard", plan_expires_at: null, has_stripe_customer: false }));
     api.get<{ length: number } | unknown[]>(`/customers/${merchant.id}`)
       .then((r) => setCustomerCount(Array.isArray(r.data) ? r.data.length : 0))
       .catch(() => setCustomerCount(0));

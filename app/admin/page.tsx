@@ -15,7 +15,7 @@ const API  = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 interface Stats {
   totalMerchants: number;
   proMerchants: number;
-  freeMerchants: number;
+  standardMerchants: number;
   totalCustomers: number;
   totalTransactions: number;
   newMerchantsThisMonth: number;
@@ -52,7 +52,7 @@ const initials    = (s: string) => (s || "??").slice(0, 2).toUpperCase();
 const fmtDate     = (d: string) => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 const fmtEur      = (n: number) => `${n.toLocaleString("fr-FR")} €`;
 
-const PLAN_LABELS: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
+const PLAN_LABELS: Record<string, string> = { standard: "Standard", pro: "Pro", business: "Business" };
 const planBadge = (plan: string): React.CSSProperties => ({
   display: "inline-block", padding: "2px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
   background: plan === "pro" ? "rgba(184,135,58,0.18)" : plan === "business" ? "rgba(11,15,14,0.10)" : "#F0EDE8",
@@ -104,7 +104,7 @@ export default function AdminPage() {
     if (lastSec >= 30) load();
   }, [lastSec, load]);
 
-  const mrr = stats ? stats.proMerchants * 80 + stats.freeMerchants * 0 : 0;
+  const mrr = stats ? stats.standardMerchants * 50 + stats.proMerchants * 80 : 0;
 
   const KPIS = stats ? [
     { icon: Users,       label: "Total commerçants",  value: stats.totalMerchants.toLocaleString("fr-FR"),   sub: `+${stats.newMerchantsThisMonth} ce mois`,   subColor: "#22C55E" },
@@ -114,8 +114,8 @@ export default function AdminPage() {
   ] : [];
 
   const planDist = stats ? [
-    { label: "Pro",      count: stats.proMerchants,   total: stats.totalMerchants, barColor: GOLD,     bg: "rgba(184,135,58,0.15)" },
-    { label: "Free",     count: stats.freeMerchants,  total: stats.totalMerchants, barColor: "#6B6B6B", bg: "#F0EDE8"              },
+    { label: "Pro",      count: stats.proMerchants,      total: stats.totalMerchants, barColor: GOLD,      bg: "rgba(184,135,58,0.15)" },
+    { label: "Standard", count: stats.standardMerchants, total: stats.totalMerchants, barColor: "#6B6B6B", bg: "#F0EDE8"              },
   ] : [];
 
   const dateStr = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });

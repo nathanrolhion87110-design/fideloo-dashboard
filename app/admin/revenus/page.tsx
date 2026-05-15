@@ -13,7 +13,7 @@ const API   = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 interface Stats {
   totalMerchants: number;
   proMerchants: number;
-  freeMerchants: number;
+  standardMerchants: number;
   totalCustomers: number;
   totalTransactions: number;
   newMerchantsThisMonth: number;
@@ -32,8 +32,8 @@ interface Merchant {
   customer_count: number;
 }
 
-const PLAN_MRR: Record<string, number>    = { free: 0, pro: 80, business: 150 };
-const PLAN_LABELS: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
+const PLAN_MRR: Record<string, number>    = { standard: 50, pro: 80, business: 150 };
+const PLAN_LABELS: Record<string, string> = { standard: "Standard", pro: "Pro", business: "Business" };
 
 const AVATAR_COLORS = ["#B8873A", "#4B9CD3", "#6B8E23", "#9370DB", "#20B2AA"];
 const avatarColor = (s: string) => AVATAR_COLORS[(s?.charCodeAt(0) || 0) % AVATAR_COLORS.length];
@@ -74,16 +74,17 @@ export default function AdminRevenusPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const standard   = merchants.filter(m => m.plan === "standard").length;
   const pro        = merchants.filter(m => m.plan === "pro").length;
   const business   = merchants.filter(m => m.plan === "business").length;
-  const mrr        = pro * 80 + business * 150;
+  const mrr        = standard * 50 + pro * 80 + business * 150;
   const arr        = mrr * 12;
   const arpu       = merchants.length > 0 ? Math.round(mrr / merchants.length) : 0;
 
   const PLAN_ROWS = [
-    { label: "Standard", price: 50,  count: 0,        color: "#6B6B6B", bg: "#F0EDE8"              },
-    { label: "Pro",      price: 80,  count: pro,      color: GOLD,     bg: "rgba(184,135,58,0.15)" },
-    { label: "Business", price: 150, count: business, color: INK,      bg: "rgba(11,15,14,0.08)"   },
+    { label: "Standard", price: 50,  count: standard, color: "#6B6B6B", bg: "#F0EDE8"              },
+    { label: "Pro",      price: 80,  count: pro,      color: GOLD,      bg: "rgba(184,135,58,0.15)" },
+    { label: "Business", price: 150, count: business, color: INK,       bg: "rgba(11,15,14,0.08)"   },
   ];
 
   const thStyle: React.CSSProperties = { padding: "12px 16px", background: "#F5F3EE", fontSize: 11, fontWeight: 700, color: GRAY, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "left", borderBottom: `1px solid ${BORD}` };

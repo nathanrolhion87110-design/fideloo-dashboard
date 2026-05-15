@@ -13,7 +13,7 @@ const BORD = "#E0DDD6";
 const CARD = "#FFFFFF";
 const CARD2 = "#F5F3EE";
 
-interface PlanStatus { plan: "free" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
+interface PlanStatus { plan: "standard" | "pro"; plan_expires_at: string | null; has_stripe_customer: boolean; }
 
 function FacturationContent() {
   const { merchant } = useAuth();
@@ -25,7 +25,7 @@ function FacturationContent() {
     if (!merchant) return;
     api.get<PlanStatus>(`/stripe/status/${merchant.id}`)
       .then(r => setPlanStatus(r.data))
-      .catch(() => setPlanStatus({ plan: "free", plan_expires_at: null, has_stripe_customer: false }));
+      .catch(() => setPlanStatus({ plan: "standard", plan_expires_at: null, has_stripe_customer: false }));
   }, [merchant]);
 
   const handlePortal = async () => {

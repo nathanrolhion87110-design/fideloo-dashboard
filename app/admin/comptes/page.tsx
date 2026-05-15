@@ -24,10 +24,10 @@ interface Merchant {
   transaction_count: number;
 }
 
-const PLANS = ["free", "pro", "business"];
-const PLAN_LABELS: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
-const PLAN_MRR: Record<string, number>    = { free: 0, pro: 80, business: 150 };
-const PLAN_LIMIT: Record<string, number>  = { free: 1500, pro: 1500, business: 5000 };
+const PLANS = ["standard", "pro", "business"];
+const PLAN_LABELS: Record<string, string> = { standard: "Standard", pro: "Pro", business: "Business" };
+const PLAN_MRR: Record<string, number>    = { standard: 50, pro: 80, business: 150 };
+const PLAN_LIMIT: Record<string, number>  = { standard: 1500, pro: 1500, business: 5000 };
 
 const AVATAR_COLORS = ["#B8873A", "#4B9CD3", "#6B8E23", "#9370DB", "#20B2AA", "#CD5C5C"];
 const avatarColor = (s: string) => AVATAR_COLORS[(s?.charCodeAt(0) || 0) % AVATAR_COLORS.length];
@@ -58,7 +58,7 @@ async function adminFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-const FILTER_PILLS = ["Tous", "Free", "Pro", "Business"];
+const FILTER_PILLS = ["Tous", "Standard", "Pro", "Business"];
 
 export default function AdminComptesPage() {
   const [merchants, setMerchants]     = useState<Merchant[]>([]);
@@ -335,7 +335,7 @@ export default function AdminComptesPage() {
                   background: editPlan === p ? "rgba(184,135,58,0.10)" : CARD, color: INK,
                   fontWeight: editPlan === p ? 700 : 500, fontSize: 14, cursor: "pointer", textAlign: "left",
                 }}>
-                  {PLAN_LABELS[p]} {PLAN_MRR[p] > 0 ? `· ${PLAN_MRR[p]} €/mois` : "· Gratuit"}
+                  {PLAN_LABELS[p]} · {PLAN_MRR[p]} €/mois
                 </button>
               ))}
             </div>

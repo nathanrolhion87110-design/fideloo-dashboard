@@ -36,10 +36,10 @@ export default function CGU() {
             </p>
           </Section>
 
-          <Section title="Article 3 — Plan Gratuit">
+          <Section title="Article 3 — Plan Standard">
             <p className="text-text-muted">
-              Le Plan Gratuit permet de gérer <span className="text-text-main">jusqu&apos;à 50 clients</span> pour un (1) commerce,
-              sans engagement. Au-delà, le Plan Pro est requis.
+              Le Plan Standard (50 €/mois) permet de gérer <span className="text-text-main">jusqu&apos;à 1 500 clients</span> pour un (1) commerce,
+              sans engagement. Au-delà, le Plan Business est requis.
             </p>
           </Section>
 
@@ -56,7 +56,7 @@ export default function CGU() {
             <p className="text-text-muted">
               Le paiement est traité par <span className="text-text-main">Stripe Payments Europe Ltd</span>.
               Le prélèvement est mensuel et automatique. Aucune donnée bancaire n&apos;est stockée par Fideloo.
-              En cas d&apos;échec de paiement, le compte repasse automatiquement en Plan Gratuit.
+              En cas d&apos;échec de paiement, le compte repasse automatiquement en Plan Standard.
             </p>
           </Section>
 
