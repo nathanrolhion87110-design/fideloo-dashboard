@@ -362,11 +362,11 @@ const Skel = ({ h = 20, w = "100%" }: { h?: number; w?: number | string }) => (
 ══════════════════════════════════════════════════════════ */
 function DashboardStandard({ merchant, customers, transactions, loading }: SharedProps) {
   const now = new Date();
-  const CLIENT_LIMIT = 200;
+  const CLIENT_LIMIT = 1500;
   const txPos = transactions.filter(tx => tx.points > 0);
   const totalClients = customers.length;
   const pointsDistributed = txPos.reduce((s, tx) => s + tx.points, 0);
-  const isNearLimit = totalClients >= 180;
+  const isNearLimit = totalClients >= 1350;
   const progressPct = Math.min((totalClients / CLIENT_LIMIT) * 100, 100);
 
   const recentCustomers = useMemo(() =>

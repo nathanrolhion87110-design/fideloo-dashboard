@@ -77,7 +77,7 @@ const translations = {
           sub: "Pour un commerce indépendant qui démarre",
           cta: "Démarrer ↗",
           href: "/register?plan=trial",
-          features: ["1 commerce", "Jusqu'à 200 clients", "Apple Wallet & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email (72h)"],
+          features: ["1 commerce", "Jusqu'à 1 500 clients", "Apple Wallet & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email (72h)"],
         },
         {
           name: "Pro",

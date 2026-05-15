@@ -28,7 +28,7 @@ const plans = [
     highlight: false,
     features: [
       { label: "1 commerce", ok: true },
-      { label: "Jusqu'à 200 clients", ok: true },
+      { label: "Jusqu'à 1 500 clients", ok: true },
       { label: "Apple Wallet & Google Wallet", ok: true },
       { label: "QR code personnalisé", ok: true },
       { label: "Analytics de base", ok: true },

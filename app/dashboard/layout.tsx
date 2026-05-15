@@ -51,15 +51,15 @@ const NAV: NavSection[] = [
     label: "Croissance",
     items: [
       { name: "Campagnes",      href: "/dashboard/notifications",  icon: Megaphone },
-      { name: "Automations",    href: "#",                         icon: Zap,      soon: true },
-      { name: "Intégrations",   href: "#",                         icon: Plug,     soon: true },
+      { name: "Automations",    href: "/dashboard/automations",    icon: Zap      },
+      { name: "Intégrations",   href: "/dashboard/integrations",   icon: Plug     },
     ],
   },
   {
     label: "Gestion",
     items: [
       { name: "Transactions",   href: "/dashboard/transactions",   icon: History },
-      { name: "Facturation",    href: "#",                         icon: Receipt,  soon: true },
+      { name: "Facturation",    href: "/dashboard/facturation",    icon: Receipt  },
       { name: "Paramètres",     href: "/dashboard/parametres",     icon: Settings },
     ],
   },

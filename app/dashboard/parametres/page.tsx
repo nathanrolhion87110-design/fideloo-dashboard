@@ -440,106 +440,107 @@ function SettingsPage() {
 
             {/* Abonnement */}
             {activeTab === "abonnement" && (
-              <div style={{ maxWidth: 560 }}>
-                {!planStatus ? (
-                  <div style={{ color: GRAY, fontSize: 14 }}>Chargement du statut d&apos;abonnement…</div>
-                ) : planStatus.plan === "pro" ? (
-                  <div style={{ padding: 28, borderRadius: 20, background: GS, border: `1px solid ${GB}` }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 24 }}>
-                      <div>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700, background: GOLD, color: "#FFFFFF", marginBottom: 10 }}>
-                          <Sparkles style={{ width: 12, height: 12 }} /> Plan Pro
-                        </span>
-                        <h3 style={{ fontSize: 22, fontWeight: 700, color: INK }}>Votre plan Pro est actif</h3>
-                        {planStatus.plan_expires_at && (
-                          <p style={{ fontSize: 13, color: GRAY, marginTop: 6 }}>
-                            Prochaine échéance : <strong style={{ color: INK }}>{new Date(planStatus.plan_expires_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</strong>
-                          </p>
-                        )}
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <span style={{ fontSize: 28, fontWeight: 700, color: INK }}>70€</span>
-                        <span style={{ fontSize: 14, color: GRAY }}>/mois</span>
-                      </div>
+              <div>
+                {/* Plan actuel */}
+                {planStatus && (
+                  <div style={{ padding: 24, background: CARD2, border: `1px solid ${BORD}`, borderRadius: 16, marginBottom: 28 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700, background: "rgba(184,135,58,0.20)", border: "1px solid rgba(184,135,58,0.40)", color: GOLD }}>
+                        Plan actif : {planStatus.plan === "pro" ? "Pro" : "Standard"}
+                      </span>
                     </div>
-                    <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-                      {["Clients illimités", "Notifications push", "Mise à jour temps réel", "Support prioritaire"].map((f) => (
-                        <li key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: INK }}>
-                          <CheckCircle2 style={{ width: 16, height: 16, color: GOLD, flexShrink: 0 }} /> {f}
+                    {planStatus.plan_expires_at && (
+                      <p style={{ fontSize: 13, color: GRAY, marginBottom: 16 }}>
+                        Essai gratuit se termine le <strong style={{ color: INK }}>{new Date(planStatus.plan_expires_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</strong>
+                      </p>
+                    )}
+                    {customerCount !== null && (
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: GRAY, marginBottom: 6 }}>
+                          <span>Clients utilisés</span>
+                          <span><strong style={{ color: INK }}>{customerCount}</strong> / 1 500</span>
+                        </div>
+                        <div style={{ height: 6, borderRadius: 999, overflow: "hidden", background: BORD }}>
+                          <div style={{ height: "100%", borderRadius: 999, transition: "width 0.5s ease", width: `${Math.min((customerCount / 1500) * 100, 100)}%`, background: customerCount >= 1500 ? "#DC2626" : customerCount >= 1200 ? "#F59E0B" : GOLD }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 3 plans */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+
+                  {/* Standard */}
+                  <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: GRAY, marginBottom: 8, fontFamily: "var(--font-sora, system-ui)" }}>Standard</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 20 }}>
+                      <span style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 32, fontWeight: 700, color: INK }}>50€</span>
+                      <span style={{ fontSize: 13, color: GRAY }}>/mois</span>
+                    </div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                      {["1 commerce", "Jusqu'à 1 500 clients", "Apple & Google Wallet", "QR code personnalisé", "Analytics de base", "Support email (72h)"].map(f => (
+                        <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: GRAY }}>
+                          <span style={{ color: GOLD, flexShrink: 0, marginTop: 1 }}>✓</span> {f}
                         </li>
                       ))}
                     </ul>
-                    <button onClick={handleManageSubscription} style={{ ...btnSecondary, width: "100%", justifyContent: "center" }}>
-                      <ExternalLink style={{ width: 15, height: 15 }} /> Gérer mon abonnement
-                    </button>
-                    <button onClick={handleManageSubscription}
-                      style={{ display: "block", margin: "12px auto 0", background: "transparent", border: "none", fontSize: 13, color: GRAY, cursor: "pointer", textDecoration: "underline" }}>
-                      Annuler mon abonnement
+                    <button
+                      disabled={planStatus?.plan !== "pro" ? false : true}
+                      style={{ padding: "12px 20px", background: planStatus?.plan === "pro" ? BORD : CARD2, color: planStatus?.plan === "pro" ? GRAY : INK, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: planStatus?.plan === "pro" ? "default" : "pointer" }}>
+                      {planStatus?.plan === "pro" ? "Plan actuel" : "Choisir Standard"}
                     </button>
                   </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    {/* Free plan current */}
-                    <div style={{ padding: 24, borderRadius: 16, background: CARD2, border: `1px solid ${BORD}` }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                        <div>
-                          <h3 style={{ fontSize: 18, fontWeight: 700, color: INK }}>Plan Gratuit</h3>
-                          <p style={{ fontSize: 13, color: GRAY, marginTop: 2 }}>Limité à 50 clients</p>
-                        </div>
-                        <div style={{ fontSize: 22, fontWeight: 700, color: INK }}>0€<span style={{ fontSize: 14, fontWeight: 400, color: GRAY }}>/mois</span></div>
-                      </div>
-                      {customerCount !== null && (
-                        <>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 500, color: GRAY, marginBottom: 6 }}>
-                            <span>Clients utilisés</span>
-                            <span><strong style={{ color: INK }}>{customerCount}</strong> / 50</span>
-                          </div>
-                          <div style={{ height: 6, borderRadius: 999, overflow: "hidden", background: BORD }}>
-                            <div style={{ height: "100%", borderRadius: 999, transition: "width 0.5s ease",
-                              width: `${Math.min((customerCount / 50) * 100, 100)}%`,
-                              background: customerCount >= 50 ? "#DC2626" : customerCount >= 40 ? "#F59E0B" : GOLD }} />
-                          </div>
-                          {customerCount >= 50 && (
-                            <p style={{ fontSize: 12, color: "#DC2626", marginTop: 10 }}>
-                              ⚠️ Limite atteinte — passez au Plan Pro pour continuer à enregistrer des clients.
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </div>
 
-                    {/* Pro CTA */}
-                    <div style={{ padding: 28, borderRadius: 20, background: INK, border: `2px solid ${GOLD}`, position: "relative" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
-                        <div>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700, background: GOLD, color: "#FFFFFF", marginBottom: 10 }}>
-                            <Sparkles style={{ width: 12, height: 12 }} /> Recommandé
-                          </span>
-                          <h3 style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF" }}>Plan Pro</h3>
-                          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>Pour scaler votre fidélité</p>
-                        </div>
-                        <div style={{ textAlign: "right" }}>
-                          <span style={{ fontSize: 28, fontWeight: 700, color: GOLD }}>70€</span>
-                          <span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>/mois</span>
-                        </div>
-                      </div>
-                      <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-                        {["Clients illimités", "Notifications push", "Mise à jour temps réel", "Analytics avancés", "Support prioritaire"].map((f) => (
-                          <li key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
-                            <CheckCircle2 style={{ width: 16, height: 16, color: GOLD, flexShrink: 0 }} /> {f}
-                          </li>
-                        ))}
-                      </ul>
-                      <button onClick={handleUpgrade} disabled={checkoutLoading}
-                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "16px 24px", background: GOLD, color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: checkoutLoading ? 0.7 : 1 }}>
-                        {checkoutLoading ? "Redirection vers Stripe…" : "Passer au Plan Pro — 70€/mois"}
-                      </button>
-                      <p style={{ fontSize: 12, textAlign: "center", color: "rgba(255,255,255,0.4)", marginTop: 12 }}>
-                        Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment
-                      </p>
+                  {/* Pro */}
+                  <div style={{ background: INK, border: `1px solid ${GOLD}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", padding: "4px 12px", borderRadius: 999, fontSize: 11, fontWeight: 700, background: "rgba(184,135,58,0.20)", border: "1px solid rgba(184,135,58,0.40)", color: GOLD, marginBottom: 8, alignSelf: "flex-start" }}>
+                      RECOMMANDÉ
                     </div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 8, fontFamily: "var(--font-sora, system-ui)" }}>Pro</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 20 }}>
+                      <span style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 32, fontWeight: 700, color: "#FFFFFF" }}>80€</span>
+                      <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>/mois</span>
+                    </div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                      {["Jusqu'à 3 commerces", "5 000 clients", "Analytics avancés", "5 campagnes push/mois", "Gestion staff", "Support prioritaire (48h)"].map(f => (
+                        <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+                          <span style={{ color: GOLD, flexShrink: 0, marginTop: 1 }}>✓</span> {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={planStatus?.plan !== "pro" ? handleUpgrade : undefined}
+                      disabled={checkoutLoading || planStatus?.plan === "pro"}
+                      style={{ padding: "12px 20px", background: planStatus?.plan === "pro" ? "rgba(184,135,58,0.3)" : GOLD, color: INK, border: "none", borderRadius: 999, fontSize: 14, fontWeight: 700, cursor: planStatus?.plan === "pro" ? "default" : "pointer", opacity: checkoutLoading ? 0.7 : 1 }}>
+                      {planStatus?.plan === "pro" ? "Plan actuel" : checkoutLoading ? "Redirection…" : "Passer au Pro — 80€/mois"}
+                    </button>
                   </div>
-                )}
+
+                  {/* Business */}
+                  <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: GRAY, marginBottom: 8, fontFamily: "var(--font-sora, system-ui)" }}>Business</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 20 }}>
+                      <span style={{ fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", fontSize: 32, fontWeight: 700, color: INK }}>150€</span>
+                      <span style={{ fontSize: 13, color: GRAY }}>/mois</span>
+                    </div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                      {["Commerces illimités", "Clients illimités", "Analytics multi-sites", "Campagnes illimitées", "API & webhooks", "Mini-jeu avis Google", "Account manager", "Support (24h)"].map(f => (
+                        <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: GRAY }}>
+                          <span style={{ color: GOLD, flexShrink: 0, marginTop: 1 }}>✓</span> {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <a href="mailto:contact@fideloo.fr"
+                      style={{ display: "block", textAlign: "center", padding: "12px 20px", background: INK, color: "#FFFFFF", border: "none", borderRadius: 999, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+                      Nous contacter
+                    </a>
+                  </div>
+                </div>
+
+                <p style={{ fontSize: 12, color: GRAY, textAlign: "center", marginTop: 20 }}>
+                  Paiement sécurisé par Stripe · Sans engagement · Annulable à tout moment
+                </p>
               </div>
             )}
 
