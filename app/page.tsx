@@ -351,147 +351,162 @@ function DiceGame() {
 }
 
 /* ─── PRODUCT SHOWCASE ──────────────────────────────────────────────────── */
-const SHOWCASE_STEPS = [
-  {
-    label: "Étape 1/4", title: "Client scanne le QR code",
-    content: (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "20px 0" }}>
-        <QrCode size={72} color={GOLD} />
-        <div style={{ position: "relative", width: "100%", height: 4, background: "rgba(184,135,58,0.15)", borderRadius: 2, overflow: "hidden" }}>
-          <div style={{ position: "absolute", inset: 0, background: GOLD, borderRadius: 2, animation: "scanLine 1.8s ease-in-out infinite" }} />
-        </div>
-        <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>Scan en cours…</span>
+function ShowStep1() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: 24, animation: "fadeIn 0.3s ease" }}>
+      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <QrCode size={80} color={GOLD} />
+        <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 2, background: "rgba(184,135,58,0.6)", animation: "scanLine 1.8s ease-in-out infinite", boxShadow: "0 0 8px rgba(184,135,58,0.8)" }} />
       </div>
-    ),
-  },
-  {
-    label: "Étape 2/4", title: "Inscription en 10 secondes",
-    content: (
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
-        {["marie@email.fr", ""].map((v, i) => (
-          <div key={i} style={{ padding: "10px 14px", background: "rgba(255,255,255,0.06)", border: `1px solid ${i === 0 ? GOLD : BORD}`, borderRadius: 8, fontSize: 13, color: i === 0 ? GOLD : GRAY, fontFamily: "var(--font-sora, system-ui)", animation: i === 0 ? "typeIn 0.6s ease" : "none" }}>
-            {i === 0 ? v : "Nom (optionnel)"}
-          </div>
-        ))}
-        <div style={{ padding: "10px 14px", background: GOLD, borderRadius: 8, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#0B0F0E", fontFamily: "var(--font-sora, system-ui)" }}>
-          Rejoindre le programme →
+      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-sora, system-ui)", textAlign: "center" }}>Scannez pour rejoindre le programme</span>
+    </div>
+  );
+}
+
+function ShowStep2() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 24, animation: "fadeIn 0.3s ease" }}>
+      <div style={{ background: "#1A1A1A", borderRadius: 20, padding: 16, width: 180, border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textAlign: "center", marginBottom: 12, fontFamily: "var(--font-sora, system-ui)" }}>Programme fidélité</div>
+        <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 10px", marginBottom: 8, border: `1px solid ${GOLD}` }}>
+          <div style={{ fontSize: 11, color: GOLD, fontFamily: "var(--font-sora, system-ui)", animation: "typeIn 1.5s ease" }}>marie@gmail.com</div>
         </div>
-      </div>
-    ),
-  },
-  {
-    label: "Étape 3/4", title: "Carte dans le Wallet",
-    content: (
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <div style={{ background: "#0B0F0E", borderRadius: 16, padding: 20, width: 200, animation: "popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)" }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
-          <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 14 }}>Le Bon Café</div>
-          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} style={{ width: 20, height: 20, borderRadius: "50%", background: i === 0 ? GOLD : "rgba(255,255,255,0.1)", transition: "background 0.3s", animation: i === 0 ? "dotPop 0.4s ease" : "none" }} />
-            ))}
-          </div>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)" }}>1 / 10 points</div>
+        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "8px 10px", marginBottom: 12, border: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-sora, system-ui)" }}>Nom (optionnel)</div>
+        </div>
+        <div style={{ background: GOLD, borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#0B0F0E", fontFamily: "var(--font-sora, system-ui)" }}>Rejoindre →</div>
         </div>
       </div>
-    ),
-  },
-  {
-    label: "Étape 4/4", title: "Points augmentent",
-    content: (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", justifyContent: "center" }}>
+    </div>
+  );
+}
+
+function ShowStep3() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 24, gap: 12, animation: "fadeIn 0.3s ease" }}>
+      <div style={{ background: "linear-gradient(135deg, #1A1A1A, #0B0F0E)", borderRadius: 16, padding: 20, width: 200, border: "1px solid rgba(184,135,58,0.2)" }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
+        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 15, fontWeight: 600, color: "#FFFFFF", marginBottom: 14 }}>Le Bon Café</div>
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} style={{ width: 24, height: 24, borderRadius: "50%", background: i < 7 ? GOLD : "rgba(255,255,255,0.1)", animation: i < 7 ? `dotPop ${0.1 + i * 0.08}s ease` : "none" }} />
+            <div key={i} style={{ width: 16, height: 16, borderRadius: "50%", background: i === 0 ? GOLD : "rgba(255,255,255,0.1)" }} />
           ))}
         </div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: GOLD, fontFamily: "var(--font-playfair, Georgia, serif)", animation: "countUp 0.8s ease" }}>7 / 10</div>
-        <div style={{ padding: "6px 16px", background: "rgba(184,135,58,0.15)", border: `1px solid rgba(184,135,58,0.3)`, borderRadius: 999, fontSize: 12, color: GOLD, fontFamily: "var(--font-sora, system-ui)" }}>
-          +3 avant la récompense !
-        </div>
+        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)" }}>1 / 10 points</div>
       </div>
-    ),
-  },
+      <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 999, padding: "6px 14px", animation: "fadeIn 0.5s ease 0.5s both" }}>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 600, fontFamily: "var(--font-sora, system-ui)" }}>Ajouté au Wallet</span>
+      </div>
+    </div>
+  );
+}
+
+function ShowStep4() {
+  const [pts, setPts] = useState(240);
+  useEffect(() => {
+    setPts(240);
+    let count = 240;
+    const t = setInterval(() => {
+      count += 2;
+      setPts(count);
+      if (count >= 280) clearInterval(t);
+    }, 80);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: 24, animation: "fadeIn 0.3s ease" }}>
+      <div style={{ opacity: 0.9, background: "linear-gradient(135deg, #1A1A1A, #0B0F0E)", borderRadius: 16, padding: 20, width: 200, border: "1px solid rgba(184,135,58,0.2)" }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
+        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 15, fontWeight: 600, color: "#FFFFFF", marginBottom: 10 }}>Le Bon Café</div>
+        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 28, fontWeight: 700, color: GOLD, lineHeight: 1 }}>{pts}</div>
+        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)", marginTop: 2 }}>points accumulés</div>
+      </div>
+      <div style={{
+        position: "absolute", top: 16, right: 16,
+        background: WHITE, borderRadius: 12, padding: "6px 10px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+        animation: "slideInRight 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.5s both",
+        display: "flex", alignItems: "center", gap: 6,
+      }}>
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E", flexShrink: 0 }} />
+        <span style={{ fontSize: 10, fontWeight: 600, color: INK, fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap" }}>+40 pts gagnés</span>
+      </div>
+    </div>
+  );
+}
+
+const SHOWCASE_NAV = [
+  { num: "01", title: "Client scanne le QR", desc: "En caisse, le client scanne le QR code affiché. Aucune app à télécharger." },
+  { num: "02", title: "Inscription en 10 sec", desc: "Il entre son email ou son numéro. C'est tout. La carte s'ajoute dans son Wallet." },
+  { num: "03", title: "Carte dans le Wallet", desc: "La carte de fidélité est ajoutée automatiquement à Apple Wallet ou Google Wallet." },
+  { num: "04", title: "Points qui s'accumulent", desc: "À chaque passage, ses points augmentent. Votre chiffre d'affaires aussi." },
 ];
+
+const STEP_VISUALS = [ShowStep1, ShowStep2, ShowStep3, ShowStep4];
 
 function ProductShowcase() {
   const [active, setActive] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [animKey, setAnimKey] = useState(0);
 
-  const clearAll = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (progressRef.current) clearInterval(progressRef.current);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive(prev => (prev + 1) % SHOWCASE_NAV.length);
+      setAnimKey(k => k + 1);
+    }, 4000);
+    return () => clearInterval(timer);
   }, []);
 
-  const startPlay = useCallback(() => {
-    clearAll();
-    setPlaying(true);
-    setProgress(0);
-    setActive(0);
-    let step = 0;
-    let prog = 0;
-    progressRef.current = setInterval(() => {
-      prog += 100 / (3000 / 50);
-      setProgress(Math.min(prog, 100));
-    }, 50);
-    intervalRef.current = setInterval(() => {
-      step = (step + 1) % SHOWCASE_STEPS.length;
-      setActive(step);
-      setProgress(0);
-      prog = 0;
-      if (step === 0) {
-        clearAll();
-        setPlaying(false);
-      }
-    }, 3000);
-  }, [clearAll]);
-
-  useEffect(() => () => clearAll(), [clearAll]);
-
-  const step = SHOWCASE_STEPS[active];
+  const StepVisual = STEP_VISUALS[active];
 
   return (
-    <div style={{ marginTop: 48, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
-      <div style={{
-        background: "#111111", border: `1px solid rgba(184,135,58,0.2)`, borderRadius: 20,
-        overflow: "hidden", width: "100%", maxWidth: 440,
-      }}>
-        {/* Top bar */}
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: GOLD, letterSpacing: "0.1em", fontFamily: "var(--font-sora, system-ui)" }}>{step.label}</span>
-          <span style={{ fontSize: 12, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>{step.title}</span>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: "24px 20px", minHeight: 160, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-          {!playing ? (
-            <button
-              onClick={startPlay}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, background: "none", border: "none", cursor: "pointer" }}>
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 0 12px rgba(184,135,58,0.12)` }}>
-                <Play size={22} color="#0B0F0E" fill="#0B0F0E" />
+    <div style={{ marginTop: 48, display: "grid", gridTemplateColumns: "40fr 60fr", gap: 20, alignItems: "stretch" }}>
+      {/* Left: numbered step nav */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {SHOWCASE_NAV.map((step, i) => {
+          const isActive = i === active;
+          return (
+            <div key={i}
+              onClick={() => { setActive(i); setAnimKey(k => k + 1); }}
+              style={{ display: "flex", gap: 12, cursor: "pointer", paddingBottom: i < SHOWCASE_NAV.length - 1 ? 20 : 0, position: "relative" }}>
+              {i < SHOWCASE_NAV.length - 1 && (
+                <div style={{ position: "absolute", left: 15, top: 32, bottom: 0, width: 1, background: BORD2 }} />
+              )}
+              <div style={{
+                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                background: isActive ? INK : "transparent",
+                border: `1px solid ${isActive ? INK : BORD2}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 10, fontWeight: 700, fontFamily: "var(--font-sora, system-ui)",
+                color: isActive ? WHITE : GRAY,
+                transition: "all 0.25s ease", position: "relative", zIndex: 1,
+              }}>
+                {step.num}
               </div>
-              <span style={{ fontSize: 13, color: GRAY, fontFamily: "var(--font-sora, system-ui)" }}>Voir la démo en action</span>
-            </button>
-          ) : (
-            <div style={{ width: "100%", animation: "fadeInSlide 0.3s ease" }}>{step.content}</div>
-          )}
-        </div>
+              <div style={{ paddingTop: 6, flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: isActive ? INK : GRAY, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.25s", marginBottom: 4 }}>
+                  {step.title}
+                </div>
+                {isActive && (
+                  <>
+                    <div style={{ fontSize: 11, color: GRAY, lineHeight: 1.5, fontFamily: "var(--font-sora, system-ui)", animation: "fadeIn 0.3s ease" }}>
+                      {step.desc}
+                    </div>
+                    <div style={{ marginTop: 8, height: 2, background: BORD2, borderRadius: 1, overflow: "hidden" }}>
+                      <div key={animKey} style={{ height: "100%", background: GOLD, borderRadius: 1, animation: "progressFill 4s linear forwards" }} />
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Progress bar */}
-        <div style={{ height: 3, background: "rgba(255,255,255,0.06)" }}>
-          <div style={{ height: "100%", width: `${playing ? progress : 0}%`, background: GOLD, transition: "width 0.05s linear" }} />
-        </div>
-
-        {/* Step dots */}
-        <div style={{ padding: "12px 20px", display: "flex", gap: 6, justifyContent: "center" }}>
-          {SHOWCASE_STEPS.map((_, i) => (
-            <div key={i} style={{ width: playing && i === active ? 20 : 6, height: 6, borderRadius: 999, background: playing && i === active ? GOLD : "rgba(255,255,255,0.12)", transition: "all 0.25s ease" }} />
-          ))}
-        </div>
+      {/* Right: dark visual area */}
+      <div style={{ background: "#0B0F0E", borderRadius: 16, overflow: "hidden", minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <StepVisual key={animKey} />
       </div>
     </div>
   );
@@ -769,7 +784,7 @@ export default function LandingPage() {
       <main style={{ paddingTop: 64 }}>
 
         {/* ── HERO ────────────────────────────────────────────────────── */}
-        <section style={{ ...px, paddingTop: 80, paddingBottom: 100 }}>
+        <section style={{ ...px, paddingTop: 80, paddingBottom: 80 }}>
           <div style={{ display: "grid", gridTemplateColumns: "60fr 40fr", gap: 48, alignItems: "center", maxWidth: 1200, margin: "0 auto" }} className="hero-grid">
 
             {/* Left */}
@@ -787,7 +802,7 @@ export default function LandingPage() {
               </div>
 
               {/* H1 */}
-              <h1 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, lineHeight: 1.12, marginBottom: 24, fontSize: "clamp(42px, 5.5vw, 78px)" }}>
+              <h1 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontWeight: 400, lineHeight: 1.12, marginBottom: 24, fontSize: "clamp(42px, 5.5vw, 64px)" }}>
                 <span style={{ display: "block" }}>{t.hero.h1a}</span>
                 <em style={{ display: "block", fontStyle: "italic", color: INK }}>{t.hero.h1b}</em>
               </h1>
@@ -876,7 +891,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── FEATURES ────────────────────────────────────────────────── */}
-        <section ref={featuresRef} style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
+        <section ref={featuresRef} style={{ ...px, paddingTop: 96, paddingBottom: 96 }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div style={{ marginBottom: 56 }}>
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: GRAY, marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>
@@ -898,7 +913,7 @@ export default function LandingPage() {
                       style={{
                         borderRight: `1px solid ${BORD2}`,
                         borderBottom: `1px solid ${BORD2}`,
-                        padding: 32,
+                        padding: 28,
                         background: "transparent",
                         cursor: "default",
                         transition: "background 0.2s ease",
@@ -912,7 +927,7 @@ export default function LandingPage() {
                         <Icon size={18} color={GOLD} style={{ flexShrink: 0 }} />
                       </div>
                       <div>
-                        <h3 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 22, fontWeight: 600, color: INK, marginBottom: 12 }}>
+                        <h3 style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 20, fontWeight: 600, color: INK, marginBottom: 12 }}>
                           {item.title}
                         </h3>
                         <p style={{ fontSize: 15, color: GRAY, lineHeight: 1.6 }}>{item.desc}</p>
@@ -1000,7 +1015,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── ROI CALCULATOR ──────────────────────────────────────────── */}
-        <section style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
+        <section style={{ ...px, paddingTop: 96, paddingBottom: 96 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 48 }}>
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: GRAY, marginBottom: 16, fontFamily: "var(--font-sora, system-ui)" }}>
@@ -1019,7 +1034,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── PRICING ─────────────────────────────────────────────────── */}
-        <section ref={pricingRef} style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
+        <section ref={pricingRef} style={{ ...px, paddingTop: 96, paddingBottom: 96 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             {/* Header */}
             <div style={{ textAlign: "center", marginBottom: 48 }}>
@@ -1069,6 +1084,7 @@ export default function LandingPage() {
                     borderRadius: 20, padding: 32,
                     display: "flex", flexDirection: "column",
                     boxShadow: dark ? "0 24px 60px rgba(11,15,14,0.16)" : "none",
+                    transform: dark ? "translateY(-12px)" : undefined,
                   }}>
                     {plan.badge && (
                       <div style={{ textAlign: "center", marginBottom: 12 }}>
@@ -1149,7 +1165,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── FAQ ─────────────────────────────────────────────────────── */}
-        <section ref={faqRef} style={{ ...px, paddingTop: 100, paddingBottom: 100 }}>
+        <section ref={faqRef} style={{ ...px, paddingTop: 96, paddingBottom: 96 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 80, alignItems: "start" }} className="faq-grid">
             {/* Left */}
             <div style={{ position: "sticky", top: 100 }}>
@@ -1171,7 +1187,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── CONTACT ─────────────────────────────────────────────────── */}
-        <section ref={contactRef} id="contact" style={{ ...px, paddingTop: 120, paddingBottom: 120 }}>
+        <section ref={contactRef} id="contact" style={{ ...px, paddingTop: 96, paddingBottom: 96 }}>
           <div style={{ maxWidth: 960, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }} className="contact-grid">
 
             {/* Left */}
@@ -1285,7 +1301,7 @@ export default function LandingPage() {
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}
       <footer style={{ background: INK }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px clamp(24px,6vw,80px) 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "48px clamp(24px,6vw,80px) 32px" }}>
 
           {/* 5-column grid */}
           <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr 1fr 1fr", gap: 40 }} className="footer-grid">
@@ -1408,6 +1424,8 @@ export default function LandingPage() {
         @keyframes dotPop { from { transform: scale(0); } to { transform: scale(1); } }
         @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes progressFill { from { width: 0%; } to { width: 100%; } }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
