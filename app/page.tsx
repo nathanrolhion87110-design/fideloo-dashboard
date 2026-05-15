@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
   Wallet, RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
-  Mail, Clock, Play, TrendingUp, Users, Calculator,
+  Mail, Clock, TrendingUp, Users, Calculator,
 } from "lucide-react";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
@@ -350,167 +350,6 @@ function DiceGame() {
   );
 }
 
-/* ─── PRODUCT SHOWCASE ──────────────────────────────────────────────────── */
-function ShowStep1() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: 24, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <QrCode size={80} color={GOLD} />
-        <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 2, background: "rgba(184,135,58,0.6)", animation: "scanLine 1.8s ease-in-out infinite", boxShadow: "0 0 8px rgba(184,135,58,0.8)" }} />
-      </div>
-      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-sora, system-ui)", textAlign: "center" }}>Scannez pour rejoindre le programme</span>
-    </div>
-  );
-}
-
-function ShowStep2() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 24, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ background: "#1A1A1A", borderRadius: 20, padding: 16, width: 180, border: "1px solid rgba(255,255,255,0.08)" }}>
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textAlign: "center", marginBottom: 12, fontFamily: "var(--font-sora, system-ui)" }}>Programme fidélité</div>
-        <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 8, padding: "8px 10px", marginBottom: 8, border: `1px solid ${GOLD}` }}>
-          <div style={{ fontSize: 11, color: GOLD, fontFamily: "var(--font-sora, system-ui)", animation: "typeIn 1.5s ease" }}>marie@gmail.com</div>
-        </div>
-        <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "8px 10px", marginBottom: 12, border: "1px solid rgba(255,255,255,0.1)" }}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-sora, system-ui)" }}>Nom (optionnel)</div>
-        </div>
-        <div style={{ background: GOLD, borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#0B0F0E", fontFamily: "var(--font-sora, system-ui)" }}>Rejoindre →</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ShowStep3() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 24, gap: 12, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ background: "linear-gradient(135deg, #1A1A1A, #0B0F0E)", borderRadius: 16, padding: 20, width: 200, border: "1px solid rgba(184,135,58,0.2)" }}>
-        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
-        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 15, fontWeight: 600, color: "#FFFFFF", marginBottom: 14 }}>Le Bon Café</div>
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} style={{ width: 16, height: 16, borderRadius: "50%", background: i === 0 ? GOLD : "rgba(255,255,255,0.1)" }} />
-          ))}
-        </div>
-        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)" }}>1 / 10 points</div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 999, padding: "6px 14px", animation: "fadeIn 0.5s ease 0.5s both" }}>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 600, fontFamily: "var(--font-sora, system-ui)" }}>Ajouté au Wallet</span>
-      </div>
-    </div>
-  );
-}
-
-function ShowStep4() {
-  const [pts, setPts] = useState(240);
-  useEffect(() => {
-    setPts(240);
-    let count = 240;
-    const t = setInterval(() => {
-      count += 2;
-      setPts(count);
-      if (count >= 280) clearInterval(t);
-    }, 80);
-    return () => clearInterval(t);
-  }, []);
-  return (
-    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: 24, animation: "fadeIn 0.3s ease" }}>
-      <div style={{ opacity: 0.9, background: "linear-gradient(135deg, #1A1A1A, #0B0F0E)", borderRadius: 16, padding: 20, width: 200, border: "1px solid rgba(184,135,58,0.2)" }}>
-        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>FIDÉLITÉ</div>
-        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 15, fontWeight: 600, color: "#FFFFFF", marginBottom: 10 }}>Le Bon Café</div>
-        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 28, fontWeight: 700, color: GOLD, lineHeight: 1 }}>{pts}</div>
-        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-sora, system-ui)", marginTop: 2 }}>points accumulés</div>
-      </div>
-      <div style={{
-        position: "absolute", top: 16, right: 16,
-        background: WHITE, borderRadius: 12, padding: "6px 10px",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-        animation: "slideInRight 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.5s both",
-        display: "flex", alignItems: "center", gap: 6,
-      }}>
-        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E", flexShrink: 0 }} />
-        <span style={{ fontSize: 10, fontWeight: 600, color: INK, fontFamily: "var(--font-sora, system-ui)", whiteSpace: "nowrap" }}>+40 pts gagnés</span>
-      </div>
-    </div>
-  );
-}
-
-const SHOWCASE_NAV = [
-  { num: "01", title: "Client scanne le QR", desc: "En caisse, le client scanne le QR code affiché. Aucune app à télécharger." },
-  { num: "02", title: "Inscription en 10 sec", desc: "Il entre son email ou son numéro. C'est tout. La carte s'ajoute dans son Wallet." },
-  { num: "03", title: "Carte dans le Wallet", desc: "La carte de fidélité est ajoutée automatiquement à Apple Wallet ou Google Wallet." },
-  { num: "04", title: "Points qui s'accumulent", desc: "À chaque passage, ses points augmentent. Votre chiffre d'affaires aussi." },
-];
-
-const STEP_VISUALS = [ShowStep1, ShowStep2, ShowStep3, ShowStep4];
-
-function ProductShowcase() {
-  const [active, setActive] = useState(0);
-  const [animKey, setAnimKey] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActive(prev => (prev + 1) % SHOWCASE_NAV.length);
-      setAnimKey(k => k + 1);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const StepVisual = STEP_VISUALS[active];
-
-  return (
-    <div style={{ marginTop: 48, display: "grid", gridTemplateColumns: "40fr 60fr", gap: 20, alignItems: "stretch" }}>
-      {/* Left: numbered step nav */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {SHOWCASE_NAV.map((step, i) => {
-          const isActive = i === active;
-          return (
-            <div key={i}
-              onClick={() => { setActive(i); setAnimKey(k => k + 1); }}
-              style={{ display: "flex", gap: 12, cursor: "pointer", paddingBottom: i < SHOWCASE_NAV.length - 1 ? 20 : 0, position: "relative" }}>
-              {i < SHOWCASE_NAV.length - 1 && (
-                <div style={{ position: "absolute", left: 15, top: 32, bottom: 0, width: 1, background: BORD2 }} />
-              )}
-              <div style={{
-                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-                background: isActive ? INK : "transparent",
-                border: `1px solid ${isActive ? INK : BORD2}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 10, fontWeight: 700, fontFamily: "var(--font-sora, system-ui)",
-                color: isActive ? WHITE : GRAY,
-                transition: "all 0.25s ease", position: "relative", zIndex: 1,
-              }}>
-                {step.num}
-              </div>
-              <div style={{ paddingTop: 6, flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: isActive ? INK : GRAY, fontFamily: "var(--font-sora, system-ui)", transition: "color 0.25s", marginBottom: 4 }}>
-                  {step.title}
-                </div>
-                {isActive && (
-                  <>
-                    <div style={{ fontSize: 11, color: GRAY, lineHeight: 1.5, fontFamily: "var(--font-sora, system-ui)", animation: "fadeIn 0.3s ease" }}>
-                      {step.desc}
-                    </div>
-                    <div style={{ marginTop: 8, height: 2, background: BORD2, borderRadius: 1, overflow: "hidden" }}>
-                      <div key={animKey} style={{ height: "100%", background: GOLD, borderRadius: 1, animation: "progressFill 4s linear forwards" }} />
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Right: dark visual area */}
-      <div style={{ background: "#0B0F0E", borderRadius: 16, overflow: "hidden", minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <StepVisual key={animKey} />
-      </div>
-    </div>
-  );
-}
 
 /* ─── COUNTDOWN TIMER ────────────────────────────────────────────────────── */
 function CountdownTimer() {
@@ -820,15 +659,7 @@ export default function LandingPage() {
                 }}>
                   {t.hero.cta1}
                 </Link>
-                <Link href="/demo" style={{
-                  background: WHITE, color: INK, borderRadius: 999, padding: "12px 28px",
-                  fontSize: 15, fontWeight: 600, border: `1px solid ${BORD}`,
-                  fontFamily: "var(--font-sora, system-ui)", textDecoration: "none", display: "inline-block",
-                }}>
-                  {t.hero.cta2}
-                </Link>
               </div>
-              <ProductShowcase />
             </div>
 
             {/* Right — wallet card mockup */}
@@ -1413,19 +1244,6 @@ export default function LandingPage() {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.82; transform: scale(1.06); }
         }
-        @keyframes scanLine {
-          0% { transform: scaleX(0); transform-origin: left; }
-          50% { transform: scaleX(1); transform-origin: left; }
-          51% { transform: scaleX(1); transform-origin: right; }
-          100% { transform: scaleX(0); transform-origin: right; }
-        }
-        @keyframes typeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-        @keyframes dotPop { from { transform: scale(0); } to { transform: scale(1); } }
-        @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes progressFill { from { width: 0%; } to { width: 100%; } }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
