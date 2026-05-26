@@ -12,7 +12,6 @@ import {
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
 import TutorialOverlay from "@/app/components/TutorialOverlay";
-import { FideloLogoStamp } from "@/components/FideloLogoStamp";
 
 /* ── Design tokens ─────────────────────────────────── */
 const DB   = "#EDEBE4";   // page background
@@ -118,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Logo + Search */}
       <div className="px-4 pt-5 pb-3 space-y-3">
         <div className="px-2 mb-1">
-          <img src="/brand/fideloo-logo-stamp-onDark.svg" alt="Fideloo" style={{ height: 36, width: "auto", display: "block" }} />
+          <img src="/brand/fideloo-logo-linked-onDark.svg" alt="Fideloo" style={{ height: 28, width: "auto", display: "block" }} />
         </div>
 
         <button
@@ -376,7 +375,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <header className="md:hidden h-14 flex items-center px-4 justify-between sticky top-0 z-30"
             style={{ background: "rgba(237,235,228,0.95)", backdropFilter: "blur(20px)", borderBottom: `1px solid ${DL}` }}>
             <div className="flex items-center gap-2">
-              <FideloLogoStamp variant="onDark" size={32} />
+              <img src="/brand/fideloo-logo-linked.svg" alt="Fideloo" style={{ height: 24, width: "auto" }} />
             </div>
             <div className="flex items-center gap-1">
               <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg" style={{ color: DTD }}>
