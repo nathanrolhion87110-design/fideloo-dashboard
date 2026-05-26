@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import { GoogleLogo } from "@/components/icons/GoogleLogo";
+import { AppleLogo } from "@/components/icons/AppleLogo";
 
 declare global {
   interface Window {
@@ -447,12 +449,12 @@ function RegisterContent() {
           {googleClientId ? (
             <button type="button" onClick={handleGoogleClick} disabled={loading || !googleReady}
               style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "#FFFFFF", border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, fontWeight: 500, color: INK, cursor: "pointer", fontFamily: "inherit", opacity: (loading || !googleReady) ? 0.5 : 1 }}>
-              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <GoogleIcon />}
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <GoogleLogo size={18} />}
               Continuer avec Google
             </button>
           ) : (
             <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "#FFFFFF", border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, color: GRAY, opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
-              <GoogleIcon /> Google (non configuré)
+              <GoogleLogo size={18} /> Google (non configuré)
             </button>
           )}
           <div id="google-fallback-btn-register" style={{ display: "none", justifyContent: "center" }} />
@@ -460,12 +462,12 @@ function RegisterContent() {
           {appleServiceId ? (
             <button type="button" onClick={handleAppleSignIn} disabled={loading || !appleReady}
               style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "#FFFFFF", border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, fontWeight: 500, color: INK, cursor: "pointer", fontFamily: "inherit", opacity: (loading || !appleReady) ? 0.5 : 1 }}>
-              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <AppleIcon />}
+              {loading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <AppleLogo size={16} />}
               Continuer avec Apple
             </button>
           ) : (
             <button disabled style={{ width: "100%", height: 44, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "#FFFFFF", border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 14, color: INK, opacity: 0.4, cursor: "not-allowed", fontFamily: "inherit" }}>
-              <AppleIcon /> Apple (non configuré)
+              <AppleLogo size={16} /> Apple (non configuré)
             </button>
           )}
         </div>
@@ -511,21 +513,5 @@ export default function RegisterPage() {
     <Suspense fallback={<div style={{ background: "#EDEBE4", minHeight: "100vh" }} />}>
       <RegisterContent />
     </Suspense>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
-      <path fill="#EA4335" d="M12 11.5v3.6h5.1c-.2 1.3-1.6 3.8-5.1 3.8-3.1 0-5.6-2.6-5.6-5.7s2.5-5.7 5.6-5.7c1.7 0 2.9.7 3.5 1.3l2.4-2.3C16.4 5.1 14.4 4 12 4 7.6 4 4 7.6 4 12s3.6 8 8 8c4.6 0 7.7-3.2 7.7-7.7 0-.5-.1-.9-.1-1.3H12z" />
-    </svg>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 814.6 1000" width="16" height="16" fill="currentColor" aria-hidden>
-      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 411.6 0 279.6 0 154.8 0 71.5 26.5 .88 72.8-27.1c44.3-26.3 99.8-35.1 149.4-35.1 73.4 0 133.8 47.1 178.6 47.1 42.8 0 109.8-50.1 194.8-50.1 31.5 0 108.1 6.4 160 60.9zm-134.2-66.4c-27.3 32.4-69.4 57.8-120.3 57.8-5.1 0-10.3-.4-15.4-1.1-3.4-48.8 16.4-101.6 47.4-135.9 25.9-29.2 70.5-53.7 115.2-57.8 3.8 52.6-14.4 104.3-26.9 137z"/>
-    </svg>
   );
 }
