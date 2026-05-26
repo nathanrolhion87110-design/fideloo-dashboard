@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   ChevronDown, Coffee, Nfc, BarChart2, Palette, Bell, QrCode,
-  Wallet, RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
+  RefreshCw, Gamepad2, Gift, ShieldCheck, Sparkles, Star, Tag, X as XIcon,
   Mail, Clock, TrendingUp, Users, Calculator,
 } from "lucide-react";
+import { AppleLogo } from "@/components/icons/AppleLogo";
 
 /* ─── PALETTE ───────────────────────────────────────────────────────────── */
 const BG   = "#EDEBE4";
@@ -238,7 +239,7 @@ const translations = {
   },
 };
 
-const featureIcons = [Wallet, QrCode, RefreshCw, BarChart2, Palette, Bell];
+const featureIcons = [AppleLogo, QrCode, RefreshCw, BarChart2, Palette, Bell];
 
 /* ─── DICE FACE SVG ─────────────────────────────────────────────────────── */
 function DiceFace({ value }: { value: number | "?" }) {
