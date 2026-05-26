@@ -662,49 +662,109 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right — wallet card mockup */}
-            <div style={{ position: "relative" }}>
+            {/* Right — iPhone mockup with wallet card */}
+            <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+
+              {/* iPhone frame */}
               <div style={{
-                background: INK, borderRadius: 20, padding: 28, color: WHITE,
-                boxShadow: "0 32px 80px rgba(11,15,14,0.18)",
+                width: 280,
+                background: "#1A1A1A",
+                borderRadius: 44,
+                border: "8px solid #2A2A2A",
+                boxShadow: "0 40px 100px rgba(11,15,14,0.28), inset 0 0 0 1px rgba(255,255,255,0.06)",
+                overflow: "hidden",
+                position: "relative",
               }}>
-                {/* Card header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: GOLD, marginBottom: 4, fontFamily: "var(--font-sora, system-ui)" }}>
-                      {t.card.label}
-                    </div>
-                    <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 22, fontWeight: 600 }}>
-                      {t.card.name}
-                    </div>
-                  </div>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(184,135,58,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Coffee size={20} color={GOLD} />
+                {/* Notch */}
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <div style={{ width: 88, height: 28, background: "#1A1A1A", borderRadius: "0 0 18px 18px", position: "relative", zIndex: 2 }} />
+                </div>
+
+                {/* Status bar */}
+                <div style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "0 18px 6px",
+                  fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.85)",
+                  fontFamily: "var(--font-sora, system-ui)",
+                }}>
+                  <span>9:41</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    {/* Signal bars */}
+                    <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                      <rect x="0" y="6" width="2" height="3" rx="0.5" fill="rgba(255,255,255,0.85)" />
+                      <rect x="3" y="4" width="2" height="5" rx="0.5" fill="rgba(255,255,255,0.85)" />
+                      <rect x="6" y="2" width="2" height="7" rx="0.5" fill="rgba(255,255,255,0.85)" />
+                      <rect x="9" y="0" width="2" height="9" rx="0.5" fill="rgba(255,255,255,0.4)" />
+                    </svg>
+                    {/* WiFi */}
+                    <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                      <path d="M6 8L8.5 5.2A3.5 3.5 0 003.5 5.2L6 8z" fill="rgba(255,255,255,0.85)" />
+                      <path d="M6 8L10 3.8A6 6 0 002 3.8L6 8z" fill="rgba(255,255,255,0.5)" />
+                    </svg>
+                    {/* Battery */}
+                    <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
+                      <rect x="0.5" y="0.5" width="16" height="9" rx="2" stroke="rgba(255,255,255,0.6)" strokeWidth="1" />
+                      <rect x="17" y="3" width="2.5" height="4" rx="1" fill="rgba(255,255,255,0.4)" />
+                      <rect x="1.5" y="1.5" width="12" height="7" rx="1.5" fill="rgba(255,255,255,0.85)" />
+                    </svg>
                   </div>
                 </div>
 
-                {/* Stamps */}
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <div key={i} style={{
-                      width: 28, height: 28, borderRadius: "50%",
-                      background: i < 7 ? GOLD : "rgba(255,255,255,0.12)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                      {i < 7 && <Coffee size={13} color={INK} />}
-                    </div>
-                  ))}
+                {/* Wallet app header */}
+                <div style={{ padding: "4px 18px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 17, fontWeight: 700, color: WHITE, fontFamily: "var(--font-sora, system-ui)" }}>Wallet</span>
+                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="7" cy="7" r="6" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
+                      <path d="M7 4v3l2 2" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </div>
                 </div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 20, fontFamily: "var(--font-sora, system-ui)" }}>7 / 10</div>
 
-                {/* Footer */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 16 }}>
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-sora, system-ui)" }}>{t.card.reward}</span>
-                  <Nfc size={16} color={GOLD} />
+                {/* Wallet card inside phone */}
+                <div style={{ padding: "0 12px 20px" }}>
+                  <div style={{
+                    background: INK, borderRadius: 16, padding: "18px 16px", color: WHITE,
+                  }}>
+                    {/* Card header */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                      <div>
+                        <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.15em", color: GOLD, marginBottom: 3, fontFamily: "var(--font-sora, system-ui)" }}>
+                          {t.card.label}
+                        </div>
+                        <div style={{ fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: 16, fontWeight: 600 }}>
+                          {t.card.name}
+                        </div>
+                      </div>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(184,135,58,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Coffee size={15} color={GOLD} />
+                      </div>
+                    </div>
+
+                    {/* Stamps */}
+                    <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
+                      {Array.from({ length: 10 }).map((_, i) => (
+                        <div key={i} style={{
+                          width: 20, height: 20, borderRadius: "50%",
+                          background: i < 7 ? GOLD : "rgba(255,255,255,0.12)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          {i < 7 && <Coffee size={9} color={INK} />}
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", marginBottom: 12, fontFamily: "var(--font-sora, system-ui)" }}>7 / 10</div>
+
+                    {/* Footer */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10 }}>
+                      <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-sora, system-ui)" }}>{t.card.reward}</span>
+                      <Nfc size={13} color={GOLD} />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Floating stat card */}
+              {/* Floating stat card — outside phone frame */}
               <div style={{
                 position: "absolute", bottom: -20, right: -20, background: WHITE,
                 borderRadius: 14, padding: "14px 18px", boxShadow: "0 8px 32px rgba(11,15,14,0.12)",
@@ -785,7 +845,7 @@ export default function LandingPage() {
               <em style={{ display: "block", color: "#B8873A", fontStyle: "italic" }}>Vos clients jouent. Vos avis explosent.</em>
             </h2>
             <p style={{ fontSize: 16, color: "#6B6B6B", maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
-              En quelques secondes, chaque client tente sa chance. Simple, rapide, addictif.
+              En quelques secondes, chaque client tente sa chance. Simple, rapide, engageant.
             </p>
           </div>
 
