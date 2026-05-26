@@ -26,7 +26,7 @@ interface AuthContextType {
   merchant: Merchant | null;
   token: string | null;
   isLoading: boolean;
-  login: (token: string, merchantData: Merchant) => void;
+  login: (token: string, merchantData: Merchant, refreshToken?: string) => void;
   logout: () => void;
   updateMerchant: (data: Partial<Merchant>) => void;
 }
@@ -53,9 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = (newToken: string, merchantData: Merchant) => {
+  const login = (newToken: string, merchantData: Merchant, refreshToken?: string) => {
     localStorage.setItem("fideloo_token", newToken);
     localStorage.setItem("fideloo_merchant", JSON.stringify(merchantData));
+    if (refreshToken) localStorage.setItem("fideloo_refresh_token", refreshToken);
     setToken(newToken);
     setMerchant(merchantData);
   };
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("fideloo_token");
     localStorage.removeItem("fideloo_merchant");
+    localStorage.removeItem("fideloo_refresh_token");
     setToken(null);
     setMerchant(null);
     router.push("/login");

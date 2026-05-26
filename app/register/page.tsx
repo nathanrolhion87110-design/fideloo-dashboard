@@ -84,6 +84,7 @@ const BUSINESS_TYPES = [
 function RegisterContent() {
   const searchParams = useSearchParams();
   const isTrial = searchParams.get("plan") === "trial";
+  const referralCode = searchParams.get("ref") || "";
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -104,7 +105,7 @@ function RegisterContent() {
     setError(""); setLoading(true);
     try {
       const res = await api.post("/merchants/auth/google", { token: credential, credential, mode: "register" });
-      login(res.data.token, res.data.merchant);
+      login(res.data.token, res.data.merchant, res.data.refresh_token);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string; message?: string } } };
@@ -174,7 +175,7 @@ function RegisterContent() {
         token: data.authorization.id_token, identityToken: data.authorization.id_token,
         user: data.user, mode: "register",
       });
-      login(res.data.token, res.data.merchant);
+      login(res.data.token, res.data.merchant, res.data.refresh_token);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const a = err as { error?: string };
@@ -194,6 +195,7 @@ function RegisterContent() {
         business_name: [firstName, lastName].filter(Boolean).join(" ") || email,
         business_type: businessType,
         website: honeypot,
+        ...(referralCode ? { referral_code: referralCode } : {}),
       };
       if (isTrial) {
         body.plan = "pro";

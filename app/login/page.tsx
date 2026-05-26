@@ -80,7 +80,7 @@ export default function LoginPage() {
     setError(""); setLoading(true);
     try {
       const res = await api.post("/merchants/auth/google", { token: credential, credential, mode: "login" });
-      login(res.data.token, res.data.merchant);
+      login(res.data.token, res.data.merchant, res.data.refresh_token);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const e = err as { response?: { status?: number; data?: { error?: string; message?: string } } };
@@ -151,7 +151,7 @@ export default function LoginPage() {
     try {
       const data = await window.AppleID.auth.signIn();
       const res = await api.post("/merchants/auth/apple", { token: data.authorization.id_token, identityToken: data.authorization.id_token, user: data.user, mode: "login" });
-      login(res.data.token, res.data.merchant);
+      login(res.data.token, res.data.merchant, res.data.refresh_token);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const a = err as { error?: string };
@@ -167,7 +167,7 @@ export default function LoginPage() {
     setError(""); setLoading(true);
     try {
       const res = await api.post("/merchants/login", { email, password });
-      login(res.data.token, res.data.merchant);
+      login(res.data.token, res.data.merchant, res.data.refresh_token);
       router.push(res.data.merchant.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } };

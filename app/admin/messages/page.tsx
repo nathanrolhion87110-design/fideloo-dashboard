@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, ExternalLink, Check } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Mail, ExternalLink, Check, Loader } from "lucide-react";
 
+const API   = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 const INK   = "#0B0F0E";
 const GOLD  = "#B8873A";
 const GRAY  = "#6B6B6B";
@@ -11,24 +12,26 @@ const CARD  = "#FFFFFF";
 const CARD2 = "#F5F3EE";
 
 interface Message {
-  id: number;
-  name: string;
-  email: string;
-  commerce: string;
-  message: string;
-  date: string;
+  id: string;
+  name: string | null;
+  email: string | null;
+  business_type: string | null;
+  message: string | null;
   read: boolean;
+  created_at: string;
 }
 
-const MOCK_MESSAGES: Message[] = [
-  { id: 1,  name: "Marie Dupont",     email: "marie@cafedupont.fr",       commerce: "Café",         message: "Bonjour, je souhaite en savoir plus sur votre offre Pro. Est-ce que je peux avoir une démo personnalisée ?",                        date: "il y a 2h",  read: false },
-  { id: 2,  name: "Thomas Renaud",    email: "thomas@pizzaroma.fr",       commerce: "Restaurant",   message: "Je rencontre un problème avec mon QR code. Il ne semble pas fonctionner correctement depuis hier soir.",                             date: "il y a 4h",  read: false },
-  { id: 3,  name: "Sophie Martin",    email: "sophie@boulangerie.fr",     commerce: "Boulangerie",  message: "Votre solution est exactement ce qu'il me faut ! J'aimerais commencer avec le plan Standard. Comment procéder ?",                    date: "il y a 6h",  read: true  },
-  { id: 4,  name: "Jean-Paul Lebrun", email: "jp@salonelise.fr",          commerce: "Salon",        message: "Bonjour, est-il possible d'avoir plus de 1500 clients sur le plan Standard ? Mon salon est très fréquenté.",                        date: "il y a 1j",  read: true  },
-  { id: 5,  name: "Camille Petit",    email: "camille@epicerie.fr",       commerce: "Épicerie",     message: "Je voudrais savoir si vous avez une API pour synchroniser avec notre logiciel de caisse.",                                           date: "il y a 2j",  read: true  },
-  { id: 6,  name: "Antoine Morel",    email: "antoine@bar-central.fr",    commerce: "Bar",          message: "Super service ! Mes clients adorent le système de points. Une question : peut-on personnaliser les récompenses ?",                   date: "il y a 3j",  read: true  },
-  { id: 7,  name: "Lucie Bernard",    email: "lucie@fromagerie.fr",       commerce: "Fromagerie",   message: "Bonjour, mon essai se termine dans 3 jours. Je souhaite passer au plan Pro mais je ne trouve pas où le faire dans mon dashboard.",   date: "il y a 4j",  read: true  },
-];
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "À l'instant";
+  if (mins < 60) return `il y a ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `il y a ${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "hier";
+  return `il y a ${days}j`;
+}
 
 const AVATAR_COLORS = ["#B8873A", "#4B9CD3", "#6B8E23", "#9370DB", "#20B2AA", "#CD5C5C"];
 const avatarColor = (s: string) => AVATAR_COLORS[(s?.charCodeAt(0) || 0) % AVATAR_COLORS.length];
@@ -36,13 +39,40 @@ const initials    = (s: string) => (s || "??").slice(0, 2).toUpperCase();
 
 type Filter = "all" | "unread" | "read";
 
-export default function AdminMessagesPage() {
-  const [messages, setMessages]     = useState<Message[]>(MOCK_MESSAGES);
-  const [selected, setSelected]     = useState<Message | null>(messages[0]);
-  const [filter, setFilter]         = useState<Filter>("all");
+async function adminFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = localStorage.getItem("admin_token") || "";
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers: { "Content-Type": "application/json", "x-admin-token": token, ...options?.headers },
+  });
+  if (res.status === 401) { localStorage.removeItem("admin_token"); window.location.href = "/admin/login"; throw new Error("401"); }
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
-  const markRead = (id: number) => {
+export default function AdminMessagesPage() {
+  const [messages, setMessages]   = useState<Message[]>([]);
+  const [selected, setSelected]   = useState<Message | null>(null);
+  const [filter, setFilter]       = useState<Filter>("all");
+  const [loading, setLoading]     = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await adminFetch<{ messages: Message[] }>("/admin/messages?limit=50");
+      const msgs = data.messages || [];
+      setMessages(msgs);
+      if (!selected) setSelected(msgs.find(m => !m.read) || msgs[0] || null);
+    } catch {}
+    finally { setLoading(false); }
+  }, []); // eslint-disable-line
+
+  useEffect(() => { load(); }, [load]);
+
+  const markRead = async (id: string) => {
     setMessages(msgs => msgs.map(m => m.id === id ? { ...m, read: true } : m));
+    if (selected?.id === id) setSelected(s => s ? { ...s, read: true } : s);
+    try { await adminFetch(`/admin/messages/${id}/read`, { method: "PUT" }); } catch {}
   };
 
   const unreadCount = messages.filter(m => !m.read).length;
@@ -61,6 +91,8 @@ export default function AdminMessagesPage() {
 
   return (
     <>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, color: INK, fontFamily: "var(--font-playfair,'Playfair Display',Georgia,serif)", margin: 0 }}>
@@ -86,90 +118,96 @@ export default function AdminMessagesPage() {
         ))}
       </div>
 
-      {/* Layout 2 colonnes */}
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 16, minHeight: 600 }}>
+      {loading ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
+          <div style={{ width: 28, height: 28, border: `3px solid ${BORD}`, borderTopColor: GOLD, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        </div>
+      ) : (
+        /* Layout 2 colonnes */
+        <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 16, minHeight: 600 }}>
 
-        {/* Liste */}
-        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
-          {filtered.map((msg, i) => (
-            <div key={msg.id} onClick={() => { setSelected(msg); markRead(msg.id); }}
-              style={{
-                padding: "16px 20px", cursor: "pointer", borderBottom: i < filtered.length - 1 ? `1px solid ${BORD}` : "none",
-                borderLeft: selected?.id === msg.id ? `2px solid ${GOLD}` : "2px solid transparent",
-                background: selected?.id === msg.id ? CARD2 : CARD,
-              }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: avatarColor(msg.name), display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#FFFFFF", flexShrink: 0, position: "relative" }}>
-                  {initials(msg.name)}
-                  {!msg.read && <div style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, borderRadius: "50%", background: GOLD, border: "2px solid #FFFFFF" }} />}
-                </div>
-                <div style={{ flex: 1, overflow: "hidden" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 13, fontWeight: msg.read ? 500 : 700, color: INK }}>{msg.name}</span>
-                    <span style={{ fontSize: 11, color: GRAY }}>{msg.date}</span>
+          {/* Liste */}
+          <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
+            {filtered.map((msg, i) => (
+              <div key={msg.id} onClick={() => { setSelected(msg); markRead(msg.id); }}
+                style={{
+                  padding: "16px 20px", cursor: "pointer", borderBottom: i < filtered.length - 1 ? `1px solid ${BORD}` : "none",
+                  borderLeft: selected?.id === msg.id ? `2px solid ${GOLD}` : "2px solid transparent",
+                  background: selected?.id === msg.id ? CARD2 : CARD,
+                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: avatarColor(msg.name || "?"), display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#FFFFFF", flexShrink: 0, position: "relative" }}>
+                    {initials(msg.name || "?")}
+                    {!msg.read && <div style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, borderRadius: "50%", background: GOLD, border: "2px solid #FFFFFF" }} />}
                   </div>
-                  <div style={{ fontSize: 12, color: GRAY, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {msg.message.slice(0, 55)}…
+                  <div style={{ flex: 1, overflow: "hidden" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 13, fontWeight: msg.read ? 500 : 700, color: INK }}>{msg.name || "Anonyme"}</span>
+                      <span style={{ fontSize: 11, color: GRAY }}>{timeAgo(msg.created_at)}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: GRAY, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {(msg.message || "").slice(0, 55)}…
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {filtered.length === 0 && (
-            <div style={{ padding: 48, textAlign: "center", color: GRAY, fontSize: 13 }}>Aucun message.</div>
+            {filtered.length === 0 && (
+              <div style={{ padding: 48, textAlign: "center", color: GRAY, fontSize: 13 }}>Aucun message.</div>
+            )}
+          </div>
+
+          {/* Détail */}
+          {selected ? (
+            <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 32, display: "flex", flexDirection: "column" }}>
+              {/* Header */}
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: avatarColor(selected.name || "?"), display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>
+                    {initials(selected.name || "?")}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{selected.name || "Anonyme"}</div>
+                    <div style={{ fontSize: 13, color: GRAY }}>{selected.email || "—"}</div>
+                    <div style={{ fontSize: 12, color: GRAY, marginTop: 2 }}>Type : {selected.business_type || "Non précisé"} · {timeAgo(selected.created_at)}</div>
+                  </div>
+                </div>
+                {!selected.read && (
+                  <button onClick={() => markRead(selected.id)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: `1px solid ${BORD}`, background: CARD, color: GRAY, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    <Check size={13} /> Marquer comme lu
+                  </button>
+                )}
+              </div>
+
+              {/* Séparateur */}
+              <div style={{ height: 1, background: BORD, marginBottom: 24 }} />
+
+              {/* Corps */}
+              <div style={{ flex: 1, fontSize: 15, color: INK, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+                {selected.message || ""}
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: "flex", gap: 12, marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORD}` }}>
+                <a href={`mailto:${selected.email}?subject=Re: Fideloo — votre message&body=Bonjour ${(selected.name || "").split(" ")[0]},%0A%0A`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: INK, color: "#FFFFFF", borderRadius: 999, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>
+                  <Mail size={14} /> Répondre par email
+                </a>
+                <a href={`/register?plan=trial&email=${encodeURIComponent(selected.email || "")}`}
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: CARD, color: INK, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                  <ExternalLink size={14} /> Créer un compte prospect
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", color: GRAY, fontSize: 14 }}>
+              Sélectionnez un message
+            </div>
           )}
         </div>
-
-        {/* Détail */}
-        {selected ? (
-          <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: 32, display: "flex", flexDirection: "column" }}>
-            {/* Header */}
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: "50%", background: avatarColor(selected.name), display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>
-                  {initials(selected.name)}
-                </div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>{selected.name}</div>
-                  <div style={{ fontSize: 13, color: GRAY }}>{selected.email}</div>
-                  <div style={{ fontSize: 12, color: GRAY, marginTop: 2 }}>Type : {selected.commerce} · {selected.date}</div>
-                </div>
-              </div>
-              {!selected.read && (
-                <button onClick={() => markRead(selected.id)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: `1px solid ${BORD}`, background: CARD, color: GRAY, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                  <Check size={13} /> Marquer comme lu
-                </button>
-              )}
-            </div>
-
-            {/* Séparateur */}
-            <div style={{ height: 1, background: BORD, marginBottom: 24 }} />
-
-            {/* Corps */}
-            <div style={{ flex: 1, fontSize: 15, color: INK, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
-              {selected.message}
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: 12, marginTop: 32, paddingTop: 24, borderTop: `1px solid ${BORD}` }}>
-              <a href={`mailto:${selected.email}?subject=Re: Fideloo — votre message&body=Bonjour ${selected.name.split(" ")[0]},%0A%0A`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: INK, color: "#FFFFFF", borderRadius: 999, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>
-                <Mail size={14} /> Répondre par email
-              </a>
-              <a href={`/register?plan=trial&email=${encodeURIComponent(selected.email)}`}
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: CARD, color: INK, border: `1px solid ${BORD}`, borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-                <ExternalLink size={14} /> Créer un compte prospect
-              </a>
-            </div>
-          </div>
-        ) : (
-          <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", color: GRAY, fontSize: 14 }}>
-            Sélectionnez un message
-          </div>
-        )}
-      </div>
+      )}
     </>
   );
 }
